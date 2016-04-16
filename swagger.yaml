@@ -279,34 +279,141 @@ paths:
   #
   # Outflow
   #
-  # /outflow:
-  #   get:
-  #     parameters:
-  #       - name: id
-  #         in: query
-  #   put:
-  #     parameters:
-  #       - name: id
-  #         in: query
-  #   post:
-  #     responses:
-  #       200:
-  #         description:
+  /outflow:
+    get:
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          format: int32
+          required: true
+      responses:
+        200:
+          description: outflow object
+          schema:
+            $ref: '#/definitions/Outflow'
+    put:
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          format: int32
+          required: true
+        - name: datetime
+          in: query
+          type: string
+          format: date-time
+        - name: name
+          in: query
+          type: string
+        - name: amount
+          in: query
+          type: number
+          format: float
+        - name: currency
+          in: query
+          type: string
+        - name: description
+          in: query
+          type: string
+        - name: destination
+          in: query
+          type: string
+        - name: target
+          in: query
+          type: string
+        - name: count
+          in: query
+          type: number
+          format: float
+        - name: metric_unit
+          in: query
+          type: string
+        - name: satisfaction
+          in: query
+          type: number
+          format: float
+      responses:
+        200:
+          description: ok
+    post:
+      parameters:
+        - name: datetime
+          in: query
+          type: string
+          format: date-time
+        - name: name
+          in: query
+          type: string
+          required: true
+        - name: amount
+          in: query
+          type: number
+          format: float
+          required: true
+        - name: currency
+          in: query
+          type: string
+          required: true
+        - name: description
+          in: query
+          type: string
+        - name: destination
+          in: query
+          type: string
+          required: true
+        - name: target
+          in: query
+          type: string
+        - name: count
+          in: query
+          type: number
+          format: float
+        - name: metric_unit
+          in: query
+          type: string
+        - name: satisfaction
+          in: query
+          type: number
+          format: float
+      responses:
+        200:
+          description: ok
+    delete:
+      parameters:
+        - name: id
+          in: query
+          required: true
+          type: number
+          format: int32
+      responses:
+        200:
+          description: ok
 
-  #   delete:
-  #     parameters:
-  #       - name: id
-  #         in: query
-  # /outflow/{time-range}:
-  #   get:
-  #     parameters:
-  #       - name: time-range
-  #         in: path
-  # /outflow/{time-range}/grep:
-  #   get:
-  #     parameters:
-  #       - name: time-range
-  #         in: path
+  /outflow/{time-range}:
+    get:
+      parameters:
+        - name: time-range
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: list of outflow documents
+          schema:
+            $ref: '#/definitions/Outflow'
+  /outflow/{time-range}/grep:
+    get:
+      parameters:
+        - name: time-range
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: list of outflow documents
+          schema:
+            $ref: '#/definitions/Outflow'
 
   #
   # Additionally:
@@ -329,42 +436,48 @@ paths:
             type: array
             items:
               type: string
-  # /sources/grep:
-  #   get:
-  #     parameters:
-  #       - name: s
-  #         in: query
-  #         required: true
-  #     response:
-  #       '200':
-  #         schema:
-  #           type: array
-  #           items:
-  #             type: string
-  # /destinations/grep:
-  #   get:
-  #     parameters:
-  #       - name: s
-  #         in: query
-  #         required: true
-  #     response:
-  #       '200':
-  #         schema:
-  #           type: array
-  #           items:
-  #             type: string
-  # /targets/grep:
-  #   get:
-  #     parameters:
-  #       - name: s
-  #         in: query
-  #         required: true
-  #     response:
-  #       '200':
-  #         schema:
-  #           type: array
-  #           items:
-  #             type: string
+  /sources/grep:
+    get:
+      parameters:
+        - name: s
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          description: ok
+          schema:
+            type: array
+            items:
+              type: string
+  /destinations/grep:
+    get:
+      parameters:
+        - name: s
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          description: ok
+          schema:
+            type: array
+            items:
+              type: string
+  /targets/grep:
+    get:
+      parameters:
+        - name: s
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          description: ok
+          schema:
+            type: array
+            items:
+              type: string
 
 definitions:
 
