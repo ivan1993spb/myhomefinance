@@ -1,6 +1,20 @@
 
-Document example
-----------------
+Document examples
+-----------------
+
+### transaction ###
+
+```json
+{
+    'guid':         '237bb707-3b52-11e5-ba37-00d4ee77da23',
+    'type':         '',
+    'datetime':     '',
+    'name':         'milk',
+    'amount':       1,
+    'currency':     '',
+    'description':  '',
+}
+```
 
 ### outflow ###
 
@@ -12,8 +26,8 @@ Document example
     'amount':       1,
     'currency':     '',
     'description':  '',
-
     'destination':  ''
+    'count':        ''
     'metric_unit':  'liter',
     'target':       '',
     'satisfaction': '',
@@ -30,7 +44,6 @@ Document example
     'amount':       '',
     'currency':     '',
     'description':  '',
-
     'source':       '',
 }
 ```
@@ -47,6 +60,15 @@ RESTful API
 
 GET `/inflow`
 
+
+GET `/inflow/{guid}`
+
+
+GET `/inflow/grep`
+'name'
+'currency'
+'description'
+'source'
 
 POST `/inflow/add`
 'name'
@@ -73,6 +95,18 @@ Result: inflow guid
 
 
 GET `/outflow`
+
+
+GET `/outflow/{guid}`
+
+
+GET `/outflow/grep`
+'name'
+'currency'
+'description'
+'destination'
+'target'
+'satisfaction'
 
 
 POST `/outflow/add`
@@ -106,7 +140,16 @@ POST `/outflow/{guid}/edit`
 Result: outflow guid
 
 
-GET `/transactions/all`
+GET `/transactions`
+
+
+GET `/transactions/{guid}`
+
+
+GET `/transactions/grep`
+'name'
+'currency'
+'description'
 
 
 GET `/transactions/year`
@@ -120,3 +163,14 @@ GET `/transactions/month`
 
 GET `/transactions/week`
 
+
+
+
+Tools
+-----
+
+- [mux handler](github.com/gorilla/mux)
+- [db sqlite3](github.com/mattn/go-sqlite3)
+- [guid func](http://play.golang.org/p/4FkNSiUDMg)
+- [guid lib](github.com/satori/go.uuid)
+- [swagger editor](http://swagger.io/swagger-editor/)
