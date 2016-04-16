@@ -112,7 +112,7 @@ paths:
           required: true
           minLength: 2
           maxLength: 300
-          description: title 2-300 chars
+          description: length 2-300 chars
         - name: datetime
           type: string
           format: date-time
@@ -136,6 +136,8 @@ paths:
       responses:
         200:
           description: note was deleted
+        404:
+          description: note not found
   /notes/{time-range}:
     get:
       parameters:
@@ -205,6 +207,7 @@ paths:
           in: query
           type: number
           format: float
+          minimum: 0.01
         - name: currency
           in: query
           type: string
@@ -236,6 +239,7 @@ paths:
           type: number
           format: float
           required: true
+          minimum: 0.01
         - name: currency
           in: query
           type: string
@@ -334,6 +338,7 @@ paths:
           in: query
           type: number
           format: float
+          minimum: 0.01
         - name: currency
           in: query
           type: string
@@ -378,6 +383,7 @@ paths:
           type: number
           format: float
           required: true
+          minimum: 0.01
         - name: currency
           in: query
           type: string
@@ -429,7 +435,9 @@ paths:
         200:
           description: list of outflow documents
           schema:
-            $ref: '#/definitions/Outflow'
+            type: array
+            items:
+              $ref: '#/definitions/Outflow'
   /outflow/{time-range}/grep:
     get:
       parameters:
@@ -441,7 +449,9 @@ paths:
         200:
           description: list of outflow documents
           schema:
-            $ref: '#/definitions/Outflow'
+            type: array
+            items:
+              $ref: '#/definitions/Outflow'
 
   #
   # Additionally:
@@ -530,9 +540,12 @@ definitions:
         format: date-time
       name:
         type: string
+        minLength: 2
+        maxLength: 300
       amount:
-        type: integer
-        format: int32
+        type: number
+        format: float
+        minimum: 0.01
       currency:
         type: string
       description:
@@ -552,6 +565,8 @@ definitions:
         format: int32
       title:
         type: string
+        minLength: 2
+        maxLength: 300
       datetime:
         type: string
         format: date-time
@@ -581,9 +596,12 @@ definitions:
         format: date-time
       name:
         type: string
+        minLength: 2
+        maxLength: 300
       amount:
-        type: integer
-        format: int32
+        type: number
+        format: float
+        minimum: 0.01
       currency:
         type: string
       description:
@@ -615,9 +633,12 @@ definitions:
         format: date-time
       name:
         type: string
+        minLength: 2
+        maxLength: 300
       amount:
-        type: integer
-        format: int32
+        type: number
+        format: float
+        minimum: 0.01
       currency:
         type: string
       description:
