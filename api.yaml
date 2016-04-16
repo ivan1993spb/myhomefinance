@@ -86,6 +86,23 @@ paths:
         - name: time-range
           in: path
 
+  # Note
+
+  /note
+    get:
+      parameters:
+        - name: guid
+          in: query
+    put:
+      parameters:
+        - name: guid
+          in: query
+    post:
+    delete:
+      parameters:
+        - name: guid
+          in: query
+
 definitions:
 
   ### Transaction
@@ -185,3 +202,15 @@ definitions:
         type: string
       satisfaction:
         type: float
+
+  ### Note
+
+  Note:
+    required:
+    properties:
+      title:
+        type: string
+      body:
+        type: string
+
+
