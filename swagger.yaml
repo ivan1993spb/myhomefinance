@@ -1,0 +1,498 @@
+swagger: '2.0'
+info:
+  version: v1
+  title: myHomeFinance API
+  description: |
+    This is small finance program named myHomeFinance
+host: localhost
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+
+  #
+  # Transactions
+  #
+  /transaction:
+    get:
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          format: int32
+          required: true
+      responses:
+        200:
+          description: returns transaction by id
+          schema:
+            $ref: '#/definitions/Transaction'
+  /transactions/{time-range}:
+    get:
+      parameters:
+        - name: time-range
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: returns list of transactions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+  /transactions/{time-range}/grep:
+    get:
+      parameters:
+        - name: time-range
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: returns list of transactions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+
+  #
+  # Note
+  #
+  /note:
+    get:
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          format: int32
+          required: true
+          description: note id
+      responses:
+        200:
+          description: returns note
+          schema:
+            $ref: '#/definitions/Note'
+    put:
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          format: int32
+          required: true
+          description: note id
+        - name: datetime
+          in: query
+          type: string
+          format: date-time
+          description: timestamp
+        - name: title
+          in: query
+          type: string
+          description: note title
+        - name: body
+          in: query
+          type: string
+          description: notebody
+      responses:
+        200:
+          description: rewrites note
+    post:
+      parameters:
+        - name: title
+          type: string
+          in: query
+          required: true
+        - name: datetime
+          type: string
+          format: date-time
+          in: query
+          required: true
+        - name: body
+          type: string
+          in: query
+      responses:
+        200:
+          description: created new note
+    delete:
+      parameters:
+        - name: id
+          type: integer
+          format: int32
+          in: query
+          required: true
+      responses:
+        200:
+          description: note is deleted
+  /notes/{time-range}:
+    get:
+      parameters:
+        - name: time-range
+          type: string
+          in: path
+          required: true
+      responses:
+        200:
+          description: list of nodes
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Note'
+  /notes/{time-range}/grep:
+    get:
+      parameters:
+        - name: time-range
+          type: string
+          in: path
+          required: true
+        - name: title
+          type: string
+          in: query
+          required: true
+      responses:
+        200:
+          description: list of notes
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Note'
+
+  #
+  # Inflow
+  #
+  /inflow:
+    get:
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          format: int32
+          required: true
+      responses:
+        200:
+          description: returns inflow
+          schema:
+            $ref: '#/definitions/Inflow'
+    put:
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          format: int32
+          required: true
+        - name: datetime
+          in: query
+          type: string
+          format: date-time
+        - name: name
+          in: query
+          type: string
+        - name: amount
+          in: query
+          type: number
+          format: float
+        - name: currency
+          in: query
+          type: string
+        - name: description
+          in: query
+          type: string
+        # special:
+        - name: source
+          in: query
+          type: string
+      responses:
+        200:
+          description: rewrited inflow document
+    post:
+      parameters:
+        - name: datetime
+          in: query
+          type: string
+          format: date-time
+        - name: name
+          in: query
+          type: string
+        - name: amount
+          in: query
+          type: number
+          format: float
+        - name: currency
+          in: query
+          type: string
+        - name: description
+          in: query
+          type: string
+        - name: source
+          in: query
+          type: string
+      responses:
+        200:
+          description: ok
+    delete:
+      parameters:
+        - name: id
+          in: query
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: ok
+  /inflow/{time-range}:
+    get:
+      parameters:
+        - name: time-range
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: list of inflow documents
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Inflow'
+
+  /inflow/{time-range}/grep:
+    get:
+      parameters:
+        - name: time-range
+          in: path
+          required: true
+          type: string
+        - name: name
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: list of inflow documents
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Inflow'
+
+  #
+  # Outflow
+  #
+  # /outflow:
+  #   get:
+  #     parameters:
+  #       - name: id
+  #         in: query
+  #   put:
+  #     parameters:
+  #       - name: id
+  #         in: query
+  #   post:
+  #     responses:
+  #       200:
+  #         description:
+
+  #   delete:
+  #     parameters:
+  #       - name: id
+  #         in: query
+  # /outflow/{time-range}:
+  #   get:
+  #     parameters:
+  #       - name: time-range
+  #         in: path
+  # /outflow/{time-range}/grep:
+  #   get:
+  #     parameters:
+  #       - name: time-range
+  #         in: path
+
+  #
+  # Additionally:
+  #
+  /currencies:
+    get:
+      responses:
+        '200':
+          description: ok
+          schema:
+            type: array
+            items:
+              type: string
+  /metric-units:
+    get:
+      responses:
+        '200':
+          description: ok
+          schema:
+            type: array
+            items:
+              type: string
+  # /sources/grep:
+  #   get:
+  #     parameters:
+  #       - name: s
+  #         in: query
+  #         required: true
+  #     response:
+  #       '200':
+  #         schema:
+  #           type: array
+  #           items:
+  #             type: string
+  # /destinations/grep:
+  #   get:
+  #     parameters:
+  #       - name: s
+  #         in: query
+  #         required: true
+  #     response:
+  #       '200':
+  #         schema:
+  #           type: array
+  #           items:
+  #             type: string
+  # /targets/grep:
+  #   get:
+  #     parameters:
+  #       - name: s
+  #         in: query
+  #         required: true
+  #     response:
+  #       '200':
+  #         schema:
+  #           type: array
+  #           items:
+  #             type: string
+
+definitions:
+
+  #
+  # Transaction
+  #
+  Transaction:
+    type: object
+    required:
+      - id
+      - datetime
+      - name
+      - amount
+      - currency
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: id
+      datetime:
+        type: string
+        format: date-time
+      name:
+        type: string
+      amount:
+        type: integer
+        format: int32
+      currency:
+        type: string
+      description:
+        type: string
+
+  #
+  # Note
+  #
+  Note:
+    required:
+      - id
+      - title
+      - datetime
+    properties:
+      id:
+        type: integer
+        format: int32
+      title:
+        type: string
+      datetime:
+        type: string
+        format: date-time
+      body:
+        type: string
+
+  #
+  # Inflow
+  #
+  Inflow:
+    type: object
+    required:
+      - id
+      - datetime
+      - name
+      - amount
+      - currency
+      # special:
+      - source
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: id
+      datetime:
+        type: string
+        format: date-time
+      name:
+        type: string
+      amount:
+        type: integer
+        format: int32
+      currency:
+        type: string
+      description:
+        type: string
+      # special:
+      source:
+        type: string
+
+  #
+  # Outflow
+  #
+  Outflow:
+    type: object
+    required:
+      - id
+      - datetime
+      - name
+      - amount
+      - currency
+      # special:
+      - destination
+    properties:
+      id:
+        type: integer
+        format: int32
+        description: id
+      datetime:
+        type: string
+        format: date-time
+      name:
+        type: string
+      amount:
+        type: integer
+        format: int32
+      currency:
+        type: string
+      description:
+        type: string
+      # special:
+      destination:
+        type: string
+      target:
+        type: string
+      # details:
+      count:
+        type: integer
+        format: int32
+      metric_unit:
+        type: string
+      satisfaction:
+        type: number
+        format: float
+
