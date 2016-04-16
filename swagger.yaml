@@ -17,21 +17,9 @@ paths:
   #
   # Transactions
   #
-  /transaction:
-    get:
-      parameters:
-        - name: id
-          in: query
-          type: integer
-          format: int32
-          required: true
-      responses:
-        200:
-          description: returns transaction by id
-          schema:
-            $ref: '#/definitions/Transaction'
   /transactions/{time-range}:
     get:
+      description: Returns list of transactions in specified time range
       parameters:
         - name: time-range
           in: path
@@ -46,14 +34,24 @@ paths:
               $ref: '#/definitions/Transaction'
   /transactions/{time-range}/grep:
     get:
+      description: Returns list of transactions matched with passed attributes in specified time range
       parameters:
         - name: time-range
           in: path
           type: string
           required: true
+        - name: name
+          in: query
+          type: string
+          minLength: 2
+          maxLength: 300
+          description: 'length: 2-300 chars'
+        - name: currency
+          in: query
+          type: string
       responses:
         200:
-          description: returns list of transactions
+          description: list of transactions
           schema:
             type: array
             items:
@@ -76,6 +74,8 @@ paths:
           description: returns note
           schema:
             $ref: '#/definitions/Note'
+        404:
+          description: note not found
     put:
       parameters:
         - name: id
@@ -100,23 +100,31 @@ paths:
       responses:
         200:
           description: rewrites note
+          schema:
+            $ref: '#/definitions/Note'
+        404:
+          description: note not found
     post:
       parameters:
         - name: title
           type: string
           in: query
           required: true
+          minLength: 2
+          maxLength: 300
+          description: title 2-300 chars
         - name: datetime
           type: string
           format: date-time
           in: query
-          required: true
+          description: 'default: current date and time'
         - name: body
           type: string
           in: query
+          description: any text
       responses:
         200:
-          description: created new note
+          description: note was created
     delete:
       parameters:
         - name: id
@@ -124,9 +132,10 @@ paths:
           format: int32
           in: query
           required: true
+          description: note id
       responses:
         200:
-          description: note is deleted
+          description: note was deleted
   /notes/{time-range}:
     get:
       parameters:
@@ -176,6 +185,8 @@ paths:
           description: returns inflow
           schema:
             $ref: '#/definitions/Inflow'
+        404:
+          description: inflow document not found
     put:
       parameters:
         - name: id
@@ -206,32 +217,39 @@ paths:
           type: string
       responses:
         200:
-          description: rewrited inflow document
+          description: inflow document rewrited
+        404:
+          description: inflow document not found
     post:
       parameters:
         - name: datetime
           in: query
           type: string
           format: date-time
+          description: 'default: current date and time'
         - name: name
           in: query
           type: string
+          required: true
         - name: amount
           in: query
           type: number
           format: float
+          required: true
         - name: currency
           in: query
           type: string
+          required: true
         - name: description
           in: query
           type: string
         - name: source
           in: query
           type: string
+          required: true
       responses:
         200:
-          description: ok
+          description: inflow document created
     delete:
       parameters:
         - name: id
@@ -241,7 +259,9 @@ paths:
           format: int32
       responses:
         200:
-          description: ok
+          description: inflow document deleted
+        404:
+          description: inflow document not found
   /inflow/{time-range}:
     get:
       parameters:
@@ -287,11 +307,14 @@ paths:
           type: integer
           format: int32
           required: true
+          description: outflow document id
       responses:
         200:
-          description: outflow object
+          description: outflow document found
           schema:
             $ref: '#/definitions/Outflow'
+        404:
+          description: outflow document not found
     put:
       parameters:
         - name: id
@@ -299,6 +322,7 @@ paths:
           type: integer
           format: int32
           required: true
+          description: outflow document id
         - name: datetime
           in: query
           type: string
@@ -335,13 +359,16 @@ paths:
           format: float
       responses:
         200:
-          description: ok
+          description: outflow document rewrited
+        404:
+          description: outflow document not found
     post:
       parameters:
         - name: datetime
           in: query
           type: string
           format: date-time
+          description: 'default: current date and time'
         - name: name
           in: query
           type: string
@@ -378,7 +405,7 @@ paths:
           format: float
       responses:
         200:
-          description: ok
+          description: outflow document created
     delete:
       parameters:
         - name: id
@@ -388,8 +415,9 @@ paths:
           format: int32
       responses:
         200:
-          description: ok
-
+          description: outflow document deleted
+        404:
+          description: outflow document not found
   /outflow/{time-range}:
     get:
       parameters:
@@ -420,60 +448,65 @@ paths:
   #
   /currencies:
     get:
+      description: Returns list of currencies
       responses:
-        '200':
-          description: ok
+        200:
+          description: list of currencies
           schema:
             type: array
             items:
               type: string
   /metric-units:
     get:
+      description: Returns list of metric units
       responses:
-        '200':
-          description: ok
+        200:
+          description: list of metric units
           schema:
             type: array
             items:
               type: string
   /sources/grep:
     get:
+      description: Returns list of sources
       parameters:
         - name: s
           in: query
           type: string
           required: true
       responses:
-        '200':
-          description: ok
+        200:
+          description: list of sources
           schema:
             type: array
             items:
               type: string
   /destinations/grep:
     get:
+      description: Returns list of destinations
       parameters:
         - name: s
           in: query
           type: string
           required: true
       responses:
-        '200':
-          description: ok
+        200:
+          description: list of destinations
           schema:
             type: array
             items:
               type: string
   /targets/grep:
     get:
+      description: Returns list of targets
       parameters:
         - name: s
           in: query
           type: string
           required: true
       responses:
-        '200':
-          description: ok
+        200:
+          description: list of targets
           schema:
             type: array
             items:
@@ -487,16 +520,11 @@ definitions:
   Transaction:
     type: object
     required:
-      - id
       - datetime
       - name
       - amount
       - currency
     properties:
-      id:
-        type: integer
-        format: int32
-        description: id
       datetime:
         type: string
         format: date-time
@@ -609,3 +637,24 @@ definitions:
         type: number
         format: float
 
+  #
+  # Time ranges
+  #
+  # TimeRange:
+  #   type: string
+  #   default: week
+  #   enum:
+  #     - year
+  #     - 6months
+  #     - 4months
+  #     - 2months
+  #     - month
+  #     - 3weeks
+  #     - 2weeks
+  #     - week
+  #     - 4days
+  #     - 2days
+  #     - day
+  #     - 12hours
+  #     - 6hours
+  #     - 3hours
