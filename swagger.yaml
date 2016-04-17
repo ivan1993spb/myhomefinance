@@ -32,6 +32,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Transaction'
+        504:
+          description: server is currently unavailable
   /transactions/{time-range}/grep:
     get:
       description: Returns list of transactions matched with passed attributes in specified time range
@@ -56,6 +58,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Transaction'
+        504:
+          description: server is currently unavailable
 
   #
   # Note
@@ -76,6 +80,8 @@ paths:
             $ref: '#/definitions/Note'
         404:
           description: note not found
+        504:
+          description: server is currently unavailable
     put:
       parameters:
         - name: id
@@ -104,6 +110,8 @@ paths:
             $ref: '#/definitions/Note'
         404:
           description: note not found
+        504:
+          description: server is currently unavailable
     post:
       parameters:
         - name: title
@@ -125,6 +133,8 @@ paths:
       responses:
         200:
           description: note was created
+        504:
+          description: server is currently unavailable
     delete:
       parameters:
         - name: id
@@ -138,6 +148,8 @@ paths:
           description: note was deleted
         404:
           description: note not found
+        504:
+          description: server is currently unavailable
   /notes/{time-range}:
     get:
       parameters:
@@ -152,6 +164,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Note'
+        504:
+          description: server is currently unavailable
   /notes/{time-range}/grep:
     get:
       parameters:
@@ -170,6 +184,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Note'
+        504:
+          description: server is currently unavailable
 
   #
   # Inflow
@@ -189,6 +205,8 @@ paths:
             $ref: '#/definitions/Inflow'
         404:
           description: inflow document not found
+        504:
+          description: server is currently unavailable
     put:
       parameters:
         - name: id
@@ -223,6 +241,8 @@ paths:
           description: inflow document rewrited
         404:
           description: inflow document not found
+        504:
+          description: server is currently unavailable
     post:
       parameters:
         - name: datetime
@@ -254,6 +274,8 @@ paths:
       responses:
         200:
           description: inflow document created
+        504:
+          description: server is currently unavailable
     delete:
       parameters:
         - name: id
@@ -266,6 +288,8 @@ paths:
           description: inflow document deleted
         404:
           description: inflow document not found
+        504:
+          description: server is currently unavailable
   /inflow/{time-range}:
     get:
       parameters:
@@ -280,6 +304,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Inflow'
+        504:
+          description: server is currently unavailable
 
   /inflow/{time-range}/grep:
     get:
@@ -299,6 +325,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Inflow'
+        504:
+          description: server is currently unavailable
 
   #
   # Outflow
@@ -319,6 +347,8 @@ paths:
             $ref: '#/definitions/Outflow'
         404:
           description: outflow document not found
+        504:
+          description: server is currently unavailable
     put:
       parameters:
         - name: id
@@ -367,6 +397,8 @@ paths:
           description: outflow document rewrited
         404:
           description: outflow document not found
+        504:
+          description: server is currently unavailable
     post:
       parameters:
         - name: datetime
@@ -412,6 +444,8 @@ paths:
       responses:
         200:
           description: outflow document created
+        504:
+          description: server is currently unavailable
     delete:
       parameters:
         - name: id
@@ -424,6 +458,8 @@ paths:
           description: outflow document deleted
         404:
           description: outflow document not found
+        504:
+          description: server is currently unavailable
   /outflow/{time-range}:
     get:
       parameters:
@@ -438,6 +474,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Outflow'
+        504:
+          description: server is currently unavailable
   /outflow/{time-range}/grep:
     get:
       parameters:
@@ -452,6 +490,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Outflow'
+        504:
+          description: server is currently unavailable
 
   #
   # Additionally:
@@ -466,6 +506,8 @@ paths:
             type: array
             items:
               type: string
+        504:
+          description: server is currently unavailable
   /metric-units:
     get:
       description: Returns list of metric units
@@ -476,6 +518,8 @@ paths:
             type: array
             items:
               type: string
+        504:
+          description: server is currently unavailable
   /sources/grep:
     get:
       description: Returns list of sources
@@ -491,6 +535,8 @@ paths:
             type: array
             items:
               type: string
+        504:
+          description: server is currently unavailable
   /destinations/grep:
     get:
       description: Returns list of destinations
@@ -506,6 +552,8 @@ paths:
             type: array
             items:
               type: string
+        504:
+          description: server is currently unavailable
   /targets/grep:
     get:
       description: Returns list of targets
@@ -521,6 +569,8 @@ paths:
             type: array
             items:
               type: string
+        504:
+          description: server is currently unavailable
 
 definitions:
 
