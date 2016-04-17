@@ -105,10 +105,14 @@ paths:
           in: formData
           type: string
           description: note title
+          minLength: 2
+          maxLength: 300
         - name: text
           in: formData
           type: string
           description: note text
+          minLength: 2
+          maxLength: 300
       responses:
         200:
           description: rewrites note
@@ -185,6 +189,8 @@ paths:
           type: string
           in: formData
           required: true
+          minLength: 2
+          maxLength: 300
       responses:
         200:
           description: list of notes
@@ -232,6 +238,8 @@ paths:
         - name: name
           in: formData
           type: string
+          minLength: 2
+          maxLength: 300
         - name: amount
           in: formData
           type: number
@@ -249,6 +257,8 @@ paths:
         - name: source
           in: formData
           type: string
+          minLength: 2
+          maxLength: 300
       responses:
         200:
           description: inflow document rewrited
@@ -269,6 +279,8 @@ paths:
           in: formData
           type: string
           required: true
+          minLength: 2
+          maxLength: 300
         - name: amount
           in: formData
           type: number
@@ -289,6 +301,8 @@ paths:
           in: formData
           type: string
           required: true
+          minLength: 2
+          maxLength: 300
       responses:
         200:
           description: inflow document created
@@ -398,6 +412,8 @@ paths:
         - name: name
           in: formData
           type: string
+          minLength: 2
+          maxLength: 300
         - name: amount
           in: formData
           type: number
@@ -414,9 +430,13 @@ paths:
         - name: destination
           in: formData
           type: string
+          minLength: 2
+          maxLength: 300
         - name: target
           in: formData
           type: string
+          minLength: 2
+          maxLength: 300
         - name: count
           in: formData
           type: number
@@ -424,6 +444,7 @@ paths:
         - name: metric_unit
           in: formData
           type: string
+          maxLength: 100
         - name: satisfaction
           in: formData
           type: number
@@ -448,6 +469,8 @@ paths:
           in: formData
           type: string
           required: true
+          minLength: 2
+          maxLength: 300
         - name: amount
           in: formData
           type: number
@@ -468,9 +491,13 @@ paths:
           in: formData
           type: string
           required: true
+          minLength: 2
+          maxLength: 300
         - name: target
           in: formData
           type: string
+          minLength: 2
+          maxLength: 300
         - name: count
           in: formData
           type: number
@@ -478,6 +505,7 @@ paths:
         - name: metric_unit
           in: formData
           type: string
+          maxLength: 100
         - name: satisfaction
           in: formData
           type: number
@@ -783,6 +811,7 @@ definitions:
         format: int32
       metric_unit:
         type: string
+        maxLength: 100
       satisfaction:
         type: number
         format: float
