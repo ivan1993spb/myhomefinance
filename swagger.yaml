@@ -133,6 +133,10 @@ paths:
       responses:
         200:
           description: note was created
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Note'
         504:
           description: server is currently unavailable
     delete:
@@ -274,6 +278,10 @@ paths:
       responses:
         200:
           description: inflow document created
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Inflow'
         504:
           description: server is currently unavailable
     delete:
@@ -444,6 +452,10 @@ paths:
       responses:
         200:
           description: outflow document created
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Outflow'
         504:
           description: server is currently unavailable
     delete:
