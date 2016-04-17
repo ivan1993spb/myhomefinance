@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: v1
+  version: '1.0.0'
   title: myHomeFinance API
   description: |
     This is small finance program named myHomeFinance
@@ -12,7 +12,9 @@ consumes:
 produces:
   - application/json
 
+
 paths:
+
 
   #
   # Transactions
@@ -43,14 +45,17 @@ paths:
           type: string
           required: true
         - name: name
-          in: query
+          in: formData
           type: string
           minLength: 2
           maxLength: 300
-          description: 'length: 2-300 chars'
+          description: length 2-300 chars
         - name: currency
-          in: query
+          in: formData
           type: string
+          minLength: 3
+          maxLength: 3
+          description: currency code (see ISO 4217)
       responses:
         200:
           description: list of transactions
@@ -60,6 +65,7 @@ paths:
               $ref: '#/definitions/Transaction'
         504:
           description: server is currently unavailable
+
 
   #
   # Note
@@ -91,18 +97,18 @@ paths:
           required: true
           description: note id
         - name: datetime
-          in: query
+          in: formData
           type: string
           format: date-time
           description: timestamp
         - name: title
-          in: query
+          in: formData
           type: string
           description: note title
-        - name: body
-          in: query
+        - name: text
+          in: formData
           type: string
-          description: notebody
+          description: note text
       responses:
         200:
           description: rewrites note
@@ -116,7 +122,7 @@ paths:
       parameters:
         - name: title
           type: string
-          in: query
+          in: formData
           required: true
           minLength: 2
           maxLength: 300
@@ -124,19 +130,17 @@ paths:
         - name: datetime
           type: string
           format: date-time
-          in: query
+          in: formData
           description: 'default: current date and time'
-        - name: body
+        - name: text
           type: string
-          in: query
+          in: formData
           description: any text
       responses:
         200:
-          description: note was created
+          description: note created
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Note'
+            $ref: '#/definitions/Note'
         504:
           description: server is currently unavailable
     delete:
@@ -149,7 +153,7 @@ paths:
           description: note id
       responses:
         200:
-          description: note was deleted
+          description: note deleted
         404:
           description: note not found
         504:
@@ -179,7 +183,7 @@ paths:
           required: true
         - name: title
           type: string
-          in: query
+          in: formData
           required: true
       responses:
         200:
@@ -190,6 +194,7 @@ paths:
               $ref: '#/definitions/Note'
         504:
           description: server is currently unavailable
+
 
   #
   # Inflow
@@ -202,9 +207,10 @@ paths:
           type: integer
           format: int32
           required: true
+          description: inflow document id
       responses:
         200:
-          description: returns inflow
+          description: inflow document
           schema:
             $ref: '#/definitions/Inflow'
         404:
@@ -218,31 +224,36 @@ paths:
           type: integer
           format: int32
           required: true
+          description: inflow document id
         - name: datetime
-          in: query
+          in: formData
           type: string
           format: date-time
         - name: name
-          in: query
+          in: formData
           type: string
         - name: amount
-          in: query
+          in: formData
           type: number
           format: float
-          minimum: 0.01
         - name: currency
-          in: query
+          in: formData
           type: string
+          minLength: 3
+          maxLength: 3
+          description: currency code (see ISO 4217)
         - name: description
-          in: query
+          in: formData
           type: string
         # special:
         - name: source
-          in: query
+          in: formData
           type: string
       responses:
         200:
           description: inflow document rewrited
+          schema:
+            $ref: '#/definitions/Inflow'
         404:
           description: inflow document not found
         504:
@@ -250,38 +261,39 @@ paths:
     post:
       parameters:
         - name: datetime
-          in: query
+          in: formData
           type: string
           format: date-time
           description: 'default: current date and time'
         - name: name
-          in: query
+          in: formData
           type: string
           required: true
         - name: amount
-          in: query
+          in: formData
           type: number
           format: float
           required: true
           minimum: 0.01
         - name: currency
-          in: query
+          in: formData
           type: string
           required: true
+          minLength: 3
+          maxLength: 3
+          description: currency code (see ISO 4217)
         - name: description
-          in: query
+          in: formData
           type: string
         - name: source
-          in: query
+          in: formData
           type: string
           required: true
       responses:
         200:
           description: inflow document created
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Inflow'
+            $ref: '#/definitions/Inflow'
         504:
           description: server is currently unavailable
     delete:
@@ -291,6 +303,7 @@ paths:
           required: true
           type: integer
           format: int32
+          description: inflow document id
       responses:
         200:
           description: inflow document deleted
@@ -323,9 +336,21 @@ paths:
           required: true
           type: string
         - name: name
-          in: query
-          required: true
+          in: formData
           type: string
+          minLength: 2
+          maxLength: 300
+        - name: currency
+          in: formData
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: currency code (see ISO 4217)
+        - name: source
+          type: string
+          in: formData
+          minLength: 2
+          maxLength: 300
       responses:
         200:
           description: list of inflow documents
@@ -335,6 +360,7 @@ paths:
               $ref: '#/definitions/Inflow'
         504:
           description: server is currently unavailable
+
 
   #
   # Outflow
@@ -366,43 +392,47 @@ paths:
           required: true
           description: outflow document id
         - name: datetime
-          in: query
+          in: formData
           type: string
           format: date-time
         - name: name
-          in: query
+          in: formData
           type: string
         - name: amount
-          in: query
+          in: formData
           type: number
           format: float
-          minimum: 0.01
         - name: currency
-          in: query
+          in: formData
           type: string
+          minLength: 3
+          maxLength: 3
+          description: currency code (see ISO 4217)
         - name: description
-          in: query
+          in: formData
           type: string
         - name: destination
-          in: query
+          in: formData
           type: string
         - name: target
-          in: query
+          in: formData
           type: string
         - name: count
-          in: query
+          in: formData
           type: number
           format: float
         - name: metric_unit
-          in: query
+          in: formData
           type: string
         - name: satisfaction
-          in: query
+          in: formData
           type: number
           format: float
       responses:
         200:
           description: outflow document rewrited
+          schema:
+            $ref: '#/definitions/Outflow'
         404:
           description: outflow document not found
         504:
@@ -410,61 +440,64 @@ paths:
     post:
       parameters:
         - name: datetime
-          in: query
+          in: formData
           type: string
           format: date-time
           description: 'default: current date and time'
         - name: name
-          in: query
+          in: formData
           type: string
           required: true
         - name: amount
-          in: query
+          in: formData
           type: number
           format: float
           required: true
           minimum: 0.01
         - name: currency
-          in: query
+          in: formData
           type: string
           required: true
+          minLength: 3
+          maxLength: 3
+          description: currency code (see ISO 4217)
         - name: description
-          in: query
+          in: formData
           type: string
         - name: destination
-          in: query
+          in: formData
           type: string
           required: true
         - name: target
-          in: query
+          in: formData
           type: string
         - name: count
-          in: query
+          in: formData
           type: number
           format: float
         - name: metric_unit
-          in: query
+          in: formData
           type: string
         - name: satisfaction
-          in: query
+          in: formData
           type: number
           format: float
       responses:
         200:
           description: outflow document created
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Outflow'
+            $ref: '#/definitions/Outflow'
         504:
           description: server is currently unavailable
     delete:
+      description: Deletes outflow document by id
       parameters:
         - name: id
           in: query
           required: true
           type: number
           format: int32
+          description: outflow document id
       responses:
         200:
           description: outflow document deleted
@@ -495,6 +528,27 @@ paths:
           in: path
           type: string
           required: true
+        - name: name
+          in: formData
+          type: string
+          minLength: 2
+          maxLength: 300
+        - name: currency
+          in: formData
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: currency code (see ISO 4217)
+        - name: destination
+          in: formData
+          type: string
+          minLength: 2
+          maxLength: 300
+        - name: target
+          in: formData
+          type: string
+          minLength: 2
+          maxLength: 300
       responses:
         200:
           description: list of outflow documents
@@ -504,6 +558,7 @@ paths:
               $ref: '#/definitions/Outflow'
         504:
           description: server is currently unavailable
+
 
   #
   # Additionally:
@@ -540,6 +595,9 @@ paths:
           in: query
           type: string
           required: true
+          minLength: 2
+          maxLength: 300
+          description: length 2-300 chars
       responses:
         200:
           description: list of sources
@@ -557,6 +615,9 @@ paths:
           in: query
           type: string
           required: true
+          minLength: 2
+          maxLength: 300
+          description: length 2-300 chars
       responses:
         200:
           description: list of destinations
@@ -574,6 +635,9 @@ paths:
           in: query
           type: string
           required: true
+          minLength: 2
+          maxLength: 300
+          description: length 2-300 chars
       responses:
         200:
           description: list of targets
@@ -584,7 +648,9 @@ paths:
         504:
           description: server is currently unavailable
 
+
 definitions:
+
 
   #
   # Transaction
@@ -607,11 +673,12 @@ definitions:
       amount:
         type: number
         format: float
-        minimum: 0.01
       currency:
         type: string
-      description:
-        type: string
+        minLength: 3
+        maxLength: 3
+        description: currency code (see ISO 4217)
+
 
   #
   # Note
@@ -632,8 +699,9 @@ definitions:
       datetime:
         type: string
         format: date-time
-      body:
+      text:
         type: string
+
 
   #
   # Inflow
@@ -663,7 +731,6 @@ definitions:
       amount:
         type: number
         format: float
-        minimum: 0.01
       currency:
         type: string
       description:
@@ -671,6 +738,7 @@ definitions:
       # special:
       source:
         type: string
+
 
   #
   # Outflow
@@ -700,7 +768,6 @@ definitions:
       amount:
         type: number
         format: float
-        minimum: 0.01
       currency:
         type: string
       description:
@@ -719,6 +786,7 @@ definitions:
       satisfaction:
         type: number
         format: float
+
 
   #
   # Time ranges
