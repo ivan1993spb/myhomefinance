@@ -57,114 +57,13 @@ Server params
 RESTful API
 -----------
 
+```
 
-GET `/inflow`
+$ go get -u github.com/go-swagger/go-swagger/cmd/swagger
+$ go install github.com/go-swagger/go-swagger/cmd/swagger
+$ swagger generate server -f swagger.yaml
 
-
-GET `/inflow/{guid}`
-
-
-GET `/inflow/grep`
-'name'
-'currency'
-'description'
-'source'
-
-POST `/inflow/add`
-'name'
-'amount'
-'currency'
-'description'
-'source'
-
-Result: inflow guid
-
-
-POST `/inflow/{guid}/delete`
-
-
-POST `/inflow/{guid}/edit`
-
-'name'
-'amount'
-'currency'
-'description'
-'source'
-
-Result: inflow guid
-
-
-GET `/outflow`
-
-
-GET `/outflow/{guid}`
-
-
-GET `/outflow/grep`
-'name'
-'currency'
-'description'
-'destination'
-'target'
-'satisfaction'
-
-
-POST `/outflow/add`
-
-'name'
-'amount'
-'currency'
-'description'
-'destination'
-'metric_unit'
-'target'
-'satisfaction'
-
-Result: outflow guid
-
-
-POST `/outflow/{guid}/delete`
-
-
-POST `/outflow/{guid}/edit`
-
-'name'
-'amount'
-'currency'
-'description'
-'destination'
-'metric_unit'
-'target'
-'satisfaction'
-
-Result: outflow guid
-
-
-GET `/transactions`
-
-
-GET `/transactions/{guid}`
-
-
-GET `/transactions/grep`
-'name'
-'currency'
-'description'
-
-
-GET `/transactions/year`
-
-
-GET `/transactions/halfyaer`
-
-
-GET `/transactions/month`
-
-
-GET `/transactions/week`
-
-
-
+```
 
 Tools
 -----

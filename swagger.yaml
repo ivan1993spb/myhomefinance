@@ -21,6 +21,7 @@ paths:
   #
   /transactions/{time-range}:
     get:
+      tags: ["transactions"]
       description: Returns list of transactions in specified time range
       parameters:
         - name: time-range
@@ -36,8 +37,13 @@ paths:
               $ref: '#/definitions/Transaction'
         504:
           description: server is currently unavailable
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/Error"
   /transactions/{time-range}/grep:
     get:
+      tags: ["transactions", "grep"]
       description: Returns list of transactions matched with passed attributes in specified time range
       parameters:
         - name: time-range
@@ -180,6 +186,7 @@ paths:
           description: server is currently unavailable
   /notes/{time-range}/grep:
     get:
+      tags: ["notes", "grep"]
       parameters:
         - name: time-range
           type: string
@@ -344,6 +351,7 @@ paths:
 
   /inflow/{time-range}/grep:
     get:
+      tags: ["inflow", "grep"]
       parameters:
         - name: time-range
           in: path
@@ -551,6 +559,7 @@ paths:
           description: server is currently unavailable
   /outflow/{time-range}/grep:
     get:
+      tags: ["outflow", "grep"]
       parameters:
         - name: time-range
           in: path
@@ -617,6 +626,7 @@ paths:
           description: server is currently unavailable
   /sources/grep:
     get:
+      tags: ["additionally", "grep"]
       description: Returns list of sources
       parameters:
         - name: s
@@ -637,6 +647,7 @@ paths:
           description: server is currently unavailable
   /destinations/grep:
     get:
+      tags: ["additionally", "grep"]
       description: Returns list of destinations
       parameters:
         - name: s
@@ -657,6 +668,7 @@ paths:
           description: server is currently unavailable
   /targets/grep:
     get:
+      tags: ["additionally", "grep"]
       description: Returns list of targets
       parameters:
         - name: s
@@ -720,6 +732,7 @@ definitions:
       id:
         type: integer
         format: int32
+        readOnly: true
       title:
         type: string
         minLength: 2
@@ -748,7 +761,8 @@ definitions:
       id:
         type: integer
         format: int32
-        description: id
+        description: inflow id
+        readOnly: true
       datetime:
         type: string
         format: date-time
@@ -785,7 +799,8 @@ definitions:
       id:
         type: integer
         format: int32
-        description: id
+        description: outflow id
+        readOnly: true
       datetime:
         type: string
         format: date-time
@@ -816,6 +831,12 @@ definitions:
         type: number
         format: float
 
+
+  #
+  #
+  #
+  Error:
+    type: object
 
   #
   # Time ranges
