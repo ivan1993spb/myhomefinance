@@ -73,6 +73,7 @@ Tools
 - [guid func](http://play.golang.org/p/4FkNSiUDMg)
 - [guid lib](github.com/satori/go.uuid)
 - [swagger editor](http://swagger.io/swagger-editor/)
+- [bin data](https://github.com/jteeuwen/go-bindata)
 
 Links
 -----
