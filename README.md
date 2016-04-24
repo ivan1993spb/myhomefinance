@@ -4,7 +4,7 @@ Document examples
 
 ### transaction ###
 
-```json
+```
 {
     'guid':         '237bb707-3b52-11e5-ba37-00d4ee77da23',
     'type':         '',
@@ -18,7 +18,7 @@ Document examples
 
 ### outflow ###
 
-```json
+```
 {
     'guid':         '237bb707-3b52-11e5-ba37-00d4ee77da23',
     'datetime':     '',
@@ -36,7 +36,7 @@ Document examples
 
 ### inflow ###
 
-```json
+```
 {
     'guid':         '237bb707-3b52-11e5-ba37-00d4ee77da23',
     'datetime':     '',
