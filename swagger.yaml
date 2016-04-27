@@ -41,6 +41,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Transaction'
+        400:
+          description: invalid date range supplied
         503:
           description: server is currently unavailable
   /transactions/{date-range}/grep:
@@ -72,6 +74,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Transaction'
+        400:
+          description: invalid date range, name or currency supplied
         503:
           description: server is currently unavailable
 
@@ -88,6 +92,7 @@ paths:
           format: int32
           required: true
           description: note id
+          minimum: 1
       responses:
         200:
           description: returns note
@@ -105,6 +110,7 @@ paths:
           format: int32
           required: true
           description: note id
+          minimum: 1
         - name: datetime
           in: formData
           type: string
@@ -120,13 +126,13 @@ paths:
           in: formData
           type: string
           description: note text
-          minLength: 2
-          maxLength: 300
       responses:
         200:
           description: rewrites note
           schema:
             $ref: '#/definitions/Note'
+        400:
+          description: invalid parameter(s) supplied
         404:
           description: note not found
         503:
@@ -154,6 +160,8 @@ paths:
           description: note created
           schema:
             $ref: '#/definitions/Note'
+        400:
+          description: invalid parameter(s) supplied
         503:
           description: server is currently unavailable
     delete:
@@ -164,6 +172,7 @@ paths:
           in: query
           required: true
           description: note id
+          minimum: 1
       responses:
         200:
           description: note deleted
@@ -186,6 +195,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Note'
+        400:
+          description: invalid data range supplied
         503:
           description: server is currently unavailable
   /notes/{date-range}/grep:
@@ -210,6 +221,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Note'
+        400:
+          description: invalid data range supplied
         503:
           description: server is currently unavailable
 
@@ -226,6 +239,7 @@ paths:
           format: int32
           required: true
           description: inflow document id
+          minimum: 1
       responses:
         200:
           description: inflow document
@@ -243,6 +257,7 @@ paths:
           format: int32
           required: true
           description: inflow document id
+          minimum: 1
         - name: datetime
           in: formData
           type: string
@@ -276,6 +291,8 @@ paths:
           description: inflow document rewrited
           schema:
             $ref: '#/definitions/Inflow'
+        400:
+          description: invalid parameter(s) supplied
         404:
           description: inflow document not found
         503:
@@ -320,6 +337,8 @@ paths:
           description: inflow document created
           schema:
             $ref: '#/definitions/Inflow'
+        400:
+          description: invalid parameter(s) supplied
         503:
           description: server is currently unavailable
     delete:
@@ -330,6 +349,7 @@ paths:
           type: integer
           format: int32
           description: inflow document id
+          minimum: 1
       responses:
         200:
           description: inflow document deleted
@@ -352,6 +372,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Inflow'
+        400:
+          description: invalid date range supplied
         503:
           description: server is currently unavailable
 
@@ -387,6 +409,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Inflow'
+        400:
+          description: invalid date range supplied
         503:
           description: server is currently unavailable
 
@@ -403,6 +427,7 @@ paths:
           format: int32
           required: true
           description: outflow document id
+          minimum: 1
       responses:
         200:
           description: outflow document found
@@ -420,6 +445,7 @@ paths:
           format: int32
           required: true
           description: outflow document id
+          minimum: 1
         - name: datetime
           in: formData
           type: string
@@ -469,6 +495,8 @@ paths:
           description: outflow document rewrited
           schema:
             $ref: '#/definitions/Outflow'
+        400:
+          description: invalid parameter(s) supplied
         404:
           description: outflow document not found
         503:
@@ -530,6 +558,8 @@ paths:
           description: outflow document created
           schema:
             $ref: '#/definitions/Outflow'
+        400:
+          description: invalid parameter(s) supplied
         503:
           description: server is currently unavailable
     delete:
@@ -541,6 +571,7 @@ paths:
           type: number
           format: int32
           description: outflow document id
+          minimum: 1
       responses:
         200:
           description: outflow document deleted
@@ -563,6 +594,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Outflow'
+        400:
+          description: invalid date range supplied
         503:
           description: server is currently unavailable
   /outflow/{date-range}/grep:
@@ -602,6 +635,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Outflow'
+        400:
+          description: invalid date range supplied
         503:
           description: server is currently unavailable
 
@@ -715,6 +750,8 @@ paths:
             description: set of metrix
             schema:
               $ref: '#/definitions/Statistics'
+          400:
+            description: invalid date range supplied
 
 definitions:
 
@@ -875,14 +912,19 @@ definitions:
   Statistics:
     type: object
     required:
-      - time_range
+      - date_from
+      - date_to
       - inflow
       - outflow
       - currency
       - mean_satisfaction
     properties:
-      time_range:
+      date_from:
         type: string
+        format: date
+      date_to:
+        type: string
+        format: date
       inflow:
         type: number
         format: float
@@ -897,11 +939,4 @@ definitions:
       mean_satisfaction:
         type: number
         format: float
-
-
-  #
-  #
-  #
-  Error:
-    type: object
 
