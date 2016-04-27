@@ -7,8 +7,10 @@ info:
 host: localhost
 schemes:
   - http
+# format of bodies a client can send (Content-Type)
 consumes:
   - application/json
+# format of the responses to the client (Accepts)
 produces:
   - application/json
 
@@ -37,10 +39,6 @@ paths:
               $ref: '#/definitions/Transaction'
         503:
           description: server is currently unavailable
-        default:
-          description: generic error response
-          schema:
-            $ref: "#/definitions/Error"
   /transactions/{time-range}/grep:
     get:
       tags: ["transactions", "grep"]
@@ -687,7 +685,25 @@ paths:
               type: string
         503:
           description: server is currently unavailable
-
+  /statistics/{time-range}:
+    get:
+      description: Returns list of metrix
+      parameters:
+        - name: time-range
+          in: path
+          type: string
+          required: true
+        - name: currency
+          in: query
+          type: string
+          required: true
+          minLength: 3
+          maxLength: 3
+      responses:
+          200:
+            description: set of metrix
+            schema:
+              $ref: '#/definitions/Statistics'
 
 definitions:
 
@@ -775,6 +791,9 @@ definitions:
         format: float
       currency:
         type: string
+        minLength: 3
+        maxLength: 3
+        description: currency code (see ISO 4217)
       description:
         type: string
       # special:
@@ -813,6 +832,9 @@ definitions:
         format: float
       currency:
         type: string
+        minLength: 3
+        maxLength: 3
+        description: currency code (see ISO 4217)
       description:
         type: string
       # special:
@@ -828,6 +850,35 @@ definitions:
         type: string
         maxLength: 100
       satisfaction:
+        type: number
+        format: float
+
+  #
+  # Statistics
+  #
+  Statistics:
+    type: object
+    required:
+      - time_range
+      - inflow
+      - outflow
+      - currency
+      - mean_satisfaction
+    properties:
+      time_range:
+        type: string
+      inflow:
+        type: number
+        format: float
+      outflow:
+        type: number
+        format: float
+      currency:
+        type: string
+        minLength: 3
+        maxLength: 3
+        description: currency code (see ISO 4217)
+      mean_satisfaction:
         type: number
         format: float
 
