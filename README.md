@@ -53,6 +53,7 @@ Server params
 
 -addr=127.0.0.1:8080
 -file=sql_file.db
+-currency=RUB
 
 RESTful API
 -----------
@@ -73,7 +74,14 @@ Tools
 - [guid func](http://play.golang.org/p/4FkNSiUDMg)
 - [guid lib](github.com/satori/go.uuid)
 - [swagger editor](http://swagger.io/swagger-editor/)
+- [JSON API for foreign exchange rates and currency conversion](http://fixer.io/)
+
+Code generation:
+
+- [swagger-codegen](https://github.com/swagger-api/swagger-codegen)
 - [bin data](https://github.com/jteeuwen/go-bindata)
+- [go-swagger](https://github.com/go-swagger/go-swagger)
+- [swagger-js](https://github.com/swagger-api/swagger-js)
 
 Links
 -----

@@ -4,6 +4,9 @@ info:
   title: myHomeFinance API
   description: |
     This is small finance program named myHomeFinance
+  contact:
+    name: Ivan Pushkin
+    url: https://twitter.com/IvanDeveloper
 host: localhost
 schemes:
   - http
@@ -21,15 +24,16 @@ paths:
   #
   # Transactions
   #
-  /transactions/{time-range}:
+  /transactions/{date-range}:
     get:
       tags: ["transactions"]
       description: Returns list of transactions in specified time range
       parameters:
-        - name: time-range
+        - name: date-range
           in: path
           type: string
           required: true
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
       responses:
         200:
           description: returns list of transactions
@@ -39,15 +43,16 @@ paths:
               $ref: '#/definitions/Transaction'
         503:
           description: server is currently unavailable
-  /transactions/{time-range}/grep:
+  /transactions/{date-range}/grep:
     get:
       tags: ["transactions", "grep"]
       description: Returns list of transactions matched with passed attributes in specified time range
       parameters:
-        - name: time-range
+        - name: date-range
           in: path
           type: string
           required: true
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
         - name: name
           in: formData
           type: string
@@ -166,13 +171,14 @@ paths:
           description: note not found
         503:
           description: server is currently unavailable
-  /notes/{time-range}:
+  /notes/{date-range}:
     get:
       parameters:
-        - name: time-range
+        - name: date-range
           type: string
           in: path
           required: true
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
       responses:
         200:
           description: list of nodes
@@ -182,14 +188,15 @@ paths:
               $ref: '#/definitions/Note'
         503:
           description: server is currently unavailable
-  /notes/{time-range}/grep:
+  /notes/{date-range}/grep:
     get:
       tags: ["notes", "grep"]
       parameters:
-        - name: time-range
+        - name: date-range
           type: string
           in: path
           required: true
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
         - name: title
           type: string
           in: formData
@@ -330,13 +337,14 @@ paths:
           description: inflow document not found
         503:
           description: server is currently unavailable
-  /inflow/{time-range}:
+  /inflow/{date-range}:
     get:
       parameters:
-        - name: time-range
+        - name: date-range
           in: path
           required: true
           type: string
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
       responses:
         200:
           description: list of inflow documents
@@ -347,14 +355,15 @@ paths:
         503:
           description: server is currently unavailable
 
-  /inflow/{time-range}/grep:
+  /inflow/{date-range}/grep:
     get:
       tags: ["inflow", "grep"]
       parameters:
-        - name: time-range
+        - name: date-range
           in: path
           required: true
           type: string
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
         - name: name
           in: formData
           type: string
@@ -539,13 +548,14 @@ paths:
           description: outflow document not found
         503:
           description: server is currently unavailable
-  /outflow/{time-range}:
+  /outflow/{date-range}:
     get:
       parameters:
-        - name: time-range
+        - name: date-range
           in: path
           type: string
           required: true
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
       responses:
         200:
           description: list of outflow documents
@@ -555,14 +565,15 @@ paths:
               $ref: '#/definitions/Outflow'
         503:
           description: server is currently unavailable
-  /outflow/{time-range}/grep:
+  /outflow/{date-range}/grep:
     get:
       tags: ["outflow", "grep"]
       parameters:
-        - name: time-range
+        - name: date-range
           in: path
           type: string
           required: true
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
         - name: name
           in: formData
           type: string
@@ -603,7 +614,7 @@ paths:
       description: Returns list of currencies
       responses:
         200:
-          description: list of currencies
+          description: list of attached currencies
           schema:
             type: array
             items:
@@ -685,18 +696,18 @@ paths:
               type: string
         503:
           description: server is currently unavailable
-  /statistics/{time-range}:
+  /statistics/{date-range}:
     get:
       description: Returns list of metrix
       parameters:
-        - name: time-range
+        - name: date-range
           in: path
           type: string
           required: true
+          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
         - name: currency
           in: query
           type: string
-          required: true
           minLength: 3
           maxLength: 3
       responses:
@@ -799,7 +810,8 @@ definitions:
       # special:
       source:
         type: string
-
+        minLength: 2
+        maxLength: 300
 
   #
   # Outflow
@@ -840,8 +852,12 @@ definitions:
       # special:
       destination:
         type: string
+        minLength: 2
+        maxLength: 300
       target:
         type: string
+        minLength: 2
+        maxLength: 300
       # details:
       count:
         type: integer
@@ -889,24 +905,3 @@ definitions:
   Error:
     type: object
 
-  #
-  # Time ranges
-  #
-  # TimeRange:
-  #   type: string
-  #   default: week
-  #   enum:
-  #     - year
-  #     - 6months
-  #     - 4months
-  #     - 2months
-  #     - month
-  #     - 3weeks
-  #     - 2weeks
-  #     - week
-  #     - 4days
-  #     - 2days
-  #     - day
-  #     - 12hours
-  #     - 6hours
-  #     - 3hours
