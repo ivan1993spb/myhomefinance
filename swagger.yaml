@@ -24,16 +24,21 @@ paths:
   #
   # Transactions
   #
-  /transactions/{date-range}:
+  /transactions:
     get:
       tags: ["transactions"]
       description: Returns list of transactions in specified time range
       parameters:
-        - name: date-range
-          in: path
+        - name: date_from
+          in: formData
           type: string
+          format: date
           required: true
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
       responses:
         200:
           description: returns list of transactions
@@ -45,16 +50,21 @@ paths:
           description: invalid date range supplied
         503:
           description: server is currently unavailable
-  /transactions/{date-range}/grep:
+  /transactions/grep:
     get:
       tags: ["transactions", "grep"]
       description: Returns list of transactions matched with passed attributes in specified time range
       parameters:
-        - name: date-range
-          in: path
+        - name: date_from
+          in: formData
           type: string
+          format: date
           required: true
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
         - name: name
           in: formData
           type: string
@@ -87,7 +97,7 @@ paths:
     get:
       parameters:
         - name: id
-          in: query
+          in: formData
           type: integer
           format: int32
           required: true
@@ -105,7 +115,7 @@ paths:
     put:
       parameters:
         - name: id
-          in: query
+          in: formData
           type: integer
           format: int32
           required: true
@@ -169,7 +179,7 @@ paths:
         - name: id
           type: integer
           format: int32
-          in: query
+          in: formData
           required: true
           description: note id
           minimum: 1
@@ -180,14 +190,19 @@ paths:
           description: note not found
         503:
           description: server is currently unavailable
-  /notes/{date-range}:
+  /note/list:
     get:
       parameters:
-        - name: date-range
+        - name: date_from
+          in: formData
           type: string
-          in: path
+          format: date
           required: true
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
       responses:
         200:
           description: list of nodes
@@ -199,15 +214,20 @@ paths:
           description: invalid data range supplied
         503:
           description: server is currently unavailable
-  /notes/{date-range}/grep:
+  /note/list/grep:
     get:
-      tags: ["notes", "grep"]
+      tags: ["note", "grep"]
       parameters:
-        - name: date-range
+        - name: date_from
+          in: formData
           type: string
-          in: path
+          format: date
           required: true
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
         - name: title
           type: string
           in: formData
@@ -234,7 +254,7 @@ paths:
     get:
       parameters:
         - name: id
-          in: query
+          in: formData
           type: integer
           format: int32
           required: true
@@ -252,7 +272,7 @@ paths:
     put:
       parameters:
         - name: id
-          in: query
+          in: formData
           type: integer
           format: int32
           required: true
@@ -344,7 +364,7 @@ paths:
     delete:
       parameters:
         - name: id
-          in: query
+          in: formData
           required: true
           type: integer
           format: int32
@@ -357,14 +377,19 @@ paths:
           description: inflow document not found
         503:
           description: server is currently unavailable
-  /inflow/{date-range}:
+  /inflow/list:
     get:
       parameters:
-        - name: date-range
-          in: path
-          required: true
+        - name: date_from
+          in: formData
           type: string
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+          format: date
+          required: true
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
       responses:
         200:
           description: list of inflow documents
@@ -377,15 +402,20 @@ paths:
         503:
           description: server is currently unavailable
 
-  /inflow/{date-range}/grep:
+  /inflow/list/grep:
     get:
       tags: ["inflow", "grep"]
       parameters:
-        - name: date-range
-          in: path
-          required: true
+        - name: date_from
+          in: formData
           type: string
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+          format: date
+          required: true
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
         - name: name
           in: formData
           type: string
@@ -422,7 +452,7 @@ paths:
     get:
       parameters:
         - name: id
-          in: query
+          in: formData
           type: integer
           format: int32
           required: true
@@ -440,7 +470,7 @@ paths:
     put:
       parameters:
         - name: id
-          in: query
+          in: formData
           type: integer
           format: int32
           required: true
@@ -566,7 +596,7 @@ paths:
       description: Deletes outflow document by id
       parameters:
         - name: id
-          in: query
+          in: formData
           required: true
           type: number
           format: int32
@@ -579,14 +609,19 @@ paths:
           description: outflow document not found
         503:
           description: server is currently unavailable
-  /outflow/{date-range}:
+  /outflow/list:
     get:
       parameters:
-        - name: date-range
-          in: path
+        - name: date_from
+          in: formData
           type: string
+          format: date
           required: true
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
       responses:
         200:
           description: list of outflow documents
@@ -598,15 +633,20 @@ paths:
           description: invalid date range supplied
         503:
           description: server is currently unavailable
-  /outflow/{date-range}/grep:
+  /outflow/list/grep:
     get:
       tags: ["outflow", "grep"]
       parameters:
-        - name: date-range
-          in: path
+        - name: date_from
+          in: formData
           type: string
+          format: date
           required: true
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
         - name: name
           in: formData
           type: string
@@ -636,7 +676,7 @@ paths:
             items:
               $ref: '#/definitions/Outflow'
         400:
-          description: invalid date range supplied
+          description: invalid date range or other parameter(s) supplied
         503:
           description: server is currently unavailable
 
@@ -674,7 +714,7 @@ paths:
       description: Returns list of sources
       parameters:
         - name: s
-          in: query
+          in: formData
           type: string
           required: true
           minLength: 2
@@ -695,7 +735,7 @@ paths:
       description: Returns list of destinations
       parameters:
         - name: s
-          in: query
+          in: formData
           type: string
           required: true
           minLength: 2
@@ -716,7 +756,7 @@ paths:
       description: Returns list of targets
       parameters:
         - name: s
-          in: query
+          in: formData
           type: string
           required: true
           minLength: 2
@@ -731,17 +771,22 @@ paths:
               type: string
         503:
           description: server is currently unavailable
-  /statistics/{date-range}:
+  /statistics:
     get:
       description: Returns list of metrix
       parameters:
-        - name: date-range
-          in: path
+        - name: date_from
+          in: formData
           type: string
+          format: date
           required: true
-          description: date range in format FROM-DATA_TO-DATE (YYYY-MM-DD_YYYY-MM-DD)
+        - name: date_to
+          in: formData
+          type: string
+          format: date
+          required: true
         - name: currency
-          in: query
+          in: formData
           type: string
           minLength: 3
           maxLength: 3
