@@ -963,6 +963,8 @@ definitions:
       - outflow
       - currency
       - mean_satisfaction
+      - balance_start
+      - balance_end
     properties:
       date_from:
         type: string
@@ -984,4 +986,11 @@ definitions:
       mean_satisfaction:
         type: number
         format: float
-
+      balance_start:
+        type: number
+        format: float
+        description: balance at the start of date range
+      balance_end:
+        type: number
+        format: float
+        description: balance at the end of date range
