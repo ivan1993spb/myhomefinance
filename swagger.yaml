@@ -95,6 +95,7 @@ paths:
   #
   /note:
     get:
+      tags: ["note"]
       parameters:
         - name: id
           in: formData
@@ -113,6 +114,7 @@ paths:
         503:
           description: server is currently unavailable
     put:
+      tags: ["note", "put"]
       parameters:
         - name: id
           in: formData
@@ -148,6 +150,7 @@ paths:
         503:
           description: server is currently unavailable
     post:
+      tags: ["note", "post"]
       parameters:
         - name: title
           type: string
@@ -175,6 +178,7 @@ paths:
         503:
           description: server is currently unavailable
     delete:
+      tags: ["note", "delete"]
       parameters:
         - name: id
           type: integer
@@ -192,6 +196,7 @@ paths:
           description: server is currently unavailable
   /note/list:
     get:
+      tags: ["note", "list"]
       parameters:
         - name: date_from
           in: formData
@@ -216,7 +221,7 @@ paths:
           description: server is currently unavailable
   /note/list/grep:
     get:
-      tags: ["note", "grep"]
+      tags: ["note", "list", "grep"]
       parameters:
         - name: date_from
           in: formData
@@ -252,6 +257,7 @@ paths:
   #
   /inflow:
     get:
+      tags: ["inflow", "get"]
       parameters:
         - name: id
           in: formData
@@ -270,6 +276,7 @@ paths:
         503:
           description: server is currently unavailable
     put:
+      tags: ["inflow", "put"]
       parameters:
         - name: id
           in: formData
@@ -318,6 +325,7 @@ paths:
         503:
           description: server is currently unavailable
     post:
+      tags: ["inflow", "post"]
       parameters:
         - name: datetime
           in: formData
@@ -362,6 +370,7 @@ paths:
         503:
           description: server is currently unavailable
     delete:
+      tags: ["inflow", "delete"]
       parameters:
         - name: id
           in: formData
@@ -379,6 +388,7 @@ paths:
           description: server is currently unavailable
   /inflow/list:
     get:
+      tags: ["inflow", "list"]
       parameters:
         - name: date_from
           in: formData
@@ -404,7 +414,7 @@ paths:
 
   /inflow/list/grep:
     get:
-      tags: ["inflow", "grep"]
+      tags: ["inflow", "list", "grep"]
       parameters:
         - name: date_from
           in: formData
@@ -450,6 +460,7 @@ paths:
   #
   /outflow:
     get:
+      tags: ["outflow", "get"]
       parameters:
         - name: id
           in: formData
@@ -468,6 +479,7 @@ paths:
         503:
           description: server is currently unavailable
     put:
+      tags: ["outflow", "put"]
       parameters:
         - name: id
           in: formData
@@ -532,6 +544,7 @@ paths:
         503:
           description: server is currently unavailable
     post:
+      tags: ["outflow", "post"]
       parameters:
         - name: datetime
           in: formData
@@ -593,6 +606,7 @@ paths:
         503:
           description: server is currently unavailable
     delete:
+      tags: ["outflow", "delete"]
       description: Deletes outflow document by id
       parameters:
         - name: id
@@ -611,6 +625,7 @@ paths:
           description: server is currently unavailable
   /outflow/list:
     get:
+      tags: ["outflow", "list"]
       parameters:
         - name: date_from
           in: formData
@@ -635,7 +650,7 @@ paths:
           description: server is currently unavailable
   /outflow/list/grep:
     get:
-      tags: ["outflow", "grep"]
+      tags: ["outflow", "list", "grep"]
       parameters:
         - name: date_from
           in: formData
@@ -686,6 +701,7 @@ paths:
   #
   /currencies:
     get:
+      tags: ["additionally"]
       description: Returns list of currencies
       responses:
         200:
@@ -698,6 +714,7 @@ paths:
           description: server is currently unavailable
   /metric-units:
     get:
+      tags: ["additionally"]
       description: Returns list of metric units
       responses:
         200:
@@ -773,6 +790,7 @@ paths:
           description: server is currently unavailable
   /statistics:
     get:
+      tags: ["additionally"]
       description: Returns list of metrix
       parameters:
         - name: date_from
