@@ -816,6 +816,7 @@ paths:
           400:
             description: invalid date range supplied
 
+
 definitions:
 
 
@@ -846,7 +847,6 @@ definitions:
         maxLength: 3
         description: currency code (see ISO 4217)
 
-
   #
   # Note
   #
@@ -869,7 +869,6 @@ definitions:
         format: date-time
       text:
         type: string
-
 
   #
   # Inflow
