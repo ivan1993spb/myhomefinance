@@ -927,7 +927,7 @@ definitions:
   #
   OutflowRaw:
     description: |
-      OutflowRaw is raw data for building outflow documents and represents a check from store
+      OutflowRaw is raw data for building outflow documents and represents checks from stores
     type: object
     required:
       - currency
@@ -949,34 +949,42 @@ definitions:
       list:
         type: array
         items:
-          type: object
-          required:
-            - name
-            - amount
-          properties:
-            name:
-              type: string
-              minLength: 2
-              maxLength: 300
-            amount:
-              type: number
-              format: float
-              minimum: 0.01
-            description:
-              type: string
-            target:
-              type: string
-              minLength: 2
-              maxLength: 300
-            count:
-              type: number
-              format: float
-            metric_unit:
-              type: string
-              maxLength: 100
-            satisfaction:
-              type: number
-              format: float
+          $ref: '#/definitions/OutflowRawItem'
+
+  #
+  # OutflowRawItem
+  #
+  OutflowRawItem:
+    description: |
+      OutflowRawItem represents a part of a chack from store and used to build outflow documents
+    type: object
+    required:
+      - name
+      - amount
+    properties:
+      name:
+        type: string
+        minLength: 2
+        maxLength: 300
+      amount:
+        type: number
+        format: float
+        minimum: 0.01
+      description:
+        type: string
+      target:
+        type: string
+        minLength: 2
+        maxLength: 300
+      count:
+        type: number
+        format: float
+      metric_unit:
+        type: string
+        maxLength: 100
+      satisfaction:
+        type: number
+        format: float
 
   #
   # Statistics

@@ -1,3 +1,6 @@
+.idea
+myhomefinance.iml
+
 # swagger server generated files
 cmd
 models
