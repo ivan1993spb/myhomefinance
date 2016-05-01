@@ -24,18 +24,18 @@ paths:
   #
   # Transactions
   #
-  /transactions:
+  /transactions/{date_from}_{date_to}:
     get:
       tags: ["transactions"]
       description: Returns list of transactions in specified time range
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
@@ -50,18 +50,18 @@ paths:
           description: invalid date range supplied
         503:
           description: server is currently unavailable
-  /transactions/grep:
+  /transactions/{date_from}_{date_to}/grep:
     get:
       tags: ["transactions"]
       description: Returns list of transactions matched with passed attributes in specified time range
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
@@ -89,16 +89,15 @@ paths:
         503:
           description: server is currently unavailable
 
-
   #
   # Note
   #
-  /note:
+  /notes:
     get:
       tags: ["notes"]
       parameters:
         - name: id
-          in: formData
+          in: query
           type: integer
           format: int32
           required: true
@@ -117,7 +116,7 @@ paths:
       tags: ["notes"]
       parameters:
         - name: id
-          in: formData
+          in: query
           type: integer
           format: int32
           required: true
@@ -183,7 +182,7 @@ paths:
         - name: id
           type: integer
           format: int32
-          in: formData
+          in: query
           required: true
           description: note id
           minimum: 1
@@ -194,17 +193,17 @@ paths:
           description: note not found
         503:
           description: server is currently unavailable
-  /note/list:
+  /notes/{date_from}_{date_to}:
     get:
       tags: ["notes"]
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
@@ -219,24 +218,23 @@ paths:
           description: invalid data range supplied
         503:
           description: server is currently unavailable
-  /note/list/grep:
+  /notes/{date_from}_{date_to}/grep:
     get:
       tags: ["notes"]
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: title
           type: string
           in: formData
-          required: true
           minLength: 2
           maxLength: 300
       responses:
@@ -260,7 +258,7 @@ paths:
       tags: ["inflow"]
       parameters:
         - name: id
-          in: formData
+          in: query
           type: integer
           format: int32
           required: true
@@ -279,7 +277,7 @@ paths:
       tags: ["inflow"]
       parameters:
         - name: id
-          in: formData
+          in: query
           type: integer
           format: int32
           required: true
@@ -373,7 +371,7 @@ paths:
       tags: ["inflow"]
       parameters:
         - name: id
-          in: formData
+          in: query
           required: true
           type: integer
           format: int32
@@ -386,17 +384,17 @@ paths:
           description: inflow document not found
         503:
           description: server is currently unavailable
-  /inflow/list:
+  /inflow/{date_from}_{date_to}:
     get:
       tags: ["inflow"]
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
@@ -412,17 +410,17 @@ paths:
         503:
           description: server is currently unavailable
 
-  /inflow/list/grep:
+  /inflow/{date_from}_{date_to}/grep:
     get:
       tags: ["inflow"]
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
@@ -463,7 +461,7 @@ paths:
       tags: ["outflow"]
       parameters:
         - name: id
-          in: formData
+          in: query
           type: integer
           format: int32
           required: true
@@ -482,7 +480,7 @@ paths:
       tags: ["outflow"]
       parameters:
         - name: id
-          in: formData
+          in: query
           type: integer
           format: int32
           required: true
@@ -610,7 +608,7 @@ paths:
       description: Deletes outflow document by id
       parameters:
         - name: id
-          in: formData
+          in: query
           required: true
           type: number
           format: int32
@@ -623,17 +621,17 @@ paths:
           description: outflow document not found
         503:
           description: server is currently unavailable
-  /outflow/list:
+  /outflow/{date_from}_{date_to}:
     get:
       tags: ["outflow"]
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
@@ -648,17 +646,17 @@ paths:
           description: invalid date range supplied
         503:
           description: server is currently unavailable
-  /outflow/list/grep:
+  /outflow/{date_from}_{date_to}/grep:
     get:
       tags: ["outflow"]
       parameters:
         - name: date_from
-          in: formData
+          in: path
           type: string
           format: date
           required: true
         - name: date_to
-          in: formData
+          in: path
           type: string
           format: date
           required: true
