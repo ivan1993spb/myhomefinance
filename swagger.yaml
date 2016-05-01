@@ -544,56 +544,15 @@ paths:
     post:
       tags: ["outflow"]
       parameters:
-        - name: datetime
-          in: formData
-          type: string
-          format: date-time
-          description: 'default: current date and time'
-        - name: name
-          in: formData
-          type: string
+        - name: outflow_data
+          description: |
+            object contains outflow data
+          in: body
           required: true
-          minLength: 2
-          maxLength: 300
-        - name: amount
-          in: formData
-          type: number
-          format: float
-          required: true
-          minimum: 0.01
-        - name: currency
-          in: formData
-          type: string
-          required: true
-          minLength: 3
-          maxLength: 3
-          description: currency code (see ISO 4217)
-        - name: description
-          in: formData
-          type: string
-        - name: destination
-          in: formData
-          type: string
-          required: true
-          minLength: 2
-          maxLength: 300
-        - name: target
-          in: formData
-          type: string
-          minLength: 2
-          maxLength: 300
-        - name: count
-          in: formData
-          type: number
-          format: float
-        - name: metric_unit
-          in: formData
-          type: string
-          maxLength: 100
-        - name: satisfaction
-          in: formData
-          type: number
-          format: float
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OutflowRaw'
       responses:
         200:
           description: outflow document created
@@ -965,6 +924,62 @@ definitions:
       satisfaction:
         type: number
         format: float
+
+  #
+  # OutflowRaw
+  #
+  OutflowRaw:
+    description: |
+      OutflowRaw is raw data for building outflow documents and represents a check from store
+    type: object
+    required:
+      - currency
+      - destination
+    properties:
+      datetime:
+        type: string
+        format: date-time
+        description: 'default: current date and time'
+      currency:
+        type: string
+        minLength: 3
+        maxLength: 3
+        description: currency code (see ISO 4217)
+      description:
+        type: string
+      destination:
+        type: string
+        minLength: 2
+        maxLength: 300
+      list:
+        type: array
+        items:
+          type: object
+          required:
+            - name
+            - amount
+          properties:
+            name:
+              type: string
+              minLength: 2
+              maxLength: 300
+            amount:
+              type: number
+              format: float
+              minimum: 0.01
+            target:
+              type: string
+              minLength: 2
+              maxLength: 300
+            count:
+              type: number
+              format: float
+            metric_unit:
+              type: string
+              maxLength: 100
+            satisfaction:
+              type: number
+              format: float
 
   #
   # Statistics
