@@ -249,7 +249,6 @@ paths:
         503:
           description: server is currently unavailable
 
-
   #
   # Inflow
   #
@@ -452,7 +451,6 @@ paths:
         503:
           description: server is currently unavailable
 
-
   #
   # Outflow
   #
@@ -651,7 +649,6 @@ paths:
           description: invalid date range or other parameter(s) supplied
         503:
           description: server is currently unavailable
-
 
   #
   # Additionally:
