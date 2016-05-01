@@ -27,7 +27,7 @@ paths:
   /transactions/{date_from}_{date_to}:
     get:
       tags: ["transactions"]
-      description: Returns list of transactions in specified time range
+      description: Returns list of transactions in specified time range ordered by timestamp
       parameters:
         - name: date_from
           in: path
@@ -68,13 +68,13 @@ paths:
         - name: name
           in: formData
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 300
-          description: length 2-300 chars
+          description: length 1-300 chars
         - name: currency
           in: formData
           type: string
-          minLength: 3
+          minLength: 1
           maxLength: 3
           description: currency code (see ISO 4217)
       responses:
@@ -235,7 +235,7 @@ paths:
         - name: title
           type: string
           in: formData
-          minLength: 2
+          minLength: 1
           maxLength: 300
       responses:
         200:
@@ -427,18 +427,18 @@ paths:
         - name: name
           in: formData
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 300
         - name: currency
           in: formData
           type: string
-          minLength: 3
+          minLength: 1
           maxLength: 3
           description: currency code (see ISO 4217)
         - name: source
           type: string
           in: formData
-          minLength: 2
+          minLength: 1
           maxLength: 300
       responses:
         200:
@@ -544,20 +544,20 @@ paths:
     post:
       tags: ["outflow"]
       parameters:
-        - name: outflow_data
+        - name: outflow_raw_data
           description: |
             object contains outflow data
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/OutflowRaw'
+            $ref: '#/definitions/OutflowRaw'
       responses:
         200:
           description: outflow document created
           schema:
-            $ref: '#/definitions/Outflow'
+            type: array
+            items:
+              $ref: '#/definitions/Outflow'
         400:
           description: invalid parameter(s) supplied
         503:
@@ -622,23 +622,23 @@ paths:
         - name: name
           in: formData
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 300
         - name: currency
           in: formData
           type: string
-          minLength: 3
+          minLength: 1
           maxLength: 3
           description: currency code (see ISO 4217)
         - name: destination
           in: formData
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 300
         - name: target
           in: formData
           type: string
-          minLength: 2
+          minLength: 1
           maxLength: 300
       responses:
         200:
@@ -691,9 +691,9 @@ paths:
           in: formData
           type: string
           required: true
-          minLength: 2
+          minLength: 1
           maxLength: 300
-          description: length 2-300 chars
+          description: length 1-300 chars
       responses:
         200:
           description: list of sources
@@ -712,9 +712,9 @@ paths:
           in: formData
           type: string
           required: true
-          minLength: 2
+          minLength: 1
           maxLength: 300
-          description: length 2-300 chars
+          description: length 1-300 chars
       responses:
         200:
           description: list of destinations
@@ -733,9 +733,9 @@ paths:
           in: formData
           type: string
           required: true
-          minLength: 2
+          minLength: 1
           maxLength: 300
-          description: length 2-300 chars
+          description: length 1-300 chars
       responses:
         200:
           description: list of targets
@@ -945,8 +945,6 @@ definitions:
         minLength: 3
         maxLength: 3
         description: currency code (see ISO 4217)
-      description:
-        type: string
       destination:
         type: string
         minLength: 2
@@ -967,6 +965,8 @@ definitions:
               type: number
               format: float
               minimum: 0.01
+            description:
+              type: string
             target:
               type: string
               minLength: 2
