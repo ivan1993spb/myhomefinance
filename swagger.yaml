@@ -913,8 +913,8 @@ definitions:
         maxLength: 300
       # details:
       count:
-        type: integer
-        format: int32
+        type: number
+        format: float
       metric_unit:
         type: string
         maxLength: 100
