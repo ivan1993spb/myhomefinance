@@ -30,8 +30,14 @@ CREATE TABLE IF NOT EXISTS `outflow` (
     `satisfaction` FLOAT
 );
 
-CREATE VIEW IF NOT EXISTS `transactions` AS
-    SELECT * FROM
+CREATE VIEW IF NOT EXISTS `transaction-list` AS
+    SELECT `datetime`, `name`, `amount`, `currency` FROM
         (SELECT `datetime`, `name`, `amount`, `currency` FROM `inflow`
-            UNION SELECT `datetime`, `name`, -`amount`, `currency` FROM `outflow`)
-        ORDER BY `datetime` DESC;
+            UNION SELECT `datetime`, `name`, -`amount` AS `amount`, `currency` FROM `outflow`)
+        ORDER BY datetime(`datetime`) DESC;
+
+CREATE VIEW IF NOT EXISTS `transactions` AS
+    SELECT `t1`.*, SUM(`t2`.`amount`) AS `balance`
+        FROM `transaction-list` AS `t1`, `transaction-list` AS `t2`
+            WHERE `t2`.`datetime` <= `t1`.`datetime`
+        GROUP BY `t1`.`datetime` ORDER BY datetime(`t1`.`datetime`) DESC;
