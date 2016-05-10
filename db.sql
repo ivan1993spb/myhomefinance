@@ -1,12 +1,12 @@
 
-CREATE TABLE `notes` (
+CREATE TABLE IF NOT EXISTS `notes` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `title` VARCHAR(300) NOT NULL,
     `datetime` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `text` TEXT
 );
 
-CREATE TABLE `inflow` (
+CREATE TABLE IF NOT EXISTS `inflow` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `datetime` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `name` VARCHAR(300) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE `inflow` (
     `source` VARCHAR(300) NOT NULL
 );
 
-CREATE TABLE `outflow` (
+CREATE TABLE IF NOT EXISTS `outflow` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `datetime` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `name` VARCHAR(300) NOT NULL,
@@ -29,3 +29,9 @@ CREATE TABLE `outflow` (
     `metric_unit` VARCHAR(100),
     `satisfaction` FLOAT
 );
+
+CREATE VIEW IF NOT EXISTS `transactions` AS
+    SELECT * FROM
+        (SELECT `datetime`, `name`, `amount`, `currency` FROM `inflow`
+            UNION SELECT `datetime`, `name`, -`amount`, `currency` FROM `outflow`)
+        ORDER BY `datetime` DESC;
