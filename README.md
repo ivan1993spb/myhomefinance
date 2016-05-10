@@ -51,10 +51,12 @@ Document examples
 Server params
 -------------
 
+```
 -addr=127.0.0.1:8080
 -file=sql_file.db
 -default_currency=RUB
 -default_satisfaction=0.5
+```
 
 RESTful API
 -----------
