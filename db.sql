@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `inflow` (
     `document_guid` VARCHAR(36) NOT NULL,
     `unixtimestamp` INT8 DEFAULT (strftime('%s', 'now')) NOT NULL,
     `name`          VARCHAR(300) NOT NULL,
-    `amount`        FLOAT NOT NULL,
+    `amount`        DOUBLE NOT NULL,
     `currency`      VARCHAR(3) NOT NULL,
     `description`   TEXT,
     `source`        VARCHAR(300) NOT NULL
@@ -23,12 +23,12 @@ CREATE TABLE IF NOT EXISTS `outflow` (
     `document_guid` VARCHAR(36) NOT NULL,
     `unixtimestamp` INT8 DEFAULT (strftime('%s', 'now')) NOT NULL,
     `name`          VARCHAR(300) NOT NULL,
-    `amount`        FLOAT NOT NULL,
+    `amount`        DOUBLE NOT NULL,
     `currency`      VARCHAR(3) NOT NULL,
     `description`   TEXT,
     `destination`   VARCHAR(300) NOT NULL,
     `target`        VARCHAR(300),
-    `count`         FLOAT,
+    `count`         DOUBLE,
     `metric_unit`   VARCHAR(100),
     `satisfaction`  FLOAT
 );

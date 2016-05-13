@@ -527,7 +527,7 @@ paths:
         - name: satisfaction
           in: formData
           type: number
-          format: double
+          format: float
       responses:
         200:
           description: outflow document rewrited
@@ -920,7 +920,7 @@ definitions:
         maxLength: 100
       satisfaction:
         type: number
-        format: double
+        format: float
 
   #
   # OutflowRaw
@@ -984,7 +984,7 @@ definitions:
         maxLength: 100
       satisfaction:
         type: number
-        format: double
+        format: float
 
   #
   # Statistics
@@ -1020,7 +1020,7 @@ definitions:
         description: currency code (see ISO 4217)
       mean_satisfaction:
         type: number
-        format: double
+        format: float
       balance_start:
         type: number
         format: double
