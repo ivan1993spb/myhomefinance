@@ -99,7 +99,7 @@ paths:
         - name: id
           in: query
           type: integer
-          format: int32
+          format: int64
           required: true
           description: note id
           minimum: 1
@@ -118,7 +118,7 @@ paths:
         - name: id
           in: query
           type: integer
-          format: int32
+          format: int64
           required: true
           description: note id
           minimum: 1
@@ -181,7 +181,7 @@ paths:
       parameters:
         - name: id
           type: integer
-          format: int32
+          format: int64
           in: query
           required: true
           description: note id
@@ -259,7 +259,7 @@ paths:
         - name: id
           in: query
           type: integer
-          format: int32
+          format: int64
           required: true
           description: inflow document id
           minimum: 1
@@ -278,7 +278,7 @@ paths:
         - name: id
           in: query
           type: integer
-          format: int32
+          format: int64
           required: true
           description: inflow document id
           minimum: 1
@@ -294,7 +294,7 @@ paths:
         - name: amount
           in: formData
           type: number
-          format: float
+          format: double
         - name: currency
           in: formData
           type: string
@@ -338,7 +338,7 @@ paths:
         - name: amount
           in: formData
           type: number
-          format: float
+          format: double
           required: true
           minimum: 0.01
         - name: currency
@@ -373,7 +373,7 @@ paths:
           in: query
           required: true
           type: integer
-          format: int32
+          format: int64
           description: inflow document id
           minimum: 1
       responses:
@@ -461,7 +461,7 @@ paths:
         - name: id
           in: query
           type: integer
-          format: int32
+          format: int64
           required: true
           description: outflow document id
           minimum: 1
@@ -480,7 +480,7 @@ paths:
         - name: id
           in: query
           type: integer
-          format: int32
+          format: int64
           required: true
           description: outflow document id
           minimum: 1
@@ -496,7 +496,7 @@ paths:
         - name: amount
           in: formData
           type: number
-          format: float
+          format: double
         - name: currency
           in: formData
           type: string
@@ -519,7 +519,7 @@ paths:
         - name: count
           in: formData
           type: number
-          format: float
+          format: double
         - name: metric_unit
           in: formData
           type: string
@@ -527,7 +527,7 @@ paths:
         - name: satisfaction
           in: formData
           type: number
-          format: float
+          format: double
       responses:
         200:
           description: outflow document rewrited
@@ -568,7 +568,7 @@ paths:
           in: query
           required: true
           type: number
-          format: int32
+          format: int64
           description: outflow document id
           minimum: 1
       responses:
@@ -794,7 +794,7 @@ definitions:
         maxLength: 300
       amount:
         type: number
-        format: float
+        format: double
       currency:
         type: string
         minLength: 3
@@ -812,7 +812,7 @@ definitions:
     properties:
       id:
         type: integer
-        format: int32
+        format: int64
         readOnly: true
       title:
         type: string
@@ -840,7 +840,7 @@ definitions:
     properties:
       id:
         type: integer
-        format: int32
+        format: int64
         description: inflow id
         readOnly: true
       datetime:
@@ -852,7 +852,7 @@ definitions:
         maxLength: 300
       amount:
         type: number
-        format: float
+        format: double
       currency:
         type: string
         minLength: 3
@@ -882,7 +882,7 @@ definitions:
     properties:
       id:
         type: integer
-        format: int32
+        format: int64
         description: outflow id
         readOnly: true
       datetime:
@@ -894,7 +894,7 @@ definitions:
         maxLength: 300
       amount:
         type: number
-        format: float
+        format: double
       currency:
         type: string
         minLength: 3
@@ -914,13 +914,13 @@ definitions:
       # details:
       count:
         type: number
-        format: float
+        format: double
       metric_unit:
         type: string
         maxLength: 100
       satisfaction:
         type: number
-        format: float
+        format: double
 
   #
   # OutflowRaw
@@ -968,7 +968,7 @@ definitions:
         maxLength: 300
       amount:
         type: number
-        format: float
+        format: double
         minimum: 0.01
       description:
         type: string
@@ -978,13 +978,13 @@ definitions:
         maxLength: 300
       count:
         type: number
-        format: float
+        format: double
       metric_unit:
         type: string
         maxLength: 100
       satisfaction:
         type: number
-        format: float
+        format: double
 
   #
   # Statistics
@@ -1009,10 +1009,10 @@ definitions:
         format: date
       inflow:
         type: number
-        format: float
+        format: double
       outflow:
         type: number
-        format: float
+        format: double
       currency:
         type: string
         minLength: 3
@@ -1020,12 +1020,12 @@ definitions:
         description: currency code (see ISO 4217)
       mean_satisfaction:
         type: number
-        format: float
+        format: double
       balance_start:
         type: number
-        format: float
+        format: double
         description: balance at the start of date range
       balance_end:
         type: number
-        format: float
+        format: double
         description: balance at the end of date range
