@@ -1,8 +1,7 @@
 
 CREATE TABLE IF NOT EXISTS `notes` (
     `id`            INTEGER PRIMARY KEY AUTOINCREMENT,
-    `document_guid` VARCHAR(36) NOT NULL,
-    `title`         VARCHAR(300) NOT NULL,
+    `name`          VARCHAR(300) NOT NULL,
     `unixtimestamp` INT8 DEFAULT (strftime('%s', 'now')) NOT NULL,
     `text`          TEXT
 );
@@ -33,16 +32,19 @@ CREATE TABLE IF NOT EXISTS `outflow` (
     `satisfaction`  FLOAT
 );
 
-CREATE VIEW IF NOT EXISTS `transaction-list` AS
+CREATE VIEW IF NOT EXISTS `transactions` AS
     SELECT * FROM (
-        SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `currency` FROM `inflow`
+        SELECT `document_guid`, `unixtimestamp`, `name`, `amount`,
+            `currency`, `description` FROM `inflow`
         UNION
-        SELECT `document_guid`, `unixtimestamp`, `name`, -`amount` AS `amount`, `currency` FROM `outflow`
+        SELECT `document_guid`, `unixtimestamp`, `name`, -`amount` AS `amount`,
+            `currency`, `description` FROM `outflow`
     ) `result_union`
     ORDER BY (`result_union`.`unixtimestamp`) DESC;
 
-CREATE VIEW IF NOT EXISTS `transactions` AS
-    SELECT `t1`.*, SUM(`t2`.`amount`) AS `balance`
-        FROM `transaction-list` AS `t1`, `transaction-list` AS `t2`
+CREATE VIEW IF NOT EXISTS `history` AS
+    SELECT `t1`.`document_guid`, `t1`.`unixtimestamp`, `t1`.`name`, `t1`.`amount`,
+            `t1`.`currency`, SUM(`t2`.`amount`) AS `balance`
+        FROM `transactions` AS `t1`, `transactions` AS `t2`
             WHERE `t2`.`unixtimestamp` <= `t1`.`unixtimestamp`
         GROUP BY `t1`.`document_guid` ORDER BY `t1`.`unixtimestamp` DESC;
