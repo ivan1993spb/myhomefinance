@@ -24,6 +24,25 @@ paths:
   #
   # Transactions
   #
+  /transactions:
+    get:
+      tags: ["transactions"]
+      parameters:
+        - name: guid
+          in: query
+          type: string
+          pattern: "^[{(]?[0-9A-F]{8}[-]?([0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$"
+          required: true
+          description: transaction global uid
+      responses:
+        200:
+          description: returns transaction
+          schema:
+            $ref: '#/definitions/Transaction'
+        404:
+          description: transaction not found
+        503:
+          description: server is currently unavailable
   /transactions/{date_from}_{date_to}:
     get:
       tags: ["transactions"]
@@ -127,10 +146,10 @@ paths:
           type: string
           format: date-time
           description: timestamp
-        - name: title
+        - name: name
           in: formData
           type: string
-          description: note title
+          description: note name
           minLength: 2
           maxLength: 300
         - name: text
@@ -151,7 +170,7 @@ paths:
     post:
       tags: ["notes"]
       parameters:
-        - name: title
+        - name: name
           type: string
           in: formData
           required: true
@@ -232,7 +251,7 @@ paths:
           type: string
           format: date
           required: true
-        - name: title
+        - name: name
           type: string
           in: formData
           minLength: 1
@@ -800,6 +819,8 @@ definitions:
         minLength: 3
         maxLength: 3
         description: currency code (see ISO 4217)
+      description:
+        type: string
 
   #
   # Note
@@ -807,14 +828,14 @@ definitions:
   Note:
     required:
       - id
-      - title
+      - name
       - datetime
     properties:
       id:
         type: integer
         format: int64
         readOnly: true
-      title:
+      name:
         type: string
         minLength: 2
         maxLength: 300
