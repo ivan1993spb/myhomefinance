@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io/ioutil"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -54,11 +55,71 @@ func InitSQLiteDB(dbFileName string) (*sql.DB, error) {
 	return db, err
 }
 
-type Document interface {
+type ErrInflowMapper string
+
+func (e ErrInflowMapper) Error() string {
+	return "inflow mapper error: " + string(e)
 }
 
-type Inflow struct {
+type InflowMapper struct {
+	DB *sql.DB
 }
 
-type Outflow struct {
+// CreateInflow creates new inflow document into db and returns it
+func (im *InflowMapper) CreateInflow(t time.Time, name string, amount float64, description, source string,
+) (*Inflow, error) {
+	guid, err := newGUID()
+	if err != nil {
+		return nil, ErrInflowMapper("cannot generate guid: " + err.Error())
+	}
+
+	res, err := im.DB.Exec("INSERT INTO `inflow` (`document_guid`, `unixtimestamp`, `name`, `amount`, "+
+		"`description`, `source`) VALUES(?, ?, ?, ?, ?, ?)", guid, t.Unix(), name, amount, description,
+		source)
+	if err != nil {
+		return nil, ErrInflowMapper("cannot insert new inflow into db: " + err.Error())
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, ErrInflowMapper("cannot get id of new inflow: " + err.Error())
+	}
+
+	return &Inflow{uint64(id), guid, t, name, amount, description, source}, nil
+}
+
+type ErrOutflowMapper string
+
+func (e ErrOutflowMapper) Error() string {
+	return "outflow mapper error: " + string(e)
+}
+
+type OutflowMapper struct {
+	DB *sql.DB
+}
+
+// CreateOutflow creates new outflow document into db and returns it
+func (im *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64, description, destination,
+	target string, count float64, metricUnit string, satisfaction float32) (*Outflow, error) {
+
+	guid, err := newGUID()
+	if err != nil {
+		return nil, ErrOutflowMapper("cannot generate guid: " + err.Error())
+	}
+
+	res, err := im.DB.Exec("INSERT INTO `outflow` (`document_guid`, `unixtimestamp`, `name`, `amount`, "+
+		"`description`, `destination`, `target`, `count`, `metric_unit`, `satisfaction`) VALUES "+
+		"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		guid, t.Unix(), name, amount, description, description, target, count, metricUnit, satisfaction)
+	if err != nil {
+		return nil, ErrOutflowMapper("cannot insert new outflow into db: " + err.Error())
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, ErrOutflowMapper("cannot get id of new outflow: " + err.Error())
+	}
+
+	return &Outflow{uint64(id), guid, t, name, amount, description, destination, target, count, metricUnit,
+		satisfaction}, nil
 }

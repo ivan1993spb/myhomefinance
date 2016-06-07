@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -82,4 +83,36 @@ func TestInitSQLiteDB(t *testing.T) {
 	if err := rows.Err(); err != nil {
 		require.Nil(t, err, "error occurred on selecting or scanning rows")
 	}
+}
+
+func TestInflowMapperCreateInflow(t *testing.T) {
+	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
+	require.Nil(t, err, "init db return error")
+	defer func() {
+		db.Close()
+		os.Remove(TEST_DB_FILE_NAME)
+	}()
+
+	inflowMapper := &InflowMapper{db}
+
+	var amount float64 = 6.25
+	inflow, err := inflowMapper.CreateInflow(time.Now(), "test inflow", amount, "any desc", "any src")
+	require.Nil(t, err)
+	require.Equal(t, amount, inflow.Amount)
+}
+
+func TestInflowMapperCreateOutflow(t *testing.T) {
+	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
+	require.Nil(t, err, "init db return error")
+	defer func() {
+		db.Close()
+		os.Remove(TEST_DB_FILE_NAME)
+	}()
+
+	inflowMapper := &OutflowMapper{db}
+
+	var amount float64 = 1.55
+	inflow, err := inflowMapper.CreateOutflow(time.Now(), "test outflow", amount, "any desc", "any dst", "any target", 1.5, "kg", 1.0)
+	require.Nil(t, err)
+	require.Equal(t, amount, inflow.Amount)
 }
