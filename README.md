@@ -1,4 +1,7 @@
 
+MyHomeFinance [![Build Status](https://travis-ci.org/ivan1993spb/myhomefinance.svg?branch=master)](https://travis-ci.org/ivan1993spb/myhomefinance)
+=============
+
 Document examples
 -----------------
 
