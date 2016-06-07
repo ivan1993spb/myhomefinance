@@ -174,6 +174,8 @@ func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 		os.Remove(TEST_DB_FILE_NAME)
 	}()
 
+	var start time.Time
+
 	inflowMapper := &InflowMapper{db}
 
 	outflowMapper := &OutflowMapper{db}
@@ -195,11 +197,13 @@ func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 		{time.Unix(26, 0), "inflow 14", 4.25},
 	}
 
+	start = time.Now()
 	for n, rawInflow := range rawInflows {
 		_, err := inflowMapper.CreateInflow(rawInflow.Time, rawInflow.Name, rawInflow.Amount,
 			"any desc", "any src")
 		require.Nil(t, err, fmt.Sprintf("cannot create inflow #%d with name %q", n, rawInflow.Name))
 	}
+	t.Logf("creating %d inflow(s) time: %s\n", len(rawInflows), time.Since(start))
 
 	rawOutflows := []*rawOutflow{
 		{time.Unix(5, 0), "outflow 1", 1.25, 2, 0.5},
@@ -212,22 +216,28 @@ func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 		{time.Unix(30, 0), "outflow 8", 6.25, 2, 0.5},
 	}
 
+	start = time.Now()
 	for n, rawOutflow := range rawOutflows {
 		_, err := outflowMapper.CreateOutflow(rawOutflow.Time, rawOutflow.Name, rawOutflow.Amount,
 			"any desc", "any dst", "any target", 1.5, "any metric unit", 1.0)
 		require.Nil(t, err, fmt.Sprintf("cannot create outflow #%d with name %q", n, rawOutflow.Name))
 	}
+	t.Logf("creating %d outflow(s) time: %s\n", len(rawOutflows), time.Since(start))
 
 	historyMapper := &HistoryMapper{db}
 
 	_, err = historyMapper.GetHistoryFeed(time.Unix(2, 0), time.Unix(1, 0))
 	require.NotNil(t, err)
 
+	start = time.Now()
 	hf, err := historyMapper.GetHistoryFeed(time.Unix(0, 0), time.Unix(100, 0))
+	t.Log("getting all history time:", time.Since(start))
 	require.Nil(t, err, "cannot get history feed")
 	require.NotEmpty(t, hf, "history feed is empty")
 
+	start = time.Now()
 	hf, err = historyMapper.GetHistoryFeed(time.Unix(31, 0), time.Unix(100, 0))
+	t.Log("getting empty history time:", time.Since(start))
 	require.Nil(t, err, "cannot get history feed")
 	require.Empty(t, hf, "history feed is empty")
 }
