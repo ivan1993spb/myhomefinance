@@ -57,24 +57,20 @@ func TestInitSQLiteDB(t *testing.T) {
 
 	db.Exec(testDumpQuery)
 
-	rows, err := db.Query("SELECT `unixtimestamp`, `amount`, `balance` " +
-		"FROM `history` ORDER BY `unixtimestamp` ASC")
+	rows, err := db.Query("SELECT `amount`, `balance` FROM `history` ORDER BY `unixtimestamp` ASC")
 	require.Nil(t, err, "error on selecting history query")
 	defer rows.Close()
 
 	var (
-		checkBalance      float64 = 0
-		transactionNumber int
+		transactionNumber int         // Finance transaction number
+		checkBalance      float64 = 0 // Calculate balance for each transaction
 	)
 
 	for rows.Next() {
 		transactionNumber++
 
-		var (
-			amount, balance float64
-			unixtimestamp   int
-		)
-		err := rows.Scan(&unixtimestamp, &amount, &balance)
+		var amount, balance float64
+		err := rows.Scan(&amount, &balance)
 		require.Nil(t, err, "error on scanning query result")
 
 		checkBalance += amount
