@@ -56,7 +56,8 @@ func TestInitSQLiteDB(t *testing.T) {
 	testDumpQuery, err := loadSQLQuery(TEST_DUMP_DATA_FILE_NAME)
 	require.Nil(t, err, "load dump data sql query")
 
-	db.Exec(testDumpQuery)
+	_, err = db.Exec(testDumpQuery)
+	require.Nil(t, err)
 
 	rows, err := db.Query("SELECT `amount`, `balance` FROM `history` ORDER BY `unixtimestamp` ASC")
 	require.Nil(t, err, "error on selecting history query")

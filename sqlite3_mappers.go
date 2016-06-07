@@ -69,6 +69,9 @@ type InflowMapper struct {
 // CreateInflow creates new inflow document into db and returns it
 func (im *InflowMapper) CreateInflow(t time.Time, name string, amount float64, description, source string,
 ) (*Inflow, error) {
+	if len(name) == 0 {
+		return nil, ErrInflowMapper("name cannot be empty")
+	}
 	if amount <= 0 {
 		return nil, ErrInflowMapper(fmt.Sprintf("invalid amount %d (must be > 0)", amount))
 	}
@@ -106,6 +109,9 @@ type OutflowMapper struct {
 // CreateOutflow creates new outflow document into db and returns it
 func (om *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64, description, destination,
 	target string, count float64, metricUnit string, satisfaction float32) (*Outflow, error) {
+	if len(name) == 0 {
+		return nil, ErrOutflowMapper("name cannot be empty")
+	}
 	if amount <= 0 {
 		return nil, ErrOutflowMapper(fmt.Sprintf("invalid amount %d (must be > 0)", amount))
 	}
@@ -143,6 +149,10 @@ type NoteMapper struct {
 }
 
 func (nm *NoteMapper) CreateNote(t time.Time, name, text string) (*Note, error) {
+	if len(name) == 0 {
+		return nil, ErrNoteMapper("name cannot be empty")
+	}
+
 	res, err := nm.DB.Exec("INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)",
 		name, t.Unix(), text)
 	if err != nil {
