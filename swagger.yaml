@@ -90,12 +90,6 @@ paths:
           minLength: 1
           maxLength: 300
           description: length 1-300 chars
-        - name: currency
-          in: formData
-          type: string
-          minLength: 1
-          maxLength: 3
-          description: currency code (see ISO 4217)
       responses:
         200:
           description: list of transactions
@@ -104,7 +98,7 @@ paths:
             items:
               $ref: '#/definitions/Transaction'
         400:
-          description: invalid date range, name or currency supplied
+          description: invalid date range or name supplied
         503:
           description: server is currently unavailable
 
@@ -314,12 +308,6 @@ paths:
           in: formData
           type: number
           format: double
-        - name: currency
-          in: formData
-          type: string
-          minLength: 3
-          maxLength: 3
-          description: currency code (see ISO 4217)
         - name: description
           in: formData
           type: string
@@ -360,13 +348,6 @@ paths:
           format: double
           required: true
           minimum: 0.01
-        - name: currency
-          in: formData
-          type: string
-          required: true
-          minLength: 3
-          maxLength: 3
-          description: currency code (see ISO 4217)
         - name: description
           in: formData
           type: string
@@ -447,12 +428,6 @@ paths:
           type: string
           minLength: 1
           maxLength: 300
-        - name: currency
-          in: formData
-          type: string
-          minLength: 1
-          maxLength: 3
-          description: currency code (see ISO 4217)
         - name: source
           type: string
           in: formData
@@ -516,12 +491,6 @@ paths:
           in: formData
           type: number
           format: double
-        - name: currency
-          in: formData
-          type: string
-          minLength: 3
-          maxLength: 3
-          description: currency code (see ISO 4217)
         - name: description
           in: formData
           type: string
@@ -641,12 +610,6 @@ paths:
           type: string
           minLength: 1
           maxLength: 300
-        - name: currency
-          in: formData
-          type: string
-          minLength: 1
-          maxLength: 3
-          description: currency code (see ISO 4217)
         - name: destination
           in: formData
           type: string
@@ -776,11 +739,6 @@ paths:
           type: string
           format: date
           required: true
-        - name: currency
-          in: formData
-          type: string
-          minLength: 3
-          maxLength: 3
       responses:
           200:
             description: set of metrix
@@ -802,7 +760,6 @@ definitions:
       - datetime
       - name
       - amount
-      - currency
     properties:
       datetime:
         type: string
@@ -814,11 +771,6 @@ definitions:
       amount:
         type: number
         format: double
-      currency:
-        type: string
-        minLength: 3
-        maxLength: 3
-        description: currency code (see ISO 4217)
       description:
         type: string
 
@@ -855,7 +807,6 @@ definitions:
       - datetime
       - name
       - amount
-      - currency
       # special:
       - source
     properties:
@@ -874,11 +825,6 @@ definitions:
       amount:
         type: number
         format: double
-      currency:
-        type: string
-        minLength: 3
-        maxLength: 3
-        description: currency code (see ISO 4217)
       description:
         type: string
       # special:
@@ -897,7 +843,6 @@ definitions:
       - datetime
       - name
       - amount
-      - currency
       # special:
       - destination
     properties:
@@ -916,11 +861,6 @@ definitions:
       amount:
         type: number
         format: double
-      currency:
-        type: string
-        minLength: 3
-        maxLength: 3
-        description: currency code (see ISO 4217)
       description:
         type: string
       # special:
@@ -951,18 +891,12 @@ definitions:
       OutflowRaw is raw data for building outflow documents and represents checks from stores
     type: object
     required:
-      - currency
       - destination
     properties:
       datetime:
         type: string
         format: date-time
         description: 'default: current date and time'
-      currency:
-        type: string
-        minLength: 3
-        maxLength: 3
-        description: currency code (see ISO 4217)
       destination:
         type: string
         minLength: 2
@@ -1017,7 +951,6 @@ definitions:
       - date_to
       - inflow
       - outflow
-      - currency
       - mean_satisfaction
       - balance_start
       - balance_end
@@ -1034,11 +967,6 @@ definitions:
       outflow:
         type: number
         format: double
-      currency:
-        type: string
-        minLength: 3
-        maxLength: 3
-        description: currency code (see ISO 4217)
       mean_satisfaction:
         type: number
         format: float
