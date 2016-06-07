@@ -47,7 +47,7 @@ func floatEquals(a, b float64) bool {
 
 func TestInitSQLiteDB(t *testing.T) {
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
-	require.Nil(t, err, "init db return error")
+	require.Nil(t, err, "init db returns error")
 	defer func() {
 		db.Close()
 		os.Remove(TEST_DB_FILE_NAME)
@@ -87,7 +87,7 @@ func TestInitSQLiteDB(t *testing.T) {
 
 func TestInflowMapperCreateInflow(t *testing.T) {
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
-	require.Nil(t, err, "init db return error")
+	require.Nil(t, err, "init db returns error")
 	defer func() {
 		db.Close()
 		os.Remove(TEST_DB_FILE_NAME)
@@ -98,21 +98,38 @@ func TestInflowMapperCreateInflow(t *testing.T) {
 	var amount float64 = 6.25
 	inflow, err := inflowMapper.CreateInflow(time.Now(), "test inflow", amount, "any desc", "any src")
 	require.Nil(t, err)
-	require.Equal(t, amount, inflow.Amount)
+	require.Equal(t, amount, inflow.Amount, "inflow contains invalid amount")
+	require.Equal(t, uint64(1), inflow.Id, "inflow contains invalid id")
 }
 
 func TestInflowMapperCreateOutflow(t *testing.T) {
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
-	require.Nil(t, err, "init db return error")
+	require.Nil(t, err, "init db returns error")
 	defer func() {
 		db.Close()
 		os.Remove(TEST_DB_FILE_NAME)
 	}()
 
-	inflowMapper := &OutflowMapper{db}
+	outflowMapper := &OutflowMapper{db}
 
 	var amount float64 = 1.55
-	inflow, err := inflowMapper.CreateOutflow(time.Now(), "test outflow", amount, "any desc", "any dst", "any target", 1.5, "kg", 1.0)
+	outflow, err := outflowMapper.CreateOutflow(time.Now(), "test outflow", amount, "any desc", "any dst", "any target", 1.5, "kg", 1.0)
 	require.Nil(t, err)
-	require.Equal(t, amount, inflow.Amount)
+	require.Equal(t, amount, outflow.Amount, "outflow contains invalid amount")
+	require.Equal(t, uint64(1), outflow.Id, "outflow contains invalid id")
+}
+
+func TestNoteMapperCreateNote(t *testing.T) {
+	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
+	require.Nil(t, err, "init db returns error")
+	defer func() {
+		db.Close()
+		os.Remove(TEST_DB_FILE_NAME)
+	}()
+
+	noteMapper := &NoteMapper{db}
+
+	note, err := noteMapper.CreateNote(time.Now(), "test name", "test text")
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), note.Id, "note cotains invalid id")
 }

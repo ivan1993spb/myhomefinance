@@ -62,7 +62,7 @@ func (e ErrInflowMapper) Error() string {
 }
 
 type InflowMapper struct {
-	DB *sql.DB
+	*sql.DB
 }
 
 // CreateInflow creates new inflow document into db and returns it
@@ -95,11 +95,11 @@ func (e ErrOutflowMapper) Error() string {
 }
 
 type OutflowMapper struct {
-	DB *sql.DB
+	*sql.DB
 }
 
 // CreateOutflow creates new outflow document into db and returns it
-func (im *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64, description, destination,
+func (om *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64, description, destination,
 	target string, count float64, metricUnit string, satisfaction float32) (*Outflow, error) {
 
 	guid, err := newGUID()
@@ -107,7 +107,7 @@ func (im *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64,
 		return nil, ErrOutflowMapper("cannot generate guid: " + err.Error())
 	}
 
-	res, err := im.DB.Exec("INSERT INTO `outflow` (`document_guid`, `unixtimestamp`, `name`, `amount`, "+
+	res, err := om.DB.Exec("INSERT INTO `outflow` (`document_guid`, `unixtimestamp`, `name`, `amount`, "+
 		"`description`, `destination`, `target`, `count`, `metric_unit`, `satisfaction`) VALUES "+
 		"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		guid, t.Unix(), name, amount, description, description, target, count, metricUnit, satisfaction)
@@ -122,4 +122,29 @@ func (im *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64,
 
 	return &Outflow{uint64(id), guid, t, name, amount, description, destination, target, count, metricUnit,
 		satisfaction}, nil
+}
+
+type ErrNoteMapper string
+
+func (e ErrNoteMapper) Error() string {
+	return "note mapper error: " + string(e)
+}
+
+type NoteMapper struct {
+	*sql.DB
+}
+
+func (nm *NoteMapper) CreateNote(t time.Time, name, text string) (*Note, error) {
+	res, err := nm.DB.Exec("INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)",
+		name, t.Unix(), text)
+	if err != nil {
+		return nil, ErrNoteMapper("cannot insert new note into db: " + err.Error())
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, ErrOutflowMapper("cannot get id of new note: " + err.Error())
+	}
+
+	return &Note{uint64(id), t, name, text}, nil
 }
