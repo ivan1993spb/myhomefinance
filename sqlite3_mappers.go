@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
@@ -68,6 +69,10 @@ type InflowMapper struct {
 // CreateInflow creates new inflow document into db and returns it
 func (im *InflowMapper) CreateInflow(t time.Time, name string, amount float64, description, source string,
 ) (*Inflow, error) {
+	if amount <= 0 {
+		return nil, ErrInflowMapper(fmt.Sprintf("invalid amount %d (must be > 0)", amount))
+	}
+
 	guid, err := newGUID()
 	if err != nil {
 		return nil, ErrInflowMapper("cannot generate guid: " + err.Error())
@@ -101,6 +106,9 @@ type OutflowMapper struct {
 // CreateOutflow creates new outflow document into db and returns it
 func (om *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64, description, destination,
 	target string, count float64, metricUnit string, satisfaction float32) (*Outflow, error) {
+	if amount <= 0 {
+		return nil, ErrOutflowMapper(fmt.Sprintf("invalid amount %d (must be > 0)", amount))
+	}
 
 	guid, err := newGUID()
 	if err != nil {
@@ -147,4 +155,45 @@ func (nm *NoteMapper) CreateNote(t time.Time, name, text string) (*Note, error) 
 	}
 
 	return &Note{uint64(id), t, name, text}, nil
+}
+
+type ErrHistoryMapper string
+
+func (e ErrHistoryMapper) Error() string {
+	return "history mapper error:" + string(e)
+}
+
+type HistoryMapper struct {
+	*sql.DB
+}
+
+func (hm *HistoryMapper) GetHistoryFeed(from, to time.Time) ([]*HistoryRecord, error) {
+	if from.Unix() > to.Unix() {
+		return nil, ErrHistoryMapper("invalid time range")
+	}
+
+	rows, err := hm.DB.Query("SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `balance` FROM `history` "+
+		"WHERE `unixtimestamp` BETWEEN ? AND ?", from.Unix(), to.Unix())
+	if err != nil {
+		return nil, ErrHistoryMapper("cannot select history records: " + err.Error())
+	}
+	defer rows.Close()
+
+	historyRecords := make([]*HistoryRecord, 0)
+
+	for rows.Next() {
+		var unixtimestamp int64
+		hr := &HistoryRecord{}
+		if err := rows.Scan(&hr.DocumentGUID, &unixtimestamp, &hr.Name, &hr.Amount, &hr.Balance); err != nil {
+			return nil, ErrHistoryMapper("error on scanning query result: " + err.Error())
+		}
+		hr.Time = time.Unix(unixtimestamp, 0)
+		historyRecords = append(historyRecords, hr)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, ErrHistoryMapper("query error: " + err.Error())
+	}
+
+	return historyRecords, nil
 }
