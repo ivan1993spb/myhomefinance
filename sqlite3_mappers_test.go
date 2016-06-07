@@ -104,6 +104,9 @@ func TestInflowMapperCreateInflow(t *testing.T) {
 
 	_, err = inflowMapper.CreateInflow(time.Now(), "test inflow", 0, "any desc", "any src")
 	require.NotNil(t, err)
+
+	_, err = inflowMapper.CreateInflow(time.Now(), "", 1.00, "any desc", "any src")
+	require.NotNil(t, err)
 }
 
 func TestInflowMapperCreateOutflow(t *testing.T) {
@@ -126,6 +129,9 @@ func TestInflowMapperCreateOutflow(t *testing.T) {
 	_, err = outflowMapper.CreateOutflow(time.Now(), "test outflow", 0, "any desc", "any dst", "any target", 1.5, "kg",
 		1.0)
 	require.NotNil(t, err)
+
+	_, err = outflowMapper.CreateOutflow(time.Now(), "", 1.00, "any desc", "any dst", "any target", 1.5, "kg", 1.0)
+	require.NotNil(t, err)
 }
 
 func TestNoteMapperCreateNote(t *testing.T) {
@@ -141,6 +147,9 @@ func TestNoteMapperCreateNote(t *testing.T) {
 	note, err := noteMapper.CreateNote(time.Now(), "test name", "test text")
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), note.Id, "note cotains invalid id")
+
+	_, err = noteMapper.CreateNote(time.Now(), "", "test text")
+	require.NotNil(t, err)
 }
 
 type rawInflow struct {
