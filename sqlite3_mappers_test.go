@@ -218,7 +218,7 @@ func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 	require.NotNil(t, err)
 
 	start = time.Now()
-	hf, err := historyMapper.GetHistoryFeed(time.Unix(50, 0), time.Unix(RAW_OUTFLOW_COUNT, 0))
+	hf, err := historyMapper.GetHistoryFeed(time.Unix(RAW_OUTFLOW_COUNT/2, 0), time.Unix(RAW_OUTFLOW_COUNT, 0))
 	t.Logf("getting all history (%d row(s)) time: %s\n", len(hf), time.Since(start))
 	require.Nil(t, err, "cannot get history feed")
 	require.NotEmpty(t, hf, "history feed is empty")
