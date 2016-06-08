@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
@@ -59,30 +60,16 @@ func TestInitSQLiteDB(t *testing.T) {
 	_, err = db.Exec(testDumpQuery)
 	require.Nil(t, err)
 
-	rows, err := db.Query("SELECT `amount`, `balance` FROM `history` ORDER BY `unixtimestamp` ASC")
-	require.Nil(t, err, "error on selecting history query")
-	defer rows.Close()
+	historyMapper := &HistoryMapper{db}
+	historyRecords, err := historyMapper.GetHistoryFeed(time.Unix(0, 0), time.Unix(0, 100))
+	require.Nil(t, err, "cannot get history feed")
 
-	var (
-		transactionNumber int         // Finance transaction number
-		checkBalance      float64 = 0 // Calculate balance for each transaction
-	)
+	var checkBalance float64 = 0 // Calculate balance for each transaction
 
-	for rows.Next() {
-		transactionNumber++
-
-		var amount, balance float64
-		err := rows.Scan(&amount, &balance)
-		require.Nil(t, err, "error on scanning query result")
-
-		checkBalance += amount
-
-		require.True(t, floatEquals(checkBalance, balance),
-			fmt.Sprintf("on transaction %d: %f != %f", transactionNumber, checkBalance, balance))
-	}
-
-	if err := rows.Err(); err != nil {
-		require.Nil(t, err, "error occurred on selecting or scanning rows")
+	for i, hr := range historyRecords {
+		checkBalance += hr.Amount
+		require.True(t, floatEquals(checkBalance, hr.Balance),
+			fmt.Sprintf("on transaction %d: %f != %f", i+1, checkBalance, hr.Balance))
 	}
 }
 
@@ -166,6 +153,11 @@ type rawOutflow struct {
 	Satisfaction float32
 }
 
+const (
+	RAW_INFLOW_COUNT  = 100
+	RAW_OUTFLOW_COUNT = 100
+)
+
 func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
 	require.Nil(t, err, "init db returns error")
@@ -174,27 +166,22 @@ func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 		os.Remove(TEST_DB_FILE_NAME)
 	}()
 
+	rand.Seed(time.Now().Unix())
+
 	var start time.Time
 
 	inflowMapper := &InflowMapper{db}
 
 	outflowMapper := &OutflowMapper{db}
 
-	rawInflows := []*rawInflow{
-		{time.Unix(1, 0), "inflow 1", 1.55},
-		{time.Unix(2, 0), "inflow 2", 7.50},
-		{time.Unix(3, 0), "inflow 3", 1.65},
-		{time.Unix(4, 0), "inflow 4", 5.25},
-		{time.Unix(5, 0), "inflow 5", 1.00},
-		{time.Unix(6, 0), "inflow 6", 0.01},
-		{time.Unix(7, 0), "inflow 7", 1.55},
-		{time.Unix(8, 0), "inflow 8", 7.65},
-		{time.Unix(9, 0), "inflow 9", 10.25},
-		{time.Unix(15, 0), "inflow 10", 5.25},
-		{time.Unix(16, 0), "inflow 11", 1.25},
-		{time.Unix(23, 0), "inflow 12", 2.25},
-		{time.Unix(25, 0), "inflow 13", 3.25},
-		{time.Unix(26, 0), "inflow 14", 4.25},
+	rawInflows := make([]*rawInflow, RAW_INFLOW_COUNT)
+
+	for i := 0; i < RAW_INFLOW_COUNT; i++ {
+		rawInflows[i] = &rawInflow{
+			time.Unix(int64(rand.Intn(RAW_INFLOW_COUNT)), 0),
+			fmt.Sprintf("inflow %d", i),
+			rand.Float64() * 100,
+		}
 	}
 
 	start = time.Now()
@@ -205,15 +192,16 @@ func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 	}
 	t.Logf("creating %d inflow(s) time: %s\n", len(rawInflows), time.Since(start))
 
-	rawOutflows := []*rawOutflow{
-		{time.Unix(5, 0), "outflow 1", 1.25, 2, 0.5},
-		{time.Unix(7, 0), "outflow 2", 0.20, 1, 0.5},
-		{time.Unix(8, 0), "outflow 3", 3.00, 5, 0.5},
-		{time.Unix(9, 0), "outflow 4", 0.10, 3, 0.5},
-		{time.Unix(12, 0), "outflow 5", 5.00, 5, 0.5},
-		{time.Unix(23, 0), "outflow 6", 2.80, 1, 0.5},
-		{time.Unix(25, 0), "outflow 7", 7.35, 5, 0.5},
-		{time.Unix(30, 0), "outflow 8", 6.25, 2, 0.5},
+	rawOutflows := make([]*rawOutflow, RAW_OUTFLOW_COUNT)
+
+	for i := 0; i < RAW_OUTFLOW_COUNT; i++ {
+		rawOutflows[i] = &rawOutflow{
+			time.Unix(int64(rand.Intn(RAW_OUTFLOW_COUNT)), 0),
+			fmt.Sprintf("outflow %d", i),
+			rand.Float64() * 100,
+			rand.Float64() * 100,
+			rand.Float32(),
+		}
 	}
 
 	start = time.Now()
@@ -226,17 +214,17 @@ func TestHistoryMapperGetHistoryFeed(t *testing.T) {
 
 	historyMapper := &HistoryMapper{db}
 
-	_, err = historyMapper.GetHistoryFeed(time.Unix(2, 0), time.Unix(1, 0))
+	_, err = historyMapper.GetHistoryFeed(time.Unix(2, 0), time.Unix(0, 0))
 	require.NotNil(t, err)
 
 	start = time.Now()
-	hf, err := historyMapper.GetHistoryFeed(time.Unix(0, 0), time.Unix(100, 0))
-	t.Log("getting all history time:", time.Since(start))
+	hf, err := historyMapper.GetHistoryFeed(time.Unix(50, 0), time.Unix(RAW_OUTFLOW_COUNT, 0))
+	t.Logf("getting all history (%d row(s)) time: %s\n", len(hf), time.Since(start))
 	require.Nil(t, err, "cannot get history feed")
 	require.NotEmpty(t, hf, "history feed is empty")
 
 	start = time.Now()
-	hf, err = historyMapper.GetHistoryFeed(time.Unix(31, 0), time.Unix(100, 0))
+	hf, err = historyMapper.GetHistoryFeed(time.Unix(RAW_OUTFLOW_COUNT+100, 0), time.Unix(RAW_OUTFLOW_COUNT+200, 0))
 	t.Log("getting empty history time:", time.Since(start))
 	require.Nil(t, err, "cannot get history feed")
 	require.Empty(t, hf, "history feed is empty")

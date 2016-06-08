@@ -182,8 +182,23 @@ func (hm *HistoryMapper) GetHistoryFeed(from, to time.Time) ([]*HistoryRecord, e
 		return nil, ErrHistoryMapper("invalid time range")
 	}
 
-	rows, err := hm.DB.Query("SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `balance` FROM `history` "+
-		"WHERE `unixtimestamp` BETWEEN ? AND ?", from.Unix(), to.Unix())
+	rows, err := hm.DB.Query("SELECT `t1`.`document_guid`, `t1`.`unixtimestamp`, `t1`.`name`, `t1`.`amount`, SUM(`t2`.`amount`) AS `balance`"+
+		"    FROM ("+
+		"        SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `description` FROM `inflow`"+
+		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
+		"        UNION"+
+		"        SELECT `document_guid`, `unixtimestamp`, `name`, -`amount` AS `amount`, `description` FROM `outflow`"+
+		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
+		"    ) AS `t1`,"+
+		"    ("+
+		"        SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `description` FROM `inflow`"+
+		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
+		"        UNION"+
+		"        SELECT `document_guid`, `unixtimestamp`, `name`, -`amount` AS `amount`, `description` FROM `outflow`"+
+		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
+		"    ) AS `t2`"+
+		"        WHERE `t2`.`unixtimestamp` <= `t1`.`unixtimestamp`"+
+		"    GROUP BY `t1`.`document_guid` ORDER BY `t1`.`unixtimestamp` DESC", from.Unix(), to.Unix())
 	if err != nil {
 		return nil, ErrHistoryMapper("cannot select history records: " + err.Error())
 	}

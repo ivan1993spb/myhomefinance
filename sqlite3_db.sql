@@ -37,9 +37,3 @@ CREATE VIEW IF NOT EXISTS `transactions` AS
         SELECT `document_guid`, `unixtimestamp`, `name`, -`amount` AS `amount`, `description` FROM `outflow`
     ) `result_union`
     ORDER BY (`result_union`.`unixtimestamp`) DESC;
-
-CREATE VIEW IF NOT EXISTS `history` AS
-    SELECT `t1`.`document_guid`, `t1`.`unixtimestamp`, `t1`.`name`, `t1`.`amount`, SUM(`t2`.`amount`) AS `balance`
-        FROM `transactions` AS `t1`, `transactions` AS `t2`
-            WHERE `t2`.`unixtimestamp` <= `t1`.`unixtimestamp`
-        GROUP BY `t1`.`document_guid` ORDER BY `t1`.`unixtimestamp` DESC;
