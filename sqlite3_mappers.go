@@ -182,7 +182,8 @@ func (hm *HistoryMapper) GetHistoryFeed(from, to time.Time) ([]*HistoryRecord, e
 		return nil, ErrHistoryMapper("invalid time range")
 	}
 
-	rows, err := hm.DB.Query("SELECT `t1`.`document_guid`, `t1`.`unixtimestamp`, `t1`.`name`, `t1`.`amount`, SUM(`t2`.`amount`) AS `balance`"+
+	rows, err := hm.DB.Query("SELECT `t1`.`document_guid`, `t1`.`unixtimestamp`, `t1`.`name`, `t1`.`amount`,"+
+		"    SUM(`t2`.`amount`) AS `balance`"+
 		"    FROM ("+
 		"        SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `description` FROM `inflow`"+
 		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+

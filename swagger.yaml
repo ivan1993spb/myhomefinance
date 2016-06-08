@@ -635,19 +635,6 @@ paths:
   #
   # Additionally:
   #
-  /currencies:
-    get:
-      tags: ["additionally"]
-      description: Returns list of currencies
-      responses:
-        200:
-          description: list of attached currencies
-          schema:
-            type: array
-            items:
-              type: string
-        503:
-          description: server is currently unavailable
   /metric-units:
     get:
       tags: ["additionally"]
