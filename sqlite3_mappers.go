@@ -8,7 +8,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-openapi/strfmt"
 	_ "github.com/mattn/go-sqlite3"
+
+	"github.com/ivan1993spb/myhomefinance/models"
 )
 
 const DEFAULT_SQLITE_DB_FILE_NAME = "myhomefinance.db"
@@ -68,7 +71,7 @@ type InflowMapper struct {
 
 // CreateInflow creates new inflow document into db and returns it
 func (im *InflowMapper) CreateInflow(t time.Time, name string, amount float64, description, source string,
-) (*Inflow, error) {
+) (*models.Inflow, error) {
 	if len(name) == 0 {
 		return nil, ErrInflowMapper("name cannot be empty")
 	}
@@ -93,7 +96,14 @@ func (im *InflowMapper) CreateInflow(t time.Time, name string, amount float64, d
 		return nil, ErrInflowMapper("cannot get id of new inflow: " + err.Error())
 	}
 
-	return &Inflow{uint64(id), guid, t, name, amount, description, source}, nil
+	return &models.Inflow{
+		ID:          id,
+		Datetime:    strfmt.DateTime(t),
+		Name:        &name,
+		Amount:      &amount,
+		Description: description,
+		Source:      &source,
+	}, nil
 }
 
 type ErrOutflowMapper string
@@ -108,7 +118,7 @@ type OutflowMapper struct {
 
 // CreateOutflow creates new outflow document into db and returns it
 func (om *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64, description, destination,
-	target string, count float64, metricUnit string, satisfaction float32) (*Outflow, error) {
+	target string, count float64, metricUnit string, satisfaction float32) (*models.Outflow, error) {
 	if len(name) == 0 {
 		return nil, ErrOutflowMapper("name cannot be empty")
 	}
@@ -134,8 +144,18 @@ func (om *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64,
 		return nil, ErrOutflowMapper("cannot get id of new outflow: " + err.Error())
 	}
 
-	return &Outflow{uint64(id), guid, t, name, amount, description, destination, target, count, metricUnit,
-		satisfaction}, nil
+	return &models.Outflow{
+		ID:           id,
+		Datetime:     &strfmt.DateTime(t),
+		Name:         &name,
+		Amount:       &amount,
+		Description:  description,
+		Destination:  &destination,
+		Target:       target,
+		Count:        count,
+		MetricUnit:   metricUnit,
+		Satisfaction: satisfaction,
+	}, nil
 }
 
 type ErrNoteMapper string
@@ -148,7 +168,7 @@ type NoteMapper struct {
 	*sql.DB
 }
 
-func (nm *NoteMapper) CreateNote(t time.Time, name, text string) (*Note, error) {
+func (nm *NoteMapper) CreateNote(t time.Time, name, text string) (*models.Note, error) {
 	if len(name) == 0 {
 		return nil, ErrNoteMapper("name cannot be empty")
 	}
@@ -164,7 +184,12 @@ func (nm *NoteMapper) CreateNote(t time.Time, name, text string) (*Note, error) 
 		return nil, ErrOutflowMapper("cannot get id of new note: " + err.Error())
 	}
 
-	return &Note{uint64(id), t, name, text}, nil
+	return &models.Note{
+		ID:       id,
+		Datetime: &strfmt.DateTime(t),
+		Name:     &name,
+		Text:     text,
+	}, nil
 }
 
 func (nm *NoteMapper) DeleteNote(id uint64) error {
@@ -181,9 +206,9 @@ func (nm *NoteMapper) DeleteNote(id uint64) error {
 	return nil
 }
 
-func (nm *NoteMapper) UpdateNote(note *Note) error {
+func (nm *NoteMapper) UpdateNote(note *models.Note) error {
 	result, err := nm.DB.Exec("UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?",
-		note.Name, note.Time.Unix(), note.Text, note.Id)
+		note.Name, note.Datetime.String(), note.Text, note.ID)
 	if err != nil {
 		return ErrNoteMapper("cannot update note: " + err.Error())
 	}
@@ -196,24 +221,24 @@ func (nm *NoteMapper) UpdateNote(note *Note) error {
 	return nil
 }
 
-func (nm *NoteMapper) GetNoteById(id uint64) (*Note, error) {
+func (nm *NoteMapper) GetNoteById(id uint64) (*models.Note, error) {
 	var (
-		note          = &Note{}
+		note          = &models.Note{}
 		unixtimestamp int64
 	)
 
 	err := nm.DB.QueryRow("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?", id).
-		Scan(&note.Id, &unixtimestamp, &note.Name, &note.Text)
+		Scan(&note.ID, &unixtimestamp, note.Name, &note.Text)
 	if err != nil {
 		return nil, ErrNoteMapper("cannot get note by id: " + err.Error())
 	}
 
-	note.Time = time.Unix(unixtimestamp, 0)
+	note.Datetime = &strfmt.DateTime(time.Unix(unixtimestamp, 0))
 
 	return note, nil
 }
 
-func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*Note, error) {
+func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*models.Note, error) {
 	if from.Unix() >= to.Unix() {
 		return nil, ErrNoteMapper("invalid time range")
 	}
@@ -225,17 +250,17 @@ func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*Note
 	}
 	defer rows.Close()
 
-	var notes = make([]*Note, 0)
+	var notes = make([]*models.Note, 0)
 
 	for rows.Next() {
 		var (
-			note          = &Note{}
+			note          = &models.Note{}
 			unixtimestamp int64
 		)
-		if err := rows.Scan(&note.Id, &unixtimestamp, &note.Name, &note.Text); err != nil {
+		if err := rows.Scan(&note.ID, &unixtimestamp, note.Name, &note.Text); err != nil {
 			return nil, ErrNoteMapper("cannot get notes by time range: " + err.Error())
 		}
-		note.Time = time.Unix(unixtimestamp, 0)
+		note.Datetime = &strfmt.DateTime(time.Unix(unixtimestamp, 0))
 		notes = append(notes, note)
 	}
 	if err := rows.Err(); err != nil {
