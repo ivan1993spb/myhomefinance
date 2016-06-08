@@ -5,8 +5,3 @@ myhomefinance.iml
 # test files
 test.db
 test.db-journal
-
-# swagger server generated files
-cmd
-models
-restapi
