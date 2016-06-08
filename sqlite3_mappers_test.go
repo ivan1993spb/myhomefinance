@@ -47,6 +47,7 @@ func floatEquals(a, b float64) bool {
 }
 
 func TestInitSQLiteDB(t *testing.T) {
+	os.Remove(TEST_DB_FILE_NAME)
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
 	require.Nil(t, err, "init db returns error")
 	defer func() {
@@ -61,19 +62,20 @@ func TestInitSQLiteDB(t *testing.T) {
 	require.Nil(t, err)
 
 	historyMapper := &HistoryMapper{db}
-	historyRecords, err := historyMapper.GetHistoryFeed(time.Unix(0, 0), time.Unix(0, 100))
+	historyRecords, err := historyMapper.GetHistoryFeed(time.Unix(0, 0), time.Unix(100, 0))
 	require.Nil(t, err, "cannot get history feed")
 
 	var checkBalance float64 = 0 // Calculate balance for each transaction
 
-	for i, hr := range historyRecords {
-		checkBalance += hr.Amount
-		require.True(t, floatEquals(checkBalance, hr.Balance),
-			fmt.Sprintf("on transaction %d: %f != %f", i+1, checkBalance, hr.Balance))
+	for i := len(historyRecords) - 1; i >= 0; i-- {
+		checkBalance += historyRecords[i].Amount
+		require.True(t, floatEquals(checkBalance, historyRecords[i].Balance),
+			fmt.Sprintf("on transaction %d: %f != %f", i+1, checkBalance, historyRecords[i].Balance))
 	}
 }
 
 func TestInflowMapperCreateInflow(t *testing.T) {
+	os.Remove(TEST_DB_FILE_NAME)
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
 	require.Nil(t, err, "init db returns error")
 	defer func() {
@@ -97,6 +99,7 @@ func TestInflowMapperCreateInflow(t *testing.T) {
 }
 
 func TestInflowMapperCreateOutflow(t *testing.T) {
+	os.Remove(TEST_DB_FILE_NAME)
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
 	require.Nil(t, err, "init db returns error")
 	defer func() {
@@ -121,7 +124,8 @@ func TestInflowMapperCreateOutflow(t *testing.T) {
 	require.NotNil(t, err)
 }
 
-func TestNoteMapperCreateNote(t *testing.T) {
+func TestNoteMapper(t *testing.T) {
+	os.Remove(TEST_DB_FILE_NAME)
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
 	require.Nil(t, err, "init db returns error")
 	defer func() {
@@ -131,12 +135,38 @@ func TestNoteMapperCreateNote(t *testing.T) {
 
 	noteMapper := &NoteMapper{db}
 
-	note, err := noteMapper.CreateNote(time.Now(), "test name", "test text")
+	note, err := noteMapper.CreateNote(time.Unix(2, 0), "test name", "test text")
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), note.Id, "note cotains invalid id")
 
 	_, err = noteMapper.CreateNote(time.Now(), "", "test text")
 	require.NotNil(t, err)
+
+	_, err = noteMapper.GetNoteById(note.Id + 1)
+	require.NotNil(t, err)
+
+	_, err = noteMapper.GetNoteById(note.Id)
+	require.Nil(t, err)
+
+	_, err = noteMapper.GetNotesByTimeRange(time.Unix(3, 0), time.Unix(3, 0))
+	require.NotNil(t, err)
+
+	_, err = noteMapper.GetNotesByTimeRange(time.Unix(3, 0), time.Unix(1, 0))
+	require.NotNil(t, err)
+
+	notes, err := noteMapper.GetNotesByTimeRange(time.Unix(1, 0), time.Unix(3, 0))
+	require.Nil(t, err)
+	require.Equal(t, 1, len(notes))
+
+	err = noteMapper.DeleteNote(note.Id + 1)
+	require.NotNil(t, err)
+
+	err = noteMapper.DeleteNote(note.Id)
+	require.Nil(t, err)
+
+	notes, err = noteMapper.GetNotesByTimeRange(time.Unix(1, 0), time.Unix(3, 0))
+	require.Nil(t, err)
+	require.Equal(t, 0, len(notes))
 }
 
 type rawInflow struct {
@@ -154,11 +184,12 @@ type rawOutflow struct {
 }
 
 const (
-	RAW_INFLOW_COUNT  = 100
-	RAW_OUTFLOW_COUNT = 100
+	RAW_INFLOW_COUNT  = 20
+	RAW_OUTFLOW_COUNT = 20
 )
 
 func TestHistoryMapperGetHistoryFeed(t *testing.T) {
+	os.Remove(TEST_DB_FILE_NAME)
 	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
 	require.Nil(t, err, "init db returns error")
 	defer func() {
