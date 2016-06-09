@@ -1,4 +1,4 @@
-package main
+package sqlite3mappers
 
 import (
 	"crypto/rand"

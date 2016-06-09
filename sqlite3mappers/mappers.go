@@ -1,10 +1,8 @@
-package main
+package sqlite3mappers
 
 import (
 	"database/sql"
-	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"time"
 
@@ -14,13 +12,7 @@ import (
 	"github.com/ivan1993spb/myhomefinance/models"
 )
 
-const DEFAULT_SQLITE_DB_FILE_NAME = "myhomefinance.db"
-
-var dbFileName string = DEFAULT_SQLITE_DB_FILE_NAME
-
-func init() {
-	flag.StringVar(&dbFileName, "sqlite-db", DEFAULT_SQLITE_DB_FILE_NAME, "sqlite db file name")
-}
+//go:generate go-bindata --pkg=sqlite3mappers db.sql
 
 type ErrSQLiteDB string
 
@@ -36,20 +28,7 @@ func InitSQLiteDB(dbFileName string) (*sql.DB, error) {
 	}
 
 	if _, err := os.Stat(dbFileName); os.IsNotExist(err) {
-		// Try to open file with queries for tables and views creation and execute that queries
-		f, err := os.Open("sqlite3_db.sql")
-		if err != nil {
-			return db, ErrSQLiteDB("cannot init db: " + err.Error())
-		}
-		defer f.Close()
-
-		rawQuery, err := ioutil.ReadAll(f)
-		if err != nil {
-			return db, ErrSQLiteDB("cannot read file with queries for tables and views creation: " +
-				err.Error())
-		}
-
-		_, err = db.Exec(string(rawQuery))
+		_, err = db.Exec(string(MustAsset("db.sql")))
 		if err != nil {
 			return db, ErrSQLiteDB("cannot execute queries for tables and views creation: " +
 				err.Error())

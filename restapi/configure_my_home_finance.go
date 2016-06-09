@@ -2,12 +2,17 @@ package restapi
 
 import (
 	"crypto/tls"
+	"log"
 	"net/http"
+	"os"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/swag"
+	"github.com/jessevdk/go-flags"
 
+	"github.com/ivan1993spb/myhomefinance/models"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/additionally"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/inflow"
@@ -18,19 +23,28 @@ import (
 
 // This file is safe to edit. Once it exists it will not be overwritten
 
+type ServerOptions struct {
+	DBFile flags.Filename `short:"f" long:"db-file" description:"sqlite3 db file name" default:"myhomefinance.db"`
+}
+
+var serverOptions ServerOptions
+
 func configureFlags(api *operations.MyHomeFinanceAPI) {
-	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
+	api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{
+		{
+			ShortDescription: "MyHomeFinance Options",
+			LongDescription:  "",
+			Options:          &serverOptions,
+		},
+	}
 }
 
 func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
-	// configure the api here
 	api.ServeError = errors.ServeError
 
-	// Set your custom logger if needed. Default one is log.Printf
-	// Expected interface func(string, ...interface{})
-	//
-	// Example:
-	// s.api.Logger = log.Printf
+	log.SetOutput(os.Stdout)
+	log.SetFlags(log.LstdFlags)
+	api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
@@ -61,7 +75,13 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return middleware.NotImplemented("operation additionally.GetMetricUnits has not yet been implemented")
 	})
 	api.NotesGetNotesHandler = notes.GetNotesHandlerFunc(func(params notes.GetNotesParams) middleware.Responder {
-		return middleware.NotImplemented("operation notes.GetNotes has not yet been implemented")
+		return notes.NewGetNotesOK().WithPayload(&models.Note{
+			ID:       22,
+			Name:     nil,
+			Text:     "text",
+			Datetime: nil,
+		})
+		//return middleware.NotImplemented("operation notes.GetNotes has not yet been implemented")
 	})
 	api.NotesGetNotesDateFromDateToHandler = notes.GetNotesDateFromDateToHandlerFunc(func(params notes.GetNotesDateFromDateToParams) middleware.Responder {
 		return middleware.NotImplemented("operation notes.GetNotesDateFromDateTo has not yet been implemented")

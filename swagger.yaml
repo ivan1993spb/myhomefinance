@@ -8,6 +8,7 @@ info:
     name: Ivan Pushkin
     url: https://twitter.com/IvanDeveloper
 host: localhost
+basePath: /api
 schemes:
   - http
 # format of bodies a client can send (Content-Type)
