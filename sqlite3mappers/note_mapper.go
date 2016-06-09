@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"strings"
+
 	"github.com/go-openapi/strfmt"
 	"github.com/ivan1993spb/myhomefinance/models"
 )
@@ -19,13 +21,13 @@ func (e errCreateNote) Error() string {
 	return "cannot create note: " + string(e)
 }
 
-func (nm *NoteMapper) CreateNote(datetime *strfmt.DateTime, name string, text *string) (*models.Note, error) {
+func (nm *NoteMapper) CreateNote(datetime strfmt.DateTime, name string, text string) (*models.Note, error) {
 	if len(name) == 0 {
 		return nil, errCreateNote("name cannot be empty")
 	}
 
 	res, err := nm.DB.Exec("INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)",
-		name, time.Time(*datetime).Unix(), *text)
+		name, time.Time(datetime).Unix(), text)
 	if err != nil {
 		return nil, errCreateNote("error with query to db: " + err.Error())
 	}
@@ -37,7 +39,7 @@ func (nm *NoteMapper) CreateNote(datetime *strfmt.DateTime, name string, text *s
 
 	return &models.Note{
 		ID:       id,
-		Datetime: datetime,
+		Datetime: &datetime,
 		Name:     &name,
 		Text:     text,
 	}, nil
@@ -69,9 +71,9 @@ func (e errUpdateNote) Error() string {
 	return "cannot update note: " + string(e)
 }
 
-func (nm *NoteMapper) UpdateNote(id int64, datetime *strfmt.DateTime, name, text *string) (*models.Note, error) {
+func (nm *NoteMapper) UpdateNote(id int64, datetime strfmt.DateTime, name, text string) error {
 	result, err := nm.DB.Exec("UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?",
-		*name, time.Time(*datetime), *text, id)
+		name, time.Time(datetime), text, id)
 	if err != nil {
 		return errUpdateNote(err.Error())
 	}
@@ -86,17 +88,21 @@ func (nm *NoteMapper) UpdateNote(id int64, datetime *strfmt.DateTime, name, text
 
 func (nm *NoteMapper) GetNoteById(id int64) (*models.Note, error) {
 	var (
-		note          = &models.Note{}
+		note = &models.Note{}
+
+		name          string
 		unixtimestamp int64
 	)
 
 	err := nm.DB.QueryRow("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?", id).
-		Scan(&note.ID, &unixtimestamp, note.Name, &note.Text)
+		Scan(&note.ID, &unixtimestamp, &name, &note.Text)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get note by id: %s", err)
 	}
 
-	note.Datetime = &strfmt.DateTime(time.Unix(unixtimestamp, 0))
+	note.Name = &name
+	var datetime = strfmt.DateTime(time.Unix(unixtimestamp, 0))
+	note.Datetime = &datetime
 
 	return note, nil
 }
@@ -125,11 +131,14 @@ func (nm *NoteMapper) GetNotesByTimeRange(from strfmt.Date, to strfmt.Date) ([]*
 		var (
 			note          = &models.Note{}
 			unixtimestamp int64
+			name          string
 		)
-		if err := rows.Scan(&note.ID, &unixtimestamp, note.Name, &note.Text); err != nil {
+		if err := rows.Scan(&note.ID, &unixtimestamp, &name, &note.Text); err != nil {
 			return nil, errFindNotes("cannot get notes by time range: " + err.Error())
 		}
-		note.Datetime = &strfmt.DateTime(time.Unix(unixtimestamp, 0))
+		note.Name = &name
+		var datetime = strfmt.DateTime(time.Unix(unixtimestamp, 0))
+		note.Datetime = &datetime
 		notes = append(notes, note)
 	}
 	if err := rows.Err(); err != nil {
@@ -139,6 +148,39 @@ func (nm *NoteMapper) GetNotesByTimeRange(from strfmt.Date, to strfmt.Date) ([]*
 	return notes, nil
 }
 
-func (nm *NoteMapper) GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, name *string) ([]*models.Note, error) {
-	return nil, nil
+func (nm *NoteMapper) GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, name string) ([]*models.Note, error) {
+	if time.Time(from).Unix() >= time.Time(to).Unix() {
+		return nil, errFindNotes("invalid time range")
+	}
+
+	// TODO len(name) > 0 ?
+	name = "%" + strings.Replace(name, " ", "%", -1) + "%"
+	rows, err := nm.DB.Query("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` "+
+		"WHERE `unixtimestamp` BETWEEN ? AND ? AND `name` LIKE ?", time.Time(from).Unix(), time.Time(to).Unix(), name)
+	if err != nil {
+		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+	}
+	defer rows.Close()
+
+	var notes = make([]*models.Note, 0)
+
+	for rows.Next() {
+		var (
+			note          = &models.Note{}
+			unixtimestamp int64
+			name          string
+		)
+		if err := rows.Scan(&note.ID, &unixtimestamp, &name, &note.Text); err != nil {
+			return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+		}
+		note.Name = &name
+		var datetime = strfmt.DateTime(time.Unix(unixtimestamp, 0))
+		note.Datetime = &datetime
+		notes = append(notes, note)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+	}
+
+	return notes, nil
 }

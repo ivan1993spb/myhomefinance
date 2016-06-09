@@ -22,12 +22,12 @@ type OutflowMapper interface {
 }
 
 type NoteMapper interface {
-	CreateNote(datetime *strfmt.DateTime, name string, text *string) (*models.Note, error)
-	UpdateNote(id int64, datetime *strfmt.DateTime, name, text *string) (*models.Note, error)
+	CreateNote(datetime strfmt.DateTime, name string, text string) (*models.Note, error)
+	UpdateNote(id int64, datetime strfmt.DateTime, name, text string) error
 	DeleteNote(id int64) error
 	GetNoteById(id int64) (*models.Note, error)
 	GetNotesByTimeRange(from strfmt.Date, to strfmt.Date) ([]*models.Note, error)
-	GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, name *string) ([]*models.Note, error)
+	GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, name string) ([]*models.Note, error)
 }
 
 type HistoryMapper interface {

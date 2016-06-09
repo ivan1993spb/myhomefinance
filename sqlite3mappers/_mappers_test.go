@@ -11,8 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//go:generate go-bindata --pkg=sqlite3mappers -o bindata_test.go testdump.sql
-
 const (
 	TEST_DB_FILE_NAME        = "test.db"
 	TEST_DUMP_DATA_FILE_NAME = "testdump.sql"
