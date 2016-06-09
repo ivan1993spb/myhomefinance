@@ -60,7 +60,12 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return middleware.NotImplemented("operation inflow.DeleteInflow has not yet been implemented")
 	})
 	api.NotesDeleteNotesHandler = notes.DeleteNotesHandlerFunc(func(params notes.DeleteNotesParams) middleware.Responder {
-		return middleware.NotImplemented("operation notes.DeleteNotes has not yet been implemented")
+		err := noteMapper.DeleteNote(params.ID)
+		if err != nil {
+			// TODO NotFound
+			// TODO ServiceUnavailible
+		}
+		return notes.NewDeleteNotesOK()
 	})
 	api.OutflowDeleteOutflowHandler = outflow.DeleteOutflowHandlerFunc(func(params outflow.DeleteOutflowParams) middleware.Responder {
 		return middleware.NotImplemented("operation outflow.DeleteOutflow has not yet been implemented")
@@ -127,7 +132,12 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return middleware.NotImplemented("operation inflow.PostInflow has not yet been implemented")
 	})
 	api.NotesPostNotesHandler = notes.PostNotesHandlerFunc(func(params notes.PostNotesParams) middleware.Responder {
-		return middleware.NotImplemented("operation notes.PostNotes has not yet been implemented")
+		note, err := noteMapper.CreateNote(params.Datetime, params.Name, params.Text)
+		if err != nil {
+			// TODO Bad Request
+			return notes.NewPostNotesServiceUnavailable()
+		}
+		return notes.NewPostNotesOK().WithPayload(note)
 	})
 	api.OutflowPostOutflowHandler = outflow.PostOutflowHandlerFunc(func(params outflow.PostOutflowParams) middleware.Responder {
 		return middleware.NotImplemented("operation outflow.PostOutflow has not yet been implemented")
@@ -136,7 +146,12 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return middleware.NotImplemented("operation inflow.PutInflow has not yet been implemented")
 	})
 	api.NotesPutNotesHandler = notes.PutNotesHandlerFunc(func(params notes.PutNotesParams) middleware.Responder {
-		return middleware.NotImplemented("operation notes.PutNotes has not yet been implemented")
+		note, err := noteMapper.UpdateNote(params.ID, params.Datetime, params.Name, params.Text)
+		if err != nil {
+			// TODO notes.NewPutNotesNotFound()
+			// TODO notes.NewPutNotesServiceUnavailable()
+		}
+		return notes.NewPutNotesOK().WithPayload(note)
 	})
 	api.OutflowPutOutflowHandler = outflow.PutOutflowHandlerFunc(func(params outflow.PutOutflowParams) middleware.Responder {
 		return middleware.NotImplemented("operation outflow.PutOutflow has not yet been implemented")

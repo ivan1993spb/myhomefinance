@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/ivan1993spb/myhomefinance/models"
 )
 
@@ -21,8 +22,9 @@ type OutflowMapper interface {
 }
 
 type NoteMapper interface {
-	CreateNote(t time.Time, name, text string) (*models.Note, error)
-	UpdateNote(note *models.Note) error
+	CreateNote(datetime *strfmt.DateTime, name string, text *string) (*models.Note, error)
+	UpdateNote(id int64, datetime *strfmt.DateTime, name, text *string) (*models.Note, error)
+	DeleteNote(id int64) error
 	GetNoteById(id int64) (*models.Note, error)
 	GetNotesByTimeRange(from time.Time, to time.Time) ([]*models.Note, error)
 	GetNotesByTimeRangeGrep(from time.Time, to time.Time, name string) ([]*models.Note, error)
