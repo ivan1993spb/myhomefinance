@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"os"
 
-	errors "github.com/go-openapi/errors"
-	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"github.com/jessevdk/go-flags"
 
-	"github.com/ivan1993spb/myhomefinance/models"
+	"github.com/ivan1993spb/myhomefinance/mappers"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/additionally"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/inflow"
@@ -50,6 +50,10 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	var (
+		noteMapper mappers.NoteMapper
+	)
+
 	api.InflowDeleteInflowHandler = inflow.DeleteInflowHandlerFunc(func(params inflow.DeleteInflowParams) middleware.Responder {
 		return middleware.NotImplemented("operation inflow.DeleteInflow has not yet been implemented")
 	})
@@ -75,13 +79,11 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return middleware.NotImplemented("operation additionally.GetMetricUnits has not yet been implemented")
 	})
 	api.NotesGetNotesHandler = notes.GetNotesHandlerFunc(func(params notes.GetNotesParams) middleware.Responder {
-		return notes.NewGetNotesOK().WithPayload(&models.Note{
-			ID:       22,
-			Name:     nil,
-			Text:     "text",
-			Datetime: nil,
-		})
-		//return middleware.NotImplemented("operation notes.GetNotes has not yet been implemented")
+		note, err := noteMapper.GetNoteById(params.ID)
+		if err != nil {
+			return notes.NewGetNotesNotFound()
+		}
+		return notes.NewGetNotesOK().WithPayload(note)
 	})
 	api.NotesGetNotesDateFromDateToHandler = notes.GetNotesDateFromDateToHandlerFunc(func(params notes.GetNotesDateFromDateToParams) middleware.Responder {
 		return middleware.NotImplemented("operation notes.GetNotesDateFromDateTo has not yet been implemented")
