@@ -96,10 +96,26 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return notes.NewGetNotesOK().WithPayload(note)
 	})
 	api.NotesGetNotesDateFromDateToHandler = notes.GetNotesDateFromDateToHandlerFunc(func(params notes.GetNotesDateFromDateToParams) middleware.Responder {
-		return middleware.NotImplemented("operation notes.GetNotesDateFromDateTo has not yet been implemented")
+		noteList, err := noteMapper.GetNotesByTimeRange(params.DateFrom, params.DateTo)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO NotFound ?
+			}
+			// TODO return notes.NewGetNotesDateFromDateToBadRequest()
+			return notes.NewGetNotesDateFromDateToServiceUnavailable()
+		}
+		return notes.NewGetNotesDateFromDateToOK().WithPayload(noteList)
 	})
 	api.NotesGetNotesDateFromDateToGrepHandler = notes.GetNotesDateFromDateToGrepHandlerFunc(func(params notes.GetNotesDateFromDateToGrepParams) middleware.Responder {
-		return middleware.NotImplemented("operation notes.GetNotesDateFromDateToGrep has not yet been implemented")
+		noteList, err := noteMapper.GetNotesByTimeRangeGrep(params.DateFrom, params.DateTo, params.Name)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				// TODO NotFound ?
+			}
+			// TODO return notes.NewGetNotesDateFromDateToGrepBadRequest()
+			return notes.NewGetNotesDateFromDateToGrepServiceUnavailable()
+		}
+		return notes.NewGetNotesDateFromDateToGrepOK().WithPayload(noteList)
 	})
 	api.OutflowGetOutflowHandler = outflow.GetOutflowHandlerFunc(func(params outflow.GetOutflowParams) middleware.Responder {
 		return middleware.NotImplemented("operation outflow.GetOutflow has not yet been implemented")

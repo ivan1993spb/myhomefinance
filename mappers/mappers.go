@@ -26,8 +26,8 @@ type NoteMapper interface {
 	UpdateNote(id int64, datetime *strfmt.DateTime, name, text *string) (*models.Note, error)
 	DeleteNote(id int64) error
 	GetNoteById(id int64) (*models.Note, error)
-	GetNotesByTimeRange(from time.Time, to time.Time) ([]*models.Note, error)
-	GetNotesByTimeRangeGrep(from time.Time, to time.Time, name string) ([]*models.Note, error)
+	GetNotesByTimeRange(from strfmt.Date, to strfmt.Date) ([]*models.Note, error)
+	GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, name *string) ([]*models.Note, error)
 }
 
 type HistoryMapper interface {
