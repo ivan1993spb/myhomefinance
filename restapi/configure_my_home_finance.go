@@ -12,6 +12,8 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/jessevdk/go-flags"
 
+	"database/sql"
+
 	"github.com/ivan1993spb/myhomefinance/mappers"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/additionally"
@@ -81,7 +83,10 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 	api.NotesGetNotesHandler = notes.GetNotesHandlerFunc(func(params notes.GetNotesParams) middleware.Responder {
 		note, err := noteMapper.GetNoteById(params.ID)
 		if err != nil {
-			return notes.NewGetNotesNotFound()
+			if err == sql.ErrNoRows {
+				return notes.NewGetNotesNotFound()
+			}
+			return notes.NewGetNotesServiceUnavailable()
 		}
 		return notes.NewGetNotesOK().WithPayload(note)
 	})
