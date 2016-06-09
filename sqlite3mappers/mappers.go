@@ -137,8 +137,6 @@ func (om *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64,
 	}, nil
 }
 
-func (nm *NoteMapper) GetNotesByTimeRangeGrep(from time.Time, to time.Time, name string) ([]*Note, error)
-
 type ErrHistoryMapper string
 
 func (e ErrHistoryMapper) Error() string {
