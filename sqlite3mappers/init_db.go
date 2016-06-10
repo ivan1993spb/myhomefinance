@@ -8,7 +8,7 @@ import (
 	sqlite "github.com/mattn/go-sqlite3"
 )
 
-//go:generate go-bindata --pkg=sqlite3mappers db.sql
+//go:generate go-bindata --pkg=sqlite3mappers --nometadata db.sql
 
 func init() {
 	sql.Register("sqlite3_mhf", &sqlite.SQLiteDriver{

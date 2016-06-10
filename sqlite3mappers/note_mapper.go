@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/go-openapi/strfmt"
+
+	"github.com/ivan1993spb/myhomefinance/mappers"
 	"github.com/ivan1993spb/myhomefinance/models"
 )
 
@@ -112,21 +114,15 @@ func (nm *NoteMapper) CreateNote(datetime strfmt.DateTime, name string, text str
 	}, nil
 }
 
-type errDeleteNote string
-
-func (e errDeleteNote) Error() string {
-	return "cannot delete note: " + string(e)
-}
-
 func (nm *NoteMapper) DeleteNote(id int64) error {
 	result, err := nm.deleteNote.Exec(id)
 	if err != nil {
-		return errDeleteNote(err.Error())
+		return fmt.Errorf("cannot delete note: %s", err)
 	}
 
 	n, _ := result.RowsAffected()
 	if n == 0 {
-		return errDeleteNote("note not found")
+		return mappers.ErrFindNoteById
 	}
 
 	return nil
@@ -146,7 +142,7 @@ func (nm *NoteMapper) UpdateNote(id int64, datetime strfmt.DateTime, name, text 
 
 	n, _ := result.RowsAffected()
 	if n == 0 {
-		return errUpdateNote("note not found")
+		return mappers.ErrFindNoteById
 	}
 
 	return nil
@@ -162,6 +158,9 @@ func (nm *NoteMapper) GetNoteById(id int64) (*models.Note, error) {
 
 	err := nm.selectNoteById.QueryRow(id).Scan(&note.ID, &unixtimestamp, &name, &note.Text)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, mappers.ErrFindNoteById
+		}
 		return nil, fmt.Errorf("cannot get note by id: %s", err)
 	}
 

@@ -2,11 +2,15 @@ package mappers
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/go-openapi/strfmt"
+
 	"github.com/ivan1993spb/myhomefinance/models"
 )
+
+var ErrFindNoteById = errors.New("cannot find note with passed id")
 
 type InitDB func() (*sql.DB, error)
 
