@@ -9,6 +9,18 @@ import (
 	"github.com/ivan1993spb/myhomefinance/models"
 )
 
+const (
+	_SQL_INSERT_NOTE       = "INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)"
+	_SQL_DELETE_NOTE_BY_ID = "DELETE FROM `notes` WHERE `id` = ?"
+	_SQL_SELECT_NOTE_BY_ID = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?"
+	_SQL_UPDATE_NOTE_BY_ID = "UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?"
+
+	_SQL_SELECT_NOTES_BY_TIME_RANGE = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
+		"WHERE `unixtimestamp` BETWEEN ? AND ?"
+	_SQL_SELECT_NOTES_BY_TIME_RANGE_GREP = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
+		"WHERE `unixtimestamp` BETWEEN ? AND ? AND grep(`name`, ?)"
+)
+
 type NoteMapper struct {
 	db *sql.DB
 
@@ -38,36 +50,32 @@ func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
 
 	noteMapper := &NoteMapper{db: db}
 
-	noteMapper.insertNote, err = db.Prepare("INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)")
+	noteMapper.insertNote, err = db.Prepare(_SQL_INSERT_NOTE)
 	if err != nil {
 		return nil, errCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.deleteNote, err = db.Prepare("DELETE FROM `notes` WHERE `id` = ?")
+	noteMapper.deleteNote, err = db.Prepare(_SQL_DELETE_NOTE_BY_ID)
 	if err != nil {
 		return nil, errCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.selectNoteById, err =
-		db.Prepare("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?")
+	noteMapper.selectNoteById, err = db.Prepare(_SQL_SELECT_NOTE_BY_ID)
 	if err != nil {
 		return nil, errCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.updateNoteById, err =
-		db.Prepare("UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?")
+	noteMapper.updateNoteById, err = db.Prepare(_SQL_UPDATE_NOTE_BY_ID)
 	if err != nil {
 		return nil, errCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.selectNotesByTimeRange, err =
-		db.Prepare("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `unixtimestamp` BETWEEN ? AND ?")
+	noteMapper.selectNotesByTimeRange, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE)
 	if err != nil {
 		return nil, errCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.selectNotesByTimeRangeGrep, err = db.Prepare("SELECT `id`, `unixtimestamp`, `name`, `text` " +
-		"FROM `notes` WHERE `unixtimestamp` BETWEEN ? AND ? AND grep(`name`, ?)")
+	noteMapper.selectNotesByTimeRangeGrep, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE_GREP)
 	if err != nil {
 		return nil, errCreateNoteMapper(err.Error())
 	}
