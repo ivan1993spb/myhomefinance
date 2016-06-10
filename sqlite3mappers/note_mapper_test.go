@@ -20,7 +20,8 @@ func TestNoteMapper(t *testing.T) {
 		os.Remove(TEST_DB_FILE_NAME)
 	}()
 
-	noteMapper := &NoteMapper{db}
+	noteMapper, err := NewNoteMapper(db)
+	require.Nil(t, err)
 
 	note, err := noteMapper.CreateNote(strfmt.DateTime(time.Unix(2, 0)), "test name", "test text")
 	require.Nil(t, err)

@@ -10,7 +10,69 @@ import (
 )
 
 type NoteMapper struct {
-	*sql.DB
+	db *sql.DB
+
+	// Prepared statements
+
+	insertNote *sql.Stmt
+	deleteNote *sql.Stmt
+
+	selectNoteById *sql.Stmt
+	updateNoteById *sql.Stmt
+
+	selectNotesByTimeRange     *sql.Stmt
+	selectNotesByTimeRangeGrep *sql.Stmt
+}
+
+type errCreateNoteMapper string
+
+func (e errCreateNoteMapper) Error() string {
+	return "error creating note mapper: " + string(e)
+}
+
+func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
+	err := db.Ping()
+	if err != nil {
+		return nil, errCreateNoteMapper(err.Error())
+	}
+
+	noteMapper := &NoteMapper{db: db}
+
+	noteMapper.insertNote, err = db.Prepare("INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)")
+	if err != nil {
+		return nil, errCreateNoteMapper(err.Error())
+	}
+
+	noteMapper.deleteNote, err = db.Prepare("DELETE FROM `notes` WHERE `id` = ?")
+	if err != nil {
+		return nil, errCreateNoteMapper(err.Error())
+	}
+
+	noteMapper.selectNoteById, err =
+		db.Prepare("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?")
+	if err != nil {
+		return nil, errCreateNoteMapper(err.Error())
+	}
+
+	noteMapper.updateNoteById, err =
+		db.Prepare("UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?")
+	if err != nil {
+		return nil, errCreateNoteMapper(err.Error())
+	}
+
+	noteMapper.selectNotesByTimeRange, err =
+		db.Prepare("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `unixtimestamp` BETWEEN ? AND ?")
+	if err != nil {
+		return nil, errCreateNoteMapper(err.Error())
+	}
+
+	noteMapper.selectNotesByTimeRangeGrep, err = db.Prepare("SELECT `id`, `unixtimestamp`, `name`, `text` " +
+		"FROM `notes` WHERE `unixtimestamp` BETWEEN ? AND ? AND grep(`name`, ?)")
+	if err != nil {
+		return nil, errCreateNoteMapper(err.Error())
+	}
+
+	return noteMapper, nil
 }
 
 type errCreateNote string
@@ -24,8 +86,7 @@ func (nm *NoteMapper) CreateNote(datetime strfmt.DateTime, name string, text str
 		return nil, errCreateNote("name cannot be empty")
 	}
 
-	res, err := nm.DB.Exec("INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)",
-		name, time.Time(datetime).Unix(), text)
+	res, err := nm.insertNote.Exec(name, time.Time(datetime).Unix(), text)
 	if err != nil {
 		return nil, errCreateNote("error with query to db: " + err.Error())
 	}
@@ -50,7 +111,7 @@ func (e errDeleteNote) Error() string {
 }
 
 func (nm *NoteMapper) DeleteNote(id int64) error {
-	result, err := nm.DB.Exec("DELETE FROM `notes` WHERE `id` = ?", id)
+	result, err := nm.deleteNote.Exec(id)
 	if err != nil {
 		return errDeleteNote(err.Error())
 	}
@@ -70,8 +131,7 @@ func (e errUpdateNote) Error() string {
 }
 
 func (nm *NoteMapper) UpdateNote(id int64, datetime strfmt.DateTime, name, text string) error {
-	result, err := nm.DB.Exec("UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?",
-		name, time.Time(datetime), text, id)
+	result, err := nm.updateNoteById.Exec(name, time.Time(datetime), text, id)
 	if err != nil {
 		return errUpdateNote(err.Error())
 	}
@@ -92,8 +152,7 @@ func (nm *NoteMapper) GetNoteById(id int64) (*models.Note, error) {
 		unixtimestamp int64
 	)
 
-	err := nm.DB.QueryRow("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?", id).
-		Scan(&note.ID, &unixtimestamp, &name, &note.Text)
+	err := nm.selectNoteById.QueryRow(id).Scan(&note.ID, &unixtimestamp, &name, &note.Text)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get note by id: %s", err)
 	}
@@ -116,8 +175,7 @@ func (nm *NoteMapper) GetNotesByTimeRange(from strfmt.Date, to strfmt.Date) ([]*
 		return nil, errFindNotes("invalid time range")
 	}
 
-	rows, err := nm.DB.Query("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` "+
-		"WHERE `unixtimestamp` BETWEEN ? AND ?", time.Time(from).Unix(), time.Time(to).Unix())
+	rows, err := nm.selectNotesByTimeRange.Query(time.Time(from).Unix(), time.Time(to).Unix())
 	if err != nil {
 		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
 	}
@@ -152,8 +210,7 @@ func (nm *NoteMapper) GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, 
 	}
 
 	// TODO len(name) > 0 ?
-	rows, err := nm.DB.Query("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` "+
-		"WHERE `unixtimestamp` BETWEEN ? AND ? AND grep(`name`, ?)", time.Time(from).Unix(), time.Time(to).Unix(), name)
+	rows, err := nm.selectNotesByTimeRangeGrep.Query(time.Time(from).Unix(), time.Time(to).Unix(), name)
 	if err != nil {
 		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
 	}
