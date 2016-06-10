@@ -205,11 +205,14 @@ func (nm *NoteMapper) GetNotesByTimeRange(from strfmt.Date, to strfmt.Date) ([]*
 }
 
 func (nm *NoteMapper) GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, name string) ([]*models.Note, error) {
+	if len(name) == 0 {
+		return nm.GetNotesByTimeRange(from, to)
+	}
+
 	if time.Time(from).Unix() >= time.Time(to).Unix() {
 		return nil, errFindNotes("invalid time range")
 	}
 
-	// TODO len(name) > 0 ?
 	rows, err := nm.selectNotesByTimeRangeGrep.Query(time.Time(from).Unix(), time.Time(to).Unix(), name)
 	if err != nil {
 		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
