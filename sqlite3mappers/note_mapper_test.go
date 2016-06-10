@@ -71,11 +71,11 @@ func TestNoteMapper(t *testing.T) {
 	note, err = noteMapper.CreateNote(strfmt.DateTime(time.Unix(6, 0)), "test name 4", "test text 4")
 	require.Nil(t, err)
 
-	notes, err = noteMapper.GetNotesByTimeRangeGrep(strfmt.Date(time.Unix(1, 0)), strfmt.Date(time.Unix(3, 0)), "test")
+	notes, err = noteMapper.GetNotesByTimeRangeGrep(strfmt.Date(time.Unix(1, 0)), strfmt.Date(time.Unix(3, 0)), "tEst 1")
 	require.Nil(t, err)
 	require.Equal(t, 1, len(notes))
 
-	notes, err = noteMapper.GetNotesByTimeRangeGrep(strfmt.Date(time.Unix(1, 0)), strfmt.Date(time.Unix(7, 0)), "test")
+	notes, err = noteMapper.GetNotesByTimeRangeGrep(strfmt.Date(time.Unix(1, 0)), strfmt.Date(time.Unix(7, 0)), "te me")
 	require.Nil(t, err)
 	require.Equal(t, 4, len(notes))
 }

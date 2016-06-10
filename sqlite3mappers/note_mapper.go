@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"strings"
-
 	"github.com/go-openapi/strfmt"
 	"github.com/ivan1993spb/myhomefinance/models"
 )
@@ -154,9 +152,8 @@ func (nm *NoteMapper) GetNotesByTimeRangeGrep(from strfmt.Date, to strfmt.Date, 
 	}
 
 	// TODO len(name) > 0 ?
-	name = "%" + strings.Replace(name, " ", "%", -1) + "%"
 	rows, err := nm.DB.Query("SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` "+
-		"WHERE `unixtimestamp` BETWEEN ? AND ? AND `name` LIKE ?", time.Time(from).Unix(), time.Time(to).Unix(), name)
+		"WHERE `unixtimestamp` BETWEEN ? AND ? AND grep(`name`, ?)", time.Time(from).Unix(), time.Time(to).Unix(), name)
 	if err != nil {
 		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
 	}
