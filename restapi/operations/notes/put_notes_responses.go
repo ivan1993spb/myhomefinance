@@ -7,18 +7,13 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
-
-	"github.com/ivan1993spb/myhomefinance/models"
 )
 
-/*PutNotesOK rewrites note
+/*PutNotesOK note was updated
 
 swagger:response putNotesOK
 */
 type PutNotesOK struct {
-
-	// In: body
-	Payload *models.Note `json:"body,omitempty"`
 }
 
 // NewPutNotesOK creates PutNotesOK with default headers values
@@ -26,26 +21,10 @@ func NewPutNotesOK() *PutNotesOK {
 	return &PutNotesOK{}
 }
 
-// WithPayload adds the payload to the put notes o k response
-func (o *PutNotesOK) WithPayload(payload *models.Note) *PutNotesOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the put notes o k response
-func (o *PutNotesOK) SetPayload(payload *models.Note) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *PutNotesOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		if err := producer.Produce(rw, o.Payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
 }
 
 /*PutNotesBadRequest invalid parameter(s) supplied

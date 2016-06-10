@@ -12,11 +12,11 @@ This is small finance program named myHomeFinance
     Contact: Ivan Pushkin https://twitter.com/IvanDeveloper
 
     Consumes:
-    - application/json
+    - multipart/form-data
 
 
     Produces:
-    - application/json
+    - multipart/form-data
 
 
 swagger:meta

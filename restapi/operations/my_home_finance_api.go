@@ -45,11 +45,11 @@ type MyHomeFinanceAPI struct {
 	formats         strfmt.Registry
 	defaultConsumes string
 	defaultProduces string
-	// JSONConsumer registers a consumer for a "application/json" mime type
-	JSONConsumer runtime.Consumer
+	// MultipartformConsumer registers a consumer for a "multipart/form-data" mime type
+	MultipartformConsumer runtime.Consumer
 
-	// JSONProducer registers a producer for a "application/json" mime type
-	JSONProducer runtime.Producer
+	// MultipartformProducer registers a producer for a "multipart/form-data" mime type
+	MultipartformProducer runtime.Producer
 
 	// InflowDeleteInflowHandler sets the operation handler for the delete inflow operation
 	InflowDeleteInflowHandler inflow.DeleteInflowHandler
@@ -153,12 +153,12 @@ func (o *MyHomeFinanceAPI) RegisterFormat(name string, format strfmt.Format, val
 func (o *MyHomeFinanceAPI) Validate() error {
 	var unregistered []string
 
-	if o.JSONConsumer == nil {
-		unregistered = append(unregistered, "JSONConsumer")
+	if o.MultipartformConsumer == nil {
+		unregistered = append(unregistered, "MultipartformConsumer")
 	}
 
-	if o.JSONProducer == nil {
-		unregistered = append(unregistered, "JSONProducer")
+	if o.MultipartformProducer == nil {
+		unregistered = append(unregistered, "MultipartformProducer")
 	}
 
 	if o.InflowDeleteInflowHandler == nil {
@@ -291,8 +291,8 @@ func (o *MyHomeFinanceAPI) ConsumersFor(mediaTypes []string) map[string]runtime.
 	for _, mt := range mediaTypes {
 		switch mt {
 
-		case "application/json":
-			result["application/json"] = o.JSONConsumer
+		case "multipart/form-data":
+			result["multipart/form-data"] = o.MultipartformConsumer
 
 		}
 	}
@@ -307,8 +307,8 @@ func (o *MyHomeFinanceAPI) ProducersFor(mediaTypes []string) map[string]runtime.
 	for _, mt := range mediaTypes {
 		switch mt {
 
-		case "application/json":
-			result["application/json"] = o.JSONProducer
+		case "multipart/form-data":
+			result["multipart/form-data"] = o.MultipartformProducer
 
 		}
 	}

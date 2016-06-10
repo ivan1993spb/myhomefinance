@@ -2,6 +2,7 @@ package restapi
 
 import (
 	"crypto/tls"
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -12,8 +13,6 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/jessevdk/go-flags"
 
-	"database/sql"
-
 	"github.com/ivan1993spb/myhomefinance/mappers"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/additionally"
@@ -21,6 +20,7 @@ import (
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/notes"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/outflow"
 	"github.com/ivan1993spb/myhomefinance/restapi/operations/transactions"
+	"github.com/ivan1993spb/myhomefinance/sqlite3mappers"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -48,22 +48,30 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 	log.SetFlags(log.LstdFlags)
 	api.Logger = log.Printf
 
-	api.JSONConsumer = runtime.JSONConsumer()
+	api.MultipartformConsumer = runtime.JSONConsumer()
 
-	api.JSONProducer = runtime.JSONProducer()
+	api.MultipartformProducer = runtime.JSONProducer()
 
-	var (
-		noteMapper mappers.NoteMapper
-	)
+	db, err := sqlite3mappers.InitSQLiteDB("test.db")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var noteMapper mappers.NoteMapper
+	noteMapper, err = sqlite3mappers.NewNoteMapper(db)
+
+	api.ServerShutdown = func() {
+		db.Close()
+	}
 
 	api.InflowDeleteInflowHandler = inflow.DeleteInflowHandlerFunc(func(params inflow.DeleteInflowParams) middleware.Responder {
 		return middleware.NotImplemented("operation inflow.DeleteInflow has not yet been implemented")
 	})
 	api.NotesDeleteNotesHandler = notes.DeleteNotesHandlerFunc(func(params notes.DeleteNotesParams) middleware.Responder {
-		err := noteMapper.DeleteNote(params.ID)
-		if err != nil {
-			// TODO NotFound
-			// TODO ServiceUnavailible
+		if err := noteMapper.DeleteNote(params.ID); err != nil {
+			if err == mappers.ErrFindNoteById {
+				return notes.NewDeleteNotesNotFound()
+			}
+			return notes.NewDeleteNotesServiceUnavailable()
 		}
 		return notes.NewDeleteNotesOK()
 	})
@@ -88,7 +96,7 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 	api.NotesGetNotesHandler = notes.GetNotesHandlerFunc(func(params notes.GetNotesParams) middleware.Responder {
 		note, err := noteMapper.GetNoteById(params.ID)
 		if err != nil {
-			if err == sql.ErrNoRows {
+			if err == mappers.ErrFindNoteById {
 				return notes.NewGetNotesNotFound()
 			}
 			return notes.NewGetNotesServiceUnavailable()
@@ -98,16 +106,15 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 	api.NotesGetNotesDateFromDateToHandler = notes.GetNotesDateFromDateToHandlerFunc(func(params notes.GetNotesDateFromDateToParams) middleware.Responder {
 		noteList, err := noteMapper.GetNotesByTimeRange(params.DateFrom, params.DateTo)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				// TODO NotFound ?
-			}
+			log.Println(err)
 			// TODO return notes.NewGetNotesDateFromDateToBadRequest()
 			return notes.NewGetNotesDateFromDateToServiceUnavailable()
 		}
+		// TODO fix swagger api for not found case
 		return notes.NewGetNotesDateFromDateToOK().WithPayload(noteList)
 	})
 	api.NotesGetNotesDateFromDateToGrepHandler = notes.GetNotesDateFromDateToGrepHandlerFunc(func(params notes.GetNotesDateFromDateToGrepParams) middleware.Responder {
-		noteList, err := noteMapper.GetNotesByTimeRangeGrep(params.DateFrom, params.DateTo, params.Name)
+		noteList, err := noteMapper.GetNotesByTimeRangeGrep(params.DateFrom, params.DateTo, *params.Name)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				// TODO NotFound ?
@@ -148,7 +155,7 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return middleware.NotImplemented("operation inflow.PostInflow has not yet been implemented")
 	})
 	api.NotesPostNotesHandler = notes.PostNotesHandlerFunc(func(params notes.PostNotesParams) middleware.Responder {
-		note, err := noteMapper.CreateNote(params.Datetime, params.Name, params.Text)
+		note, err := noteMapper.CreateNote(*params.Datetime, params.Name, *params.Text)
 		if err != nil {
 			// TODO Bad Request
 			return notes.NewPostNotesServiceUnavailable()
@@ -162,18 +169,22 @@ func configureAPI(api *operations.MyHomeFinanceAPI) http.Handler {
 		return middleware.NotImplemented("operation inflow.PutInflow has not yet been implemented")
 	})
 	api.NotesPutNotesHandler = notes.PutNotesHandlerFunc(func(params notes.PutNotesParams) middleware.Responder {
-		note, err := noteMapper.UpdateNote(params.ID, params.Datetime, params.Name, params.Text)
+		log.Println(params)
+		return notes.NewPutNotesOK()
+
+		err := noteMapper.UpdateNote(params.ID, *params.Datetime, *params.Name, *params.Text)
 		if err != nil {
-			// TODO notes.NewPutNotesNotFound()
-			// TODO notes.NewPutNotesServiceUnavailable()
+			if err == mappers.ErrFindNoteById {
+				return notes.NewPutNotesNotFound()
+			}
+			return notes.NewPutNotesServiceUnavailable()
 		}
-		return notes.NewPutNotesOK().WithPayload(note)
+		// TODO fix swagger api: remove return value for this method
+		return notes.NewPutNotesOK()
 	})
 	api.OutflowPutOutflowHandler = outflow.PutOutflowHandlerFunc(func(params outflow.PutOutflowParams) middleware.Responder {
 		return middleware.NotImplemented("operation outflow.PutOutflow has not yet been implemented")
 	})
-
-	api.ServerShutdown = func() {}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }
