@@ -52,7 +52,7 @@ CREATE VIEW IF NOT EXISTS transactions AS
 func init() {
 	sql.Register("sqlite3_mhf", &sqlite.SQLiteDriver{
 		ConnectHook: func(conn *sqlite.SQLiteConn) error {
-			if err := conn.RegisterFunc("grep", grep, true); err != nil {
+			if err := conn.RegisterFunc("grep", match, true); err != nil {
 				return err
 			}
 
@@ -63,7 +63,7 @@ func init() {
 
 var spaceExpr = regexp.MustCompile(`\s+`)
 
-func grep(s1, s2 string) bool {
+func match(s1, s2 string) bool {
 	grepExpr, err := regexp.Compile("(?i)" + spaceExpr.ReplaceAllLiteralString(regexp.QuoteMeta(s2), ".+"))
 	if err != nil {
 		return false
