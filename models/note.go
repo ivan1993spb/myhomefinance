@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Note struct {
-	Id   uint64
+	Id   int64
 	Time time.Time
 	Name string
 	Text string
