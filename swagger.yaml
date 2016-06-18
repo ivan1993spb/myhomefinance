@@ -25,12 +25,12 @@ paths:
   #
   # Transactions
   #
-  /transactions:
+  /transactions/{guid}:
     get:
       tags: ["transactions"]
       parameters:
         - name: guid
-          in: query
+          in: path
           type: string
           pattern: "^[{(]?[0-9A-F]{8}[-]?([0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$"
           required: true
@@ -70,7 +70,7 @@ paths:
           description: invalid date range supplied
         503:
           description: server is currently unavailable
-  /transactions/{date_from}_{date_to}/grep:
+  /transactions/{date_from}_{date_to}/match:
     get:
       tags: ["transactions"]
       description: Returns list of transactions matched with passed attributes in specified time range
@@ -104,14 +104,43 @@ paths:
           description: server is currently unavailable
 
   #
-  # Note
+  # Notes
   #
   /notes:
+    post:
+      tags: ["notes"]
+      parameters:
+        - name: name
+          type: string
+          in: formData
+          required: true
+          minLength: 2
+          maxLength: 300
+          description: length 2-300 chars
+        - name: datetime
+          type: string
+          format: date-time
+          in: formData
+          description: 'default: current date and time'
+        - name: text
+          type: string
+          in: formData
+          description: any text
+      responses:
+        200:
+          description: note created
+          schema:
+            $ref: '#/definitions/Note'
+        400:
+          description: invalid parameter(s) supplied
+        503:
+          description: server is currently unavailable
+  /notes/{id}:
     get:
       tags: ["notes"]
       parameters:
         - name: id
-          in: query
+          in: path
           type: integer
           format: int64
           required: true
@@ -130,7 +159,7 @@ paths:
       tags: ["notes"]
       parameters:
         - name: id
-          in: query
+          in: path
           type: integer
           format: int64
           required: true
@@ -162,41 +191,13 @@ paths:
           description: note not found
         503:
           description: server is currently unavailable
-    post:
-      tags: ["notes"]
-      parameters:
-        - name: name
-          type: string
-          in: formData
-          required: true
-          minLength: 2
-          maxLength: 300
-          description: length 2-300 chars
-        - name: datetime
-          type: string
-          format: date-time
-          in: formData
-          description: 'default: current date and time'
-        - name: text
-          type: string
-          in: formData
-          description: any text
-      responses:
-        200:
-          description: note created
-          schema:
-            $ref: '#/definitions/Note'
-        400:
-          description: invalid parameter(s) supplied
-        503:
-          description: server is currently unavailable
     delete:
       tags: ["notes"]
       parameters:
         - name: id
           type: integer
           format: int64
-          in: query
+          in: path
           required: true
           description: note id
           minimum: 1
@@ -232,7 +233,7 @@ paths:
           description: invalid data range supplied
         503:
           description: server is currently unavailable
-  /notes/{date_from}_{date_to}/grep:
+  /notes/{date_from}_{date_to}/match:
     get:
       tags: ["notes"]
       parameters:
@@ -267,68 +268,6 @@ paths:
   # Inflow
   #
   /inflow:
-    get:
-      tags: ["inflow"]
-      parameters:
-        - name: id
-          in: query
-          type: integer
-          format: int64
-          required: true
-          description: inflow document id
-          minimum: 1
-      responses:
-        200:
-          description: inflow document
-          schema:
-            $ref: '#/definitions/Inflow'
-        404:
-          description: inflow document not found
-        503:
-          description: server is currently unavailable
-    put:
-      tags: ["inflow"]
-      parameters:
-        - name: id
-          in: query
-          type: integer
-          format: int64
-          required: true
-          description: inflow document id
-          minimum: 1
-        - name: datetime
-          in: formData
-          type: string
-          format: date-time
-        - name: name
-          in: formData
-          type: string
-          minLength: 2
-          maxLength: 300
-        - name: amount
-          in: formData
-          type: number
-          format: double
-        - name: description
-          in: formData
-          type: string
-        # special:
-        - name: source
-          in: formData
-          type: string
-          minLength: 2
-          maxLength: 300
-      responses:
-        200:
-          description: inflow document rewrited
-          schema:
-            $ref: '#/definitions/Inflow'
-        400:
-          description: invalid parameter(s) supplied
-        404:
-          description: inflow document not found
-        503:
-          description: server is currently unavailable
     post:
       tags: ["inflow"]
       parameters:
@@ -367,11 +306,74 @@ paths:
           description: invalid parameter(s) supplied
         503:
           description: server is currently unavailable
+  /inflow/{id}:
+    get:
+      tags: ["inflow"]
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: inflow document id
+          minimum: 1
+      responses:
+        200:
+          description: inflow document
+          schema:
+            $ref: '#/definitions/Inflow'
+        404:
+          description: inflow document not found
+        503:
+          description: server is currently unavailable
+    put:
+      tags: ["inflow"]
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: inflow document id
+          minimum: 1
+        - name: datetime
+          in: formData
+          type: string
+          format: date-time
+        - name: name
+          in: formData
+          type: string
+          minLength: 2
+          maxLength: 300
+        - name: amount
+          in: formData
+          type: number
+          format: double
+        - name: description
+          in: formData
+          type: string
+        # special:
+        - name: source
+          in: formData
+          type: string
+          minLength: 2
+          maxLength: 300
+      responses:
+        200:
+          description: inflow document rewrited
+          schema:
+            $ref: '#/definitions/Inflow'
+        400:
+          description: invalid parameter(s) supplied
+        404:
+          description: inflow document not found
+        503:
+          description: server is currently unavailable
     delete:
       tags: ["inflow"]
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           type: integer
           format: int64
@@ -410,7 +412,7 @@ paths:
         503:
           description: server is currently unavailable
 
-  /inflow/{date_from}_{date_to}/grep:
+  /inflow/{date_from}_{date_to}/match:
     get:
       tags: ["inflow"]
       parameters:
@@ -450,11 +452,33 @@ paths:
   # Outflow
   #
   /outflow:
+    post:
+      tags: ["outflow"]
+      parameters:
+        - name: outflow_raw_data
+          description: |
+            object contains outflow data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OutflowRaw'
+      responses:
+        200:
+          description: outflow document created
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Outflow'
+        400:
+          description: invalid parameter(s) supplied
+        503:
+          description: server is currently unavailable
+  /outflow/{id}:
     get:
       tags: ["outflow"]
       parameters:
         - name: id
-          in: query
+          in: path
           type: integer
           format: int64
           required: true
@@ -473,7 +497,7 @@ paths:
       tags: ["outflow"]
       parameters:
         - name: id
-          in: query
+          in: path
           type: integer
           format: int64
           required: true
@@ -528,33 +552,12 @@ paths:
           description: outflow document not found
         503:
           description: server is currently unavailable
-    post:
-      tags: ["outflow"]
-      parameters:
-        - name: outflow_raw_data
-          description: |
-            object contains outflow data
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/OutflowRaw'
-      responses:
-        200:
-          description: outflow document created
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Outflow'
-        400:
-          description: invalid parameter(s) supplied
-        503:
-          description: server is currently unavailable
     delete:
       tags: ["outflow"]
       description: Deletes outflow document by id
       parameters:
         - name: id
-          in: query
+          in: path
           required: true
           type: number
           format: int64
@@ -592,7 +595,7 @@ paths:
           description: invalid date range supplied
         503:
           description: server is currently unavailable
-  /outflow/{date_from}_{date_to}/grep:
+  /outflow/{date_from}_{date_to}/match:
     get:
       tags: ["outflow"]
       parameters:
@@ -649,7 +652,7 @@ paths:
               type: string
         503:
           description: server is currently unavailable
-  /sources/grep:
+  /sources/match:
     get:
       tags: ["additionally"]
       description: Returns list of sources
@@ -670,7 +673,7 @@ paths:
               type: string
         503:
           description: server is currently unavailable
-  /destinations/grep:
+  /destinations/match:
     get:
       tags: ["additionally"]
       description: Returns list of destinations
@@ -691,7 +694,7 @@ paths:
               type: string
         503:
           description: server is currently unavailable
-  /targets/grep:
+  /targets/match:
     get:
       tags: ["additionally"]
       description: Returns list of targets
