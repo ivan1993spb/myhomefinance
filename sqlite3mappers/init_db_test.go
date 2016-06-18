@@ -19,7 +19,12 @@ func TestInitSQLiteDB(t *testing.T) {
 	}()
 
 	var grepTest bool
-	err = db.QueryRow(`SELECT grep("ok","ok")`).Scan(&grepTest)
-	require.Nil(t, err, "grep select returns error")
+
+	err = db.QueryRow(`SELECT match("ok","ok")`).Scan(&grepTest)
+	require.Nil(t, err, "select match returns error")
+	require.True(t, grepTest)
+
+	err = db.QueryRow(`SELECT match("test tset olol 123","tset  123")`).Scan(&grepTest)
+	require.Nil(t, err, "select match returns error")
 	require.True(t, grepTest)
 }

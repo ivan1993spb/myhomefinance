@@ -17,8 +17,8 @@ const (
 
 	_SQL_SELECT_NOTES_BY_TIME_RANGE = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
 		"WHERE `unixtimestamp` BETWEEN ? AND ?"
-	_SQL_SELECT_NOTES_BY_TIME_RANGE_GREP = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
-		"WHERE `unixtimestamp` BETWEEN ? AND ? AND grep(`name`, ?)"
+	_SQL_SELECT_NOTES_BY_TIME_RANGE_MATCH = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
+		"WHERE `unixtimestamp` BETWEEN ? AND ? AND match(`name`, ?)"
 )
 
 type NoteMapper struct {
@@ -32,8 +32,8 @@ type NoteMapper struct {
 	selectNoteById *sql.Stmt
 	updateNoteById *sql.Stmt
 
-	selectNotesByTimeRange     *sql.Stmt
-	selectNotesByTimeRangeGrep *sql.Stmt
+	selectNotesByTimeRange      *sql.Stmt
+	selectNotesByTimeRangeMatch *sql.Stmt
 }
 
 type errCreateNoteMapper string
@@ -75,7 +75,7 @@ func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
 		return nil, errCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.selectNotesByTimeRangeGrep, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE_GREP)
+	noteMapper.selectNotesByTimeRangeMatch, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE_MATCH)
 	if err != nil {
 		return nil, errCreateNoteMapper(err.Error())
 	}
@@ -202,7 +202,7 @@ func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*mode
 	return notes, nil
 }
 
-func (nm *NoteMapper) GetNotesByTimeRangeGrep(from time.Time, to time.Time, name string) ([]*models.Note, error) {
+func (nm *NoteMapper) GetNotesByTimeRangeMatch(from time.Time, to time.Time, name string) ([]*models.Note, error) {
 	if len(name) == 0 {
 		return nm.GetNotesByTimeRange(from, to)
 	}
@@ -211,7 +211,7 @@ func (nm *NoteMapper) GetNotesByTimeRangeGrep(from time.Time, to time.Time, name
 		return nil, errFindNotes("invalid time range")
 	}
 
-	rows, err := nm.selectNotesByTimeRangeGrep.Query(from.Unix(), to.Unix(), name)
+	rows, err := nm.selectNotesByTimeRangeMatch.Query(from.Unix(), to.Unix(), name)
 	if err != nil {
 		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
 	}

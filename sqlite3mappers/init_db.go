@@ -8,7 +8,7 @@ import (
 	sqlite "github.com/mattn/go-sqlite3"
 )
 
-const _TABLES_QUERY = `
+const TABLES_QUERY = `
 CREATE TABLE IF NOT EXISTS notes (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     name          VARCHAR(300) NOT NULL,
@@ -52,7 +52,7 @@ CREATE VIEW IF NOT EXISTS transactions AS
 func init() {
 	sql.Register("sqlite3_mhf", &sqlite.SQLiteDriver{
 		ConnectHook: func(conn *sqlite.SQLiteConn) error {
-			if err := conn.RegisterFunc("grep", match, true); err != nil {
+			if err := conn.RegisterFunc("match", match, true); err != nil {
 				return err
 			}
 
@@ -74,7 +74,7 @@ func match(s1, s2 string) bool {
 type ErrSQLiteDB string
 
 func (e ErrSQLiteDB) Error() string {
-	return "sqlite db error: " + string(e)
+	return "init sqlite db error: " + string(e)
 }
 
 // InitSQLiteDB tries to load sqlite db from file or creates new db file with tables and views
@@ -85,7 +85,7 @@ func InitSQLiteDB(dbFileName string) (*sql.DB, error) {
 	}
 
 	if _, err := os.Stat(dbFileName); os.IsNotExist(err) {
-		_, err = db.Exec(_TABLES_QUERY)
+		_, err = db.Exec(TABLES_QUERY)
 		if err != nil {
 			return db, ErrSQLiteDB("cannot execute queries for tables and views creation: " + err.Error())
 		}

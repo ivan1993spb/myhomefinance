@@ -73,7 +73,7 @@ func TestNoteMapper(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, 0, len(notes))
 
-	notes, err = noteMapper.GetNotesByTimeRangeGrep(time.Unix(1, 0), time.Unix(3, 0), "test")
+	notes, err = noteMapper.GetNotesByTimeRangeMatch(time.Unix(1, 0), time.Unix(3, 0), "test")
 	require.Nil(t, err)
 	require.Equal(t, 0, len(notes))
 
@@ -93,15 +93,15 @@ func TestNoteMapper(t *testing.T) {
 	require.Equal(t, 1, len(notes))
 
 	// Test grep selector for case sensitivity
-	notes, err = noteMapper.GetNotesByTimeRangeGrep(time.Unix(1, 0), time.Unix(3, 0), "tEst")
+	notes, err = noteMapper.GetNotesByTimeRangeMatch(time.Unix(1, 0), time.Unix(3, 0), "tEst")
 	require.Nil(t, err)
 	require.Equal(t, 1, len(notes))
 
-	notes, err = noteMapper.GetNotesByTimeRangeGrep(time.Unix(1, 0), time.Unix(7, 0), "not")
+	notes, err = noteMapper.GetNotesByTimeRangeMatch(time.Unix(1, 0), time.Unix(7, 0), "not")
 	require.Nil(t, err)
 	require.Equal(t, 0, len(notes))
 
-	notes, err = noteMapper.GetNotesByTimeRangeGrep(time.Unix(1, 0), time.Unix(7, 0), "te me")
+	notes, err = noteMapper.GetNotesByTimeRangeMatch(time.Unix(1, 0), time.Unix(7, 0), "te me")
 	require.Nil(t, err)
 	require.Equal(t, 4, len(notes))
 }
