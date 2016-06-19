@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Outflow struct {
-	Id           uint64
+	Id           int64
 	DocumentGUID string
 	Time         time.Time
 	Name         string
