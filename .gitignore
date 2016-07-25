@@ -2,6 +2,9 @@
 .idea
 myhomefinance.iml
 
-# test files
+# compiled
+myhomefinance
+
+# test DB files
 test.db
 test.db-journal

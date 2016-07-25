@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"gopkg.in/tylerb/graceful.v1"
+	"github.com/tylerb/graceful"
 )
 
 const (

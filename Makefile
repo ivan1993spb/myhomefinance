@@ -1,4 +1,4 @@
 
-generate:
+test:
 
-	echo "ok"
+	go test -v ./...

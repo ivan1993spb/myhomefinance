@@ -2,8 +2,8 @@ package sqlite3mappers
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
-	"regexp"
 
 	sqlite "github.com/mattn/go-sqlite3"
 )
@@ -61,33 +61,17 @@ func init() {
 	})
 }
 
-var spaceExpr = regexp.MustCompile(`\s+`)
-
-func match(s1, s2 string) bool {
-	grepExpr, err := regexp.Compile("(?i)" + spaceExpr.ReplaceAllLiteralString(regexp.QuoteMeta(s2), ".+"))
-	if err != nil {
-		return false
-	}
-	return grepExpr.MatchString(s1)
-}
-
-type ErrSQLiteDB string
-
-func (e ErrSQLiteDB) Error() string {
-	return "init sqlite db error: " + string(e)
-}
-
 // InitSQLiteDB tries to load sqlite db from file or creates new db file with tables and views
 func InitSQLiteDB(dbFileName string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3_mhf", dbFileName)
 	if err != nil {
-		return db, ErrSQLiteDB(err.Error())
+		return db, fmt.Errorf("init sqlite db error: %s", err)
 	}
 
 	if _, err := os.Stat(dbFileName); os.IsNotExist(err) {
 		_, err = db.Exec(TABLES_QUERY)
 		if err != nil {
-			return db, ErrSQLiteDB("cannot execute queries for tables and views creation: " + err.Error())
+			panic("cannot execute init db queries for tables and views creation: " + err.Error())
 		}
 	}
 
