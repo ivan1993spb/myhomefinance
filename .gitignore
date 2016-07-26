@@ -8,3 +8,6 @@ myhomefinance
 # test DB files
 test.db
 test.db-journal
+
+static/libs
+static_files.go

@@ -1,0 +1,22 @@
+{
+  "name": "myhomefinance",
+  "description": "MyHomeFinance [![Build Status](https://travis-ci.org/ivan1993spb/myhomefinance.svg?branch=master)](https://travis-ci.org/ivan1993spb/myhomefinance) =============",
+  "main": "index.js",
+  "authors": [
+    "Ivan Pushkin <pushkin13@bk.ru>"
+  ],
+  "license": "BSD-2-Clause",
+  "homepage": "https://github.com/ivan1993spb/myhomefinance",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-3.1.0.min": "https://code.jquery.com/jquery-3.1.0.min.js",
+    "pure-min": "http://yui.yahooapis.com/pure/0.6.0/pure-min.css"
+  }
+}
