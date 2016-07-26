@@ -18,7 +18,7 @@ type NoteMapper interface {
 type ErrCreateNoteMapper string
 
 func (e ErrCreateNoteMapper) Error() string {
-	return "cannot creating note mapper: " + string(e)
+	return "cannot create note mapper: " + string(e)
 }
 
 type ErrCreateNote string
@@ -26,6 +26,8 @@ type ErrCreateNote string
 func (e ErrCreateNote) Error() string {
 	return "cannot create note: " + string(e)
 }
+
+var ErrCreateNoteEmptyName = ErrCreateNote("name cannot be empty")
 
 type ErrDeleteNote string
 

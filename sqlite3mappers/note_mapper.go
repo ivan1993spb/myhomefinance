@@ -78,7 +78,7 @@ func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
 
 func (nm *NoteMapper) CreateNote(time time.Time, name string, text string) (*models.Note, error) {
 	if len(name) == 0 {
-		return nil, mappers.ErrCreateNote("name cannot be empty")
+		return nil, mappers.ErrCreateNoteEmptyName
 	}
 
 	res, err := nm.insertNote.Exec(name, time.Unix(), text)
