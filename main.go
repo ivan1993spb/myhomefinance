@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"time"
@@ -19,9 +20,13 @@ const (
 	URL_PATH_DATE_FROM_DATE_TO_MATCH = `/notes/{date_from:\d{4}-\d{2}-\d{2}}_{date_to:\d{4}-\d{2}-\d{2}}/match`
 )
 
+func initDb() (*sql.DB, error) {
+	return sqlite3mappers.InitSQLiteDB("test.db")
+}
+
 func main() {
 	r := mux.NewRouter()
-	db, err := sqlite3mappers.InitSQLiteDB("test.db")
+	db, err := initDb()
 	if err != nil {
 		log.Println(err)
 	}
@@ -54,5 +59,10 @@ func main() {
 		noteMapper.GetNotesByTimeRangeMatch(time.Unix(0, 0), time.Now(), "text to match")
 	})
 
-	graceful.Run(":8888", time.Second, r)
+	(&graceful.Server{
+		Server: &http.Server{Addr: ":8888", Handler: r},
+		BeforeShutdown: func() {
+			db.Close()
+		},
+	}).ListenAndServe()
 }
