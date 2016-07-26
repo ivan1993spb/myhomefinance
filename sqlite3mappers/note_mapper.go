@@ -2,7 +2,6 @@ package sqlite3mappers
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/ivan1993spb/myhomefinance/mappers"
@@ -36,72 +35,60 @@ type NoteMapper struct {
 	selectNotesByTimeRangeMatch *sql.Stmt
 }
 
-type errCreateNoteMapper string
-
-func (e errCreateNoteMapper) Error() string {
-	return "error creating note mapper: " + string(e)
-}
-
 func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
 	err := db.Ping()
 	if err != nil {
-		return nil, errCreateNoteMapper(err.Error())
+		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
 	noteMapper := &NoteMapper{db: db}
 
 	noteMapper.insertNote, err = db.Prepare(_SQL_INSERT_NOTE)
 	if err != nil {
-		return nil, errCreateNoteMapper(err.Error())
+		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
 	noteMapper.deleteNote, err = db.Prepare(_SQL_DELETE_NOTE_BY_ID)
 	if err != nil {
-		return nil, errCreateNoteMapper(err.Error())
+		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
 	noteMapper.selectNoteById, err = db.Prepare(_SQL_SELECT_NOTE_BY_ID)
 	if err != nil {
-		return nil, errCreateNoteMapper(err.Error())
+		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
 	noteMapper.updateNoteById, err = db.Prepare(_SQL_UPDATE_NOTE_BY_ID)
 	if err != nil {
-		return nil, errCreateNoteMapper(err.Error())
+		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
 	noteMapper.selectNotesByTimeRange, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE)
 	if err != nil {
-		return nil, errCreateNoteMapper(err.Error())
+		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
 	noteMapper.selectNotesByTimeRangeMatch, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE_MATCH)
 	if err != nil {
-		return nil, errCreateNoteMapper(err.Error())
+		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
 	return noteMapper, nil
 }
 
-type errCreateNote string
-
-func (e errCreateNote) Error() string {
-	return "cannot create note: " + string(e)
-}
-
 func (nm *NoteMapper) CreateNote(time time.Time, name string, text string) (*models.Note, error) {
 	if len(name) == 0 {
-		return nil, errCreateNote("name cannot be empty")
+		return nil, mappers.ErrCreateNote("name cannot be empty")
 	}
 
 	res, err := nm.insertNote.Exec(name, time.Unix(), text)
 	if err != nil {
-		return nil, errCreateNote("error with query to db: " + err.Error())
+		return nil, mappers.ErrCreateNote("error with query to db: " + err.Error())
 	}
 
 	id, err := res.LastInsertId()
 	if err != nil {
-		return nil, errCreateNote("cannot get id of new note: " + err.Error())
+		return nil, mappers.ErrCreateNote("cannot get id of new note: " + err.Error())
 	}
 
 	return &models.Note{
@@ -115,32 +102,26 @@ func (nm *NoteMapper) CreateNote(time time.Time, name string, text string) (*mod
 func (nm *NoteMapper) DeleteNote(id int64) error {
 	result, err := nm.deleteNote.Exec(id)
 	if err != nil {
-		return fmt.Errorf("cannot delete note: %s", err)
+		return mappers.ErrDeleteNote(err.Error())
 	}
 
 	n, _ := result.RowsAffected()
 	if n == 0 {
-		return mappers.ErrFindNoteById
+		return mappers.ErrDeleteNoteNotFound
 	}
 
 	return nil
 }
 
-type errUpdateNote string
-
-func (e errUpdateNote) Error() string {
-	return "cannot update note: " + string(e)
-}
-
 func (nm *NoteMapper) UpdateNote(id int64, time time.Time, name, text string) error {
 	result, err := nm.updateNoteById.Exec(name, time.Unix(), text, id)
 	if err != nil {
-		return errUpdateNote(err.Error())
+		return mappers.ErrUpdateNote(err.Error())
 	}
 
 	n, _ := result.RowsAffected()
 	if n == 0 {
-		return mappers.ErrFindNoteById
+		return mappers.ErrUpdateNoteNotFound
 	}
 
 	return nil
@@ -155,9 +136,9 @@ func (nm *NoteMapper) GetNoteById(id int64) (*models.Note, error) {
 	err := nm.selectNoteById.QueryRow(id).Scan(&note.Id, &unixtimestamp, &note.Name, &note.Text)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, mappers.ErrFindNoteById
+			return nil, mappers.ErrGetNoteByIdNotFound
 		}
-		return nil, fmt.Errorf("cannot get note by id: %s", err)
+		return nil, mappers.ErrGetNoteById(err.Error())
 	}
 
 	note.Time = time.Unix(unixtimestamp, 0)
@@ -165,20 +146,14 @@ func (nm *NoteMapper) GetNoteById(id int64) (*models.Note, error) {
 	return note, nil
 }
 
-type errFindNotes string
-
-func (e errFindNotes) Error() string {
-	return "cannot find notes: "
-}
-
 func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*models.Note, error) {
 	if from.Unix() >= to.Unix() {
-		return nil, errFindNotes("invalid time range")
+		return nil, mappers.ErrGetNotesByTimeRangeInvalidTimeRange
 	}
 
 	rows, err := nm.selectNotesByTimeRange.Query(from.Unix(), to.Unix())
 	if err != nil {
-		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+		return nil, mappers.ErrGetNotesByTimeRange(err.Error())
 	}
 	defer rows.Close()
 
@@ -190,13 +165,13 @@ func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*mode
 			unixtimestamp int64
 		)
 		if err := rows.Scan(&note.Id, &unixtimestamp, &note.Name, &note.Text); err != nil {
-			return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+			return nil, mappers.ErrGetNotesByTimeRange(err.Error())
 		}
 		note.Time = time.Unix(unixtimestamp, 0)
 		notes = append(notes, note)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+		return nil, mappers.ErrGetNotesByTimeRange(err.Error())
 	}
 
 	return notes, nil
@@ -204,16 +179,16 @@ func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*mode
 
 func (nm *NoteMapper) GetNotesByTimeRangeMatch(from time.Time, to time.Time, name string) ([]*models.Note, error) {
 	if len(name) == 0 {
-		return nm.GetNotesByTimeRange(from, to)
+		return nil, mappers.ErrGetNotesByTimeRangeMatchEmptyName
 	}
 
 	if from.Unix() >= to.Unix() {
-		return nil, errFindNotes("invalid time range")
+		return nil, mappers.ErrGetNotesByTimeRangeMatchInvalidTimeRange
 	}
 
 	rows, err := nm.selectNotesByTimeRangeMatch.Query(from.Unix(), to.Unix(), name)
 	if err != nil {
-		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+		return nil, mappers.ErrGetNotesByTimeRangeMatch(err.Error())
 	}
 	defer rows.Close()
 
@@ -225,13 +200,13 @@ func (nm *NoteMapper) GetNotesByTimeRangeMatch(from time.Time, to time.Time, nam
 			unixtimestamp int64
 		)
 		if err := rows.Scan(&note.Id, &unixtimestamp, &note.Name, &note.Text); err != nil {
-			return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+			return nil, mappers.ErrGetNotesByTimeRangeMatch(err.Error())
 		}
 		note.Time = time.Unix(unixtimestamp, 0)
 		notes = append(notes, note)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, errFindNotes("cannot get notes by time range: " + err.Error())
+		return nil, mappers.ErrGetNotesByTimeRangeMatch(err.Error())
 	}
 
 	return notes, nil

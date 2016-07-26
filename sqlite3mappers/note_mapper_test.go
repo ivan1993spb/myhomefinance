@@ -36,7 +36,7 @@ func TestNoteMapper(t *testing.T) {
 
 	// Try to get note by id that cannot be found
 	_, err = noteMapper.GetNoteById(note2.Id + 100)
-	require.Equal(t, mappers.ErrFindNoteById, err)
+	require.Equal(t, mappers.ErrGetNoteByIdNotFound, err)
 
 	// Try to get note by correct id
 	myNote, err := noteMapper.GetNoteById(note2.Id)
