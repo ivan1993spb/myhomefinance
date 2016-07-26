@@ -12,7 +12,7 @@ type NoteMapper interface {
 	DeleteNote(id int64) error
 	GetNoteById(id int64) (*models.Note, error)
 	GetNotesByTimeRange(from time.Time, to time.Time) ([]*models.Note, error)
-	GetNotesByTimeRangeGrep(from time.Time, to time.Time, name string) ([]*models.Note, error)
+	GetNotesByTimeRangeMatch(from time.Time, to time.Time, name string) ([]*models.Note, error)
 }
 
 type ErrCreateNoteMapper string

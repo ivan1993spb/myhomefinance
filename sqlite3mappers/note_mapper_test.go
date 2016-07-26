@@ -32,7 +32,7 @@ func TestNoteMapper(t *testing.T) {
 
 	// Try to create note with empty name
 	_, err = noteMapper.CreateNote(time.Now(), "", "test text")
-	require.NotNil(t, err)
+	require.Equal(t, mappers.ErrCreateNoteEmptyName, err)
 
 	// Try to get note by id that cannot be found
 	_, err = noteMapper.GetNoteById(note2.Id + 100)
@@ -46,11 +46,11 @@ func TestNoteMapper(t *testing.T) {
 
 	// Try to get note list by invalid time range
 	_, err = noteMapper.GetNotesByTimeRange(time.Unix(3, 0), time.Unix(3, 0))
-	require.NotNil(t, err)
+	require.Equal(t, mappers.ErrGetNotesByTimeRangeInvalidTimeRange, err)
 
 	// Try to get note list by invalid time range
 	_, err = noteMapper.GetNotesByTimeRange(time.Unix(3, 0), time.Unix(1, 0))
-	require.NotNil(t, err)
+	require.Equal(t, mappers.ErrGetNotesByTimeRangeInvalidTimeRange, err)
 
 	// Try to get note list by correct time range
 	notes, err := noteMapper.GetNotesByTimeRange(time.Unix(1, 0), time.Unix(3, 0))
@@ -59,7 +59,7 @@ func TestNoteMapper(t *testing.T) {
 
 	// Try to delete note by invalid id
 	err = noteMapper.DeleteNote(note2.Id + 100)
-	require.NotNil(t, err)
+	require.Equal(t, mappers.ErrDeleteNoteNotFound, err)
 
 	// Try to delete note by valid id
 	err = noteMapper.DeleteNote(note1.Id)
