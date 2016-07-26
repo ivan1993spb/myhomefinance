@@ -1,5 +1,6 @@
 package sqlite3mappers
 
+/*
 import (
 	"database/sql"
 
@@ -166,3 +167,4 @@ func (hm *HistoryMapper) GetHistoryFeed(from, to time.Time) ([]*HistoryRecord, e
 
 	return historyRecords, nil
 }
+*/
