@@ -7,6 +7,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/tylerb/graceful"
+
+	"github.com/ivan1993spb/myhomefinance/mappers"
+	"github.com/ivan1993spb/myhomefinance/sqlite3mappers"
 )
 
 const (
@@ -18,24 +21,37 @@ const (
 
 func main() {
 	r := mux.NewRouter()
+	db, err := sqlite3mappers.InitSQLiteDB("test.db")
+	if err != nil {
+		log.Println(err)
+	}
+	var noteMapper mappers.NoteMapper
+
+	noteMapper, err = sqlite3mappers.NewNoteMapper(db)
 
 	r.Path(URL_PATH_NOTES).Methods(http.MethodPost).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.Path, 3)
+		log.Println(r.URL.Path, 1)
+		noteMapper.CreateNote(time.Now(), "new note", "any text")
 	})
 	r.Path(URL_PATH_NOTES_ID).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.Path, 1)
+		log.Println(r.URL.Path, 2)
+		noteMapper.GetNoteById(1)
 	})
 	r.Path(URL_PATH_NOTES_ID).Methods(http.MethodPut).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.Path, 2)
+		log.Println(r.URL.Path, 3)
+		noteMapper.UpdateNote(1, time.Now(), "new name of note", "new text of note")
 	})
 	r.Path(URL_PATH_NOTES_ID).Methods(http.MethodDelete).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path, 4)
+		noteMapper.DeleteNote(1)
 	})
 	r.Path(URL_PATH_DATE_FROM_DATE_TO).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path, 5)
+		noteMapper.GetNotesByTimeRange(time.Unix(0, 0), time.Now())
 	})
 	r.Path(URL_PATH_DATE_FROM_DATE_TO_MATCH).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path, 6)
+		noteMapper.GetNotesByTimeRangeMatch(time.Unix(0, 0), time.Now(), "text to match")
 	})
 
 	graceful.Run(":8888", time.Second, r)
