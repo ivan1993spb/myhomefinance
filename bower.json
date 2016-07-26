@@ -1,6 +1,6 @@
 {
-  "name": "myhomefinance",
-  "description": "MyHomeFinance [![Build Status](https://travis-ci.org/ivan1993spb/myhomefinance.svg?branch=master)](https://travis-ci.org/ivan1993spb/myhomefinance) =============",
+  "name": "MyHomeFinance",
+  "description": "",
   "main": "index.js",
   "authors": [
     "Ivan Pushkin <pushkin13@bk.ru>"
