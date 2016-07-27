@@ -43,7 +43,10 @@ func (e ErrUpdateNote) Error() string {
 	return "cannot update note: " + string(e)
 }
 
-var ErrUpdateNoteNotFound = ErrUpdateNote("note to update was not found")
+var (
+	ErrUpdateNoteNotFound  = ErrUpdateNote("note to update was not found")
+	ErrUpdateNoteEmptyName = ErrUpdateNote("name cannot be empty")
+)
 
 type ErrGetNoteById string
 

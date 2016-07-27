@@ -114,6 +114,10 @@ func (nm *NoteMapper) DeleteNote(id int64) error {
 }
 
 func (nm *NoteMapper) UpdateNote(id int64, time time.Time, name, text string) error {
+	if len(name) == 0 {
+		return mappers.ErrUpdateNoteEmptyName
+	}
+
 	result, err := nm.updateNoteById.Exec(name, time.Unix(), text, id)
 	if err != nil {
 		return mappers.ErrUpdateNote(err.Error())

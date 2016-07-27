@@ -44,6 +44,19 @@ func TestNoteMapper(t *testing.T) {
 	// Check if received correct note
 	require.Equal(t, note2.Name, myNote.Name)
 
+	// Try to update note with empty name
+	err = noteMapper.UpdateNote(note1.Id, note1.Time, "", "")
+	require.Equal(t, mappers.ErrUpdateNoteEmptyName, err)
+
+	// Try to update note
+	err = noteMapper.UpdateNote(note1.Id, note1.Time, "EDITED", "ok")
+	require.Nil(t, err)
+	// And check name and text
+	myNote, err = noteMapper.GetNoteById(note1.Id)
+	require.Nil(t, err)
+	require.Equal(t, "EDITED", myNote.Name)
+	require.Equal(t, "ok", myNote.Text)
+
 	// Try to get note list by invalid time range
 	_, err = noteMapper.GetNotesByTimeRange(time.Unix(3, 0), time.Unix(3, 0))
 	require.Equal(t, mappers.ErrGetNotesByTimeRangeInvalidTimeRange, err)
@@ -104,4 +117,8 @@ func TestNoteMapper(t *testing.T) {
 	notes, err = noteMapper.GetNotesByTimeRangeMatch(time.Unix(1, 0), time.Unix(7, 0), "te me")
 	require.Nil(t, err)
 	require.Equal(t, 4, len(notes))
+
+	notes, err = noteMapper.GetNotesByTimeRangeMatch(time.Unix(1, 0), time.Unix(7, 0), "te me 4")
+	require.Nil(t, err)
+	require.Equal(t, 1, len(notes))
 }
