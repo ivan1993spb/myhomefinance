@@ -9,7 +9,7 @@ build:
 
 test:
 
-	go test -v ./...
+	go test -v ./sqlite3mappers
 
 clean:
 
