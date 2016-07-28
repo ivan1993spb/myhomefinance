@@ -1,11 +1,21 @@
 
+deps:
+
 install:
 
+	npm install
 	bower install
 
 build:
 
-	go-bindata -o static_files.go -nometadata static/* static/libs/*
+	gulp build
+
+	go-bindata-assetfs -nometadata \
+		-ignore "\.bower\.json" \
+		-ignore "static/src/" \
+		static/...
+
+	go build -v
 
 test:
 
@@ -16,4 +26,5 @@ clean:
 	git clean -f
 	rm myhomefinance -f
 	rm *.db *.db-journal -f
-	rm static/libs -rf
+	rm static/libs static/dist -rf
+	rm node_modules -rf
