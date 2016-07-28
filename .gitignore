@@ -9,5 +9,9 @@ myhomefinance
 test.db
 test.db-journal
 
+node_modules
+
 static/libs
-static_files.go
+static/dist
+
+bindata_assetfs.go
