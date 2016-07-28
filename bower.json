@@ -17,6 +17,8 @@
   ],
   "dependencies": {
     "jquery-3.1.0.min": "https://code.jquery.com/jquery-3.1.0.min.js",
-    "pure-min": "http://yui.yahooapis.com/pure/0.6.0/pure-min.css"
+    "pure-min": "http://yui.yahooapis.com/pure/0.6.0/pure-min.css",
+    "react-15.2.1.min": "https://fb.me/react-15.2.1.min.js",
+    "react-dom-15.2.1.min": "https://fb.me/react-dom-15.2.1.min.js"
   }
 }

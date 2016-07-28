@@ -1,7 +1,7 @@
 {
   "name": "myhomefinance",
   "version": "0.0.0",
-  "description": "MyHomeFinance [![Build Status](https://travis-ci.org/ivan1993spb/myhomefinance.svg?branch=master)](https://travis-ci.org/ivan1993spb/myhomefinance) =============",
+  "description": "Small finance program",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,5 +14,11 @@
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/ivan1993spb/myhomefinance/issues"
+  },
+  "devDependencies": {
+    "gulp-react": "~3.1.0",
+    "gulp": "~3.9.1",
+    "gulp-reactify": "~3.0.1",
+    "gulp-uglify": "~1.5.4"
   }
 }

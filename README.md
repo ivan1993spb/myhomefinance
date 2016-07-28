@@ -2,6 +2,16 @@
 MyHomeFinance [![Build Status](https://travis-ci.org/ivan1993spb/myhomefinance.svg?branch=master)](https://travis-ci.org/ivan1993spb/myhomefinance)
 =============
 
+Install
+-------
+
+```bash
+go get github.com/jteeuwen/go-bindata/...
+go get github.com/elazarl/go-bindata-assetfs/...
+
+make install
+```
+
 Document examples
 -----------------
 
