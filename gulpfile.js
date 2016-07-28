@@ -1,7 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
-// var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglify');
 // var rename = require('gulp-rename');
 // var less = require('gulp-less');
 // var cleanCSS = require('gulp-clean-css');
@@ -11,9 +11,10 @@ var gulp = require('gulp');
 var react = require('gulp-react');
 // var reactify = require('gulp-reactify');
 
-gulp.task('default', function() {
+gulp.task('jsx', function() {
     return gulp.src('static/src/*.jsx')
         .pipe(react())
+        .pipe(uglify())
         .pipe(gulp.dest('static/dist'));
 });
 
@@ -43,11 +44,11 @@ gulp.task('default', function() {
 //         .pipe(gulp.dest('dist'));
 // });
 //
-// gulp.task('watch', function () {
-//     gulp.watch(["src/*.js"], ['scripts']);
-//     gulp.watch(["style/*.less", "style/*.css"], ['styles']);
-// });
+gulp.task('watch', function () {
+    gulp.watch(["static/src/*.jsx"], ['jsx']);
+    // gulp.watch(["style/*.less", "style/*.css"], ['styles']);
+});
 //
-// gulp.task('build', ['scripts', 'styles']);
-//
-// gulp.task('default', ['build'])
+gulp.task('build', ['jsx']);
+
+gulp.task('default', ['build'])

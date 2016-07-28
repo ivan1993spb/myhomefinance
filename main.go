@@ -58,11 +58,14 @@ func main() {
 		log.Println(r.URL.Path, 6)
 		noteMapper.GetNotesByTimeRangeMatch(time.Unix(0, 0), time.Now(), "text to match")
 	})
+	r.Path("/").Methods(http.MethodGet).Handler(http.FileServer(assetFS()))
 
 	(&graceful.Server{
-		Server: &http.Server{Addr: ":8888", Handler: r},
-		BeforeShutdown: func() {
+		Server: &http.Server{Addr: ":8888", Handler: http.FileServer(assetFS())},
+		BeforeShutdown: func() bool {
 			db.Close()
+			return true
 		},
 	}).ListenAndServe()
+
 }

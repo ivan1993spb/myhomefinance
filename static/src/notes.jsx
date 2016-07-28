@@ -1,26 +1,40 @@
 
-var NoteRow = React.createClass({
-    render: function() {
-        return (
-            <div>
-                <b>{this.props.note.id} - {this.props.note.name}</b>
-                <p>{this.props.note.text}</p>
-            </div>
-        );
-    }
-});
-
 var NoteList = React.createClass({
+    handleRemove: function(i, note) {
+        // var notes = this.props.notes;
+        // notes.splice(i, 1);
+        // this.replaceProps({notes: notes});
+        console.log(i, note);
+    },
+
     render: function() {
-        var notes = [];
-        this.props.notes.forEach(function(note) {
-            notes.push(<NoteRow note={note}/>);
-        });
+        var notes = this.props.notes.map(function(note, i) {
+            return (
+                <tr>
+                    <td>{note.id}</td>
+                    <td>{note.name}</td>
+                    <td>{note.text}</td>
+                    <td><button onClick={this.handleRemove.bind(this, i, note.id)}>delete</button></td>
+                </tr>
+            );
+        }.bind(this));
 
         return (
             <div>
                 <h1>Notes list</h1>
-                <div>{notes}</div>
+                <table className="pure-table">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>name</th>
+                            <th>text</th>
+                            <th>action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {notes}
+                    </tbody>
+                </table>
             </div>
         );
     }
@@ -34,6 +48,6 @@ var NOTES = [
 ];
 
 ReactDOM.render(
-     <NoteList notes={NOTES} />,
-     document.getElementById('content')
+    <NoteList notes={NOTES} />,
+    document.getElementById('content')
 );
