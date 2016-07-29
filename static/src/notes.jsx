@@ -1,40 +1,39 @@
 
 var NoteList = React.createClass({
-    handleRemove: function(i, note) {
-        // var notes = this.props.notes;
-        // notes.splice(i, 1);
-        // this.replaceProps({notes: notes});
-        console.log(i, note);
+    getInitialState: function() {
+        return {
+            from:  0,
+            days: 20,
+            notes: []
+        };
+    },
+
+    handleRemove: function() {},
+
+    handleLoadMore: function() {
+        this.setState({
+        })
     },
 
     render: function() {
         var notes = this.props.notes.map(function(note, i) {
             return (
-                <tr>
-                    <td>{note.id}</td>
-                    <td>{note.name}</td>
-                    <td>{note.text}</td>
-                    <td><button onClick={this.handleRemove.bind(this, i, note.id)}>delete</button></td>
-                </tr>
+                <div>
+                    <p>{note.id}</p>
+                    <p>{note.name}</p>
+                    <p>{note.text}</p>
+                    <p><button onClick={this.handleRemove.bind(this, i, note.id)}>delete</button></p>
+                </div>
             );
         }.bind(this));
 
         return (
             <div>
-                <h1>Notes list</h1>
-                <table className="pure-table">
-                    <thead>
-                        <tr>
-                            <th>id</th>
-                            <th>name</th>
-                            <th>text</th>
-                            <th>action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {notes}
-                    </tbody>
-                </table>
+                <h1>Notes list {this.state.page}</h1>
+                <div>
+                    {notes}
+                </div>
+                <button onClick={this.handleLoadMore.bind(this)}>load</button>
             </div>
         );
     }
