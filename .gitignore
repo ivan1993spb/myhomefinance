@@ -2,16 +2,14 @@
 .idea
 myhomefinance.iml
 
-# compiled
+# build
 myhomefinance
+static/dist
+bindata_assetfs.go
 
 # test DB files
 test.db
 test.db-journal
 
 node_modules
-
-static/libs
-static/dist
-
-bindata_assetfs.go
+bower_components

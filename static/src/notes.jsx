@@ -1,5 +1,7 @@
 
-var NoteList = React.createClass({
+var React = require('react');
+
+exports.noteList = React.createClass({
     getInitialState: function() {
         return {
             from:  0,
@@ -12,7 +14,7 @@ var NoteList = React.createClass({
 
     handleLoadMore: function() {
         this.setState({
-        })
+        });
     },
 
     render: function() {
@@ -38,15 +40,3 @@ var NoteList = React.createClass({
         );
     }
 });
-
-var NOTES = [
-    {id: 1, name: "first", text: "text first text"},
-    {id: 2, name: "second", text: "text second text"},
-    {id: 3, name: "third", text: "text third text"},
-    {id: 4, name: "fourth", text: "text fourth text"}
-];
-
-ReactDOM.render(
-    <NoteList notes={NOTES} />,
-    document.getElementById('content')
-);
