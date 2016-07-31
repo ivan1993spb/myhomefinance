@@ -18,8 +18,8 @@ gulp.task('scripts', function() {
             debug: false,
             extensions: ['.jsx', '.js', '.json'],
             transform: [reactify, literalify.configure({
-                react: 'window.React',
-                reactdom: 'window.ReactDOM'
+                'react':     'window.React',
+                'react-dom': 'window.ReactDOM'
             })]
         }))
         .on('error', function(err) {
@@ -43,12 +43,10 @@ gulp.task('vendor', function() {
 });
 
 gulp.task('styles', function () {
-    var lessStream = gulp.src('static/styles/*.less')
-        .pipe(less());
-
-    var cssStream = gulp.src('static/styles/*.css');
-
-    return merge(lessStream, cssStream)
+    return merge(
+        gulp.src('static/styles/*.less').pipe(less()),
+        gulp.src('static/styles/*.css')
+    )
         .pipe(concat('all.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))
         .pipe(rename('styles.min.css'))
