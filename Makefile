@@ -9,11 +9,7 @@ install:
 build:
 
 	gulp build
-
-	go-bindata-assetfs -nometadata \
-		-ignore "static/src/" \
-		static/...
-
+	go generate -v
 	go build -v
 
 test:
