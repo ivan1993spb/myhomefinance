@@ -13,6 +13,8 @@ import (
 	"github.com/ivan1993spb/myhomefinance/sqlite3mappers"
 )
 
+//go:generate go-bindata-assetfs -nometadata -ignore "static/src/" static/...
+
 const (
 	URL_PATH_NOTES                   = `/notes`
 	URL_PATH_NOTES_ID                = `/notes/{id}`

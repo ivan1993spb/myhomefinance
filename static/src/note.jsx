@@ -6,7 +6,12 @@ exports.noteList = React.createClass({
         return {
             from:  0,
             days: 20,
-            notes: []
+            notes: [
+                {id: 1, name: "first", text: "text first text"},
+                {id: 2, name: "second", text: "text second text"},
+                {id: 3, name: "third", text: "text third text"},
+                {id: 4, name: "fourth", text: "text fourth text"}
+            ]
         };
     },
 
@@ -18,7 +23,7 @@ exports.noteList = React.createClass({
     },
 
     render: function() {
-        var notes = this.props.notes.map(function(note, i) {
+        var notes = this.state.notes.map(function(note, i) {
             return (
                 <div>
                     <p>{note.id}</p>
