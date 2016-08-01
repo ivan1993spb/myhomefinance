@@ -15,8 +15,6 @@ exports.noteList = React.createClass({
         };
     },
 
-    handleRemove: function() {},
-
     handleLoadMore: function() {
         this.setState({
         });

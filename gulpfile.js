@@ -26,7 +26,7 @@ gulp.task('scripts', function() {
             gutil.log(err.message)
         })
         .pipe(uglify())
-        .pipe(rename('client.min.js'))
+        .pipe(rename('client.js'))
         .pipe(gulp.dest('static/dist'));
 });
 
@@ -38,24 +38,22 @@ gulp.task('vendor', function() {
     ])
         .pipe(concat('vendor.js'))
         .pipe(uglify())
-        .pipe(rename('vendor.min.js'))
         .pipe(gulp.dest('static/dist'));
 });
 
 gulp.task('styles', function () {
     return merge(
-        gulp.src('static/styles/*.less').pipe(less()),
-        gulp.src('static/styles/*.css')
+        gulp.src('static/src/styles/*.less').pipe(less()),
+        gulp.src('static/src/styles/*.css')
     )
-        .pipe(concat('all.css'))
+        .pipe(concat('styles.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))
-        .pipe(rename('styles.min.css'))
         .pipe(gulp.dest('static/dist'));
 });
 
 gulp.task('watch', function () {
     gulp.watch(["static/src/*.jsx"], ['scripts']);
-    gulp.watch(["static/style/*.less", "static/style/*.css"], ['styles']);
+    gulp.watch(["static/src/style/*.less", "static/src/style/*.css"], ['styles']);
 });
 
 gulp.task('build', ['scripts', 'vendor', 'styles']);

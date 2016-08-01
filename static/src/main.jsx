@@ -12,7 +12,30 @@ var NoteList = require('./note').noteList;
 var dates = require('./dates');
 var ACTIVE = { color: 'red' };
 
+var Counter = React.createClass({
+    getInitialState: function() {
+        return {count: 1};
+    },
 
+    handleClick: function() {
+        this.setState({count: this.state.count + 1});
+    },
+
+    render: function() {
+        var items = [];
+        for (var i = 0; i < this.state.count; i++) {
+            items.push(<div>{i}</div>);
+            console.log(i);
+        }
+        return (
+            <div>
+                <h1>Counter</h1>
+                {items}
+                <button onClick={this.handleClick}>OK</button>
+            </div>
+        );
+    }
+});
 
 var App = React.createClass({
     render: function(test) {
@@ -38,12 +61,16 @@ var Index = React.createClass({
     }
 });
 
-ReactDOM.render((
-    <Router history={browserHistory}>
-        <Route path="/" component={App}>
-            <IndexRoute component={Index}/>
-            <Route path="/" component={Index}/>
-            <Route path="/notes" component={NoteList}/>
-        </Route>
-    </Router>
-), document.getElementById('content'));
+// ReactDOM.render((
+//     <Router history={browserHistory}>
+//         <Route path="/" component={App}>
+//             <IndexRoute component={Index}/>
+//             <Route path="/" component={Index}/>
+//             <Route path="/notes" component={NoteList}/>
+//         </Route>
+//     </Router>
+// ), document.getElementById('content'));
+
+ReactDOM.render(
+    (<Counter/>), document.getElementById('content')
+)
