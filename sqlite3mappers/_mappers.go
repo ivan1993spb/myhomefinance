@@ -111,60 +111,6 @@ func (om *OutflowMapper) CreateOutflow(t time.Time, name string, amount float64,
 	}, nil
 }
 
-type ErrHistoryMapper string
 
-func (e ErrHistoryMapper) Error() string {
-	return "history mapper error:" + string(e)
-}
 
-type HistoryMapper struct {
-	*sql.DB
-}
-
-func (hm *HistoryMapper) GetHistoryFeed(from, to time.Time) ([]*HistoryRecord, error) {
-	if from.Unix() >= to.Unix() {
-		return nil, ErrHistoryMapper("invalid time range")
-	}
-
-	rows, err := hm.DB.Query("SELECT `t1`.`document_guid`, `t1`.`unixtimestamp`, `t1`.`name`, `t1`.`amount`,"+
-		"    SUM(`t2`.`amount`) AS `balance`"+
-		"    FROM ("+
-		"        SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `description` FROM `inflow`"+
-		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
-		"        UNION"+
-		"        SELECT `document_guid`, `unixtimestamp`, `name`, -`amount` AS `amount`, `description` FROM `outflow`"+
-		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
-		"    ) AS `t1`,"+
-		"    ("+
-		"        SELECT `document_guid`, `unixtimestamp`, `name`, `amount`, `description` FROM `inflow`"+
-		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
-		"        UNION"+
-		"        SELECT `document_guid`, `unixtimestamp`, `name`, -`amount` AS `amount`, `description` FROM `outflow`"+
-		"            WHERE `unixtimestamp` BETWEEN $1 AND $2"+
-		"    ) AS `t2`"+
-		"        WHERE `t2`.`unixtimestamp` <= `t1`.`unixtimestamp`"+
-		"    GROUP BY `t1`.`document_guid` ORDER BY `t1`.`unixtimestamp` DESC", from.Unix(), to.Unix())
-	if err != nil {
-		return nil, ErrHistoryMapper("cannot select history records: " + err.Error())
-	}
-	defer rows.Close()
-
-	historyRecords := make([]*HistoryRecord, 0)
-
-	for rows.Next() {
-		var unixtimestamp int64
-		hr := &HistoryRecord{}
-		if err := rows.Scan(&hr.DocumentGUID, &unixtimestamp, &hr.Name, &hr.Amount, &hr.Balance); err != nil {
-			return nil, ErrHistoryMapper("error on scanning query result: " + err.Error())
-		}
-		hr.Time = time.Unix(unixtimestamp, 0)
-		historyRecords = append(historyRecords, hr)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, ErrHistoryMapper("query error: " + err.Error())
-	}
-
-	return historyRecords, nil
-}
 */
