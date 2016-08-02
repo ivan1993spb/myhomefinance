@@ -9,7 +9,7 @@ import (
 )
 
 const _SQL_SELECT_HISTORY_RECORDS_BY_TIME_RANGE = `
-SELECT t1.document_guid, t1.unixtimestamp, t1.name, ROUND(t1.amount, 2), ROUND(SUM(t2.amount), 2) AS balance
+SELECT t1.document_guid, t1.unixtimestamp, t1.name, t1.amount, ROUND(SUM(t2.amount), 2) AS balance
 FROM (
     SELECT document_guid, unixtimestamp, name, amount, description
     FROM inflow
@@ -56,8 +56,8 @@ func NewHistoryRecordMapper(db *sql.DB) (*HistoryRecordMapper, error) {
 	return historyRecordMapper, err
 }
 
-func (hrm *HistoryRecordMapper) GetHistoryRecordsByTimeRange(from time.Time, to time.Time) ([]*models.HistoryRecord,
-	error) {
+func (hrm *HistoryRecordMapper) GetHistoryRecordsByTimeRange(from time.Time, to time.Time) (
+	[]*models.HistoryRecord, error) {
 
 	if from.Unix() >= to.Unix() {
 		return nil, mappers.ErrGetHistoryRecordsByTimeRangeInvalidTimeRange

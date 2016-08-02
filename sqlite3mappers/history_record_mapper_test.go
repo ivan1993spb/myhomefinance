@@ -36,6 +36,7 @@ VALUES
 ("8ece76aa-1381-4389-b79f-5e992cea5f76", 18, "test transaction 18", 1.10, "dst"),
 ("a359b83f-a720-44d8-af17-b7234e2c6556", 20, "test transaction 20", 8.10, "dst");
 `
+
 const (
 	TRANSACTION_COUNT = 20
 	FINISH_BALANCE    = 54.52
@@ -78,7 +79,6 @@ func TestHistoryRecordMapper(t *testing.T) {
 	}
 
 	balance = round(balance, 2)
-	require.Equal(t, FINISH_BALANCE, records[0].Balance)
 	require.Equal(t, FINISH_BALANCE, balance)
-
+	require.Equal(t, FINISH_BALANCE, records[0].Balance)
 }
