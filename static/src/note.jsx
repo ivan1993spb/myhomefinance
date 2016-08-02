@@ -1,23 +1,49 @@
 
 var React = require('react');
+var dates = require('./dates');
 
 exports.noteList = React.createClass({
+    propTypes: {
+        from: React.PropTypes.object.isRequired,
+        days: React.PropTypes.number.isRequired
+    },
+
     getInitialState: function() {
         return {
-            from:  0,
-            days: 20,
-            notes: [
-                {id: 1, name: "first", text: "text first text"},
-                {id: 2, name: "second", text: "text second text"},
-                {id: 3, name: "third", text: "text third text"},
-                {id: 4, name: "fourth", text: "text fourth text"}
-            ]
+            from:  this.props.from,
+            days:  this.props.days,
+            notes: []
         };
     },
 
+    doLoadMore: function(a, b, callback) {
+        console.log("doLoadMore");
+        if (typeof callback === 'function') {
+            callback([
+                {id: 1, time: "2016-08-02T13:55:32Z", name: "name", text: "text"},
+                {id: 2, time: "2016-08-01T13:50:00Z", name: "eman", text: "txet"}
+            ]);
+        }
+    },
+
     handleLoadMore: function() {
-        this.setState({
-        });
+        console.log("state22", this.state);
+        this.doLoadMore(this.state.from, dates.addDays(this.state.from, this.state.days), function(notes) {
+            console.log("okok123");
+            this.setState({
+                from:  dates.addDays(this.state.from, this.state.days),
+                notes: this.state.notes.concat(notes)
+            });
+        }.bind(this));
+    },
+
+    componentDidMount: function() {
+        console.log("ok");
+        this.handleLoadMore();
+    },
+
+    handleRemove: function(i, id) {
+        console.log(i, id)
     },
 
     render: function() {
@@ -38,7 +64,7 @@ exports.noteList = React.createClass({
                 <div>
                     {notes}
                 </div>
-                <button onClick={this.handleLoadMore.bind(this)}>load</button>
+                <button onClick={this.handleLoadMore.bind(this)}>load more</button>
             </div>
         );
     }

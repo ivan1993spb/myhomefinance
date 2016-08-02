@@ -7,5 +7,7 @@ exports.yyyymmdd = function(date) {
 };
 
 exports.addDays = function(date, days) {
-    return (new Date()).setDate(date.getDate() + days);
+    var newDate = new Date();
+    newDate.setDate(date.getDate() + days);
+    return newDate;
 };

@@ -72,5 +72,5 @@ var Index = React.createClass({
 // ), document.getElementById('content'));
 
 ReactDOM.render(
-    (<Counter/>), document.getElementById('content')
-)
+    (<NoteList from={new Date()} days="20" />), document.getElementById('content')
+);
