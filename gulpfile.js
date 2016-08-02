@@ -1,5 +1,7 @@
 'use strict';
 
+var entryPoint = 'static/src/main.jsx';
+
 var browserify = require('gulp-browserify'),
     cleanCSS = require('gulp-clean-css'),
     concat = require('gulp-concat'),
@@ -13,7 +15,7 @@ var browserify = require('gulp-browserify'),
     uglify = require('gulp-uglify');
 
 gulp.task('scripts', function() {
-    return gulp.src('static/src/main.jsx')
+    return gulp.src(entryPoint)
         .pipe(browserify({
             debug: false,
             extensions: ['.jsx', '.js', '.json'],
@@ -53,9 +55,9 @@ gulp.task('styles', function () {
 
 gulp.task('watch', function () {
     gulp.watch(["static/src/*.jsx"], ['scripts']);
-    gulp.watch(["static/src/style/*.less", "static/src/style/*.css"], ['styles']);
+    gulp.watch(["static/src/styles/*.less", "static/src/style/*.css"], ['styles']);
 });
 
 gulp.task('build', ['scripts', 'vendor', 'styles']);
 
-gulp.task('default', ['build'])
+gulp.task('default', ['build']);
