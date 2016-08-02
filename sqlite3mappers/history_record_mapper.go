@@ -17,16 +17,19 @@ FROM (
 
     UNION
 
-    SELECT document_guid, unixtimestamp, name, -amount AS amount, description FROM outflow
-        WHERE unixtimestamp BETWEEN $1 AND $2
+    SELECT document_guid, unixtimestamp, name, -amount AS amount, description
+    FROM outflow
+    WHERE unixtimestamp BETWEEN $1 AND $2
 ) AS t1,
 (
-    SELECT document_guid, unixtimestamp, name, amount, description FROM inflow
+    SELECT document_guid, unixtimestamp, name, amount, description
+    FROM inflow
     WHERE unixtimestamp BETWEEN $1 AND $2
 
     UNION
 
-    SELECT document_guid, unixtimestamp, name, -amount AS amount, description FROM outflow
+    SELECT document_guid, unixtimestamp, name, -amount AS amount, description
+    FROM outflow
     WHERE unixtimestamp BETWEEN $1 AND $2
 ) AS t2
 WHERE t2.unixtimestamp <= t1.unixtimestamp

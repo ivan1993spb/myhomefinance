@@ -13,13 +13,15 @@ import (
 	"github.com/ivan1993spb/myhomefinance/sqlite3mappers"
 )
 
-//go:generate go-bindata-assetfs -nometadata -ignore "static/src/" static/...
+//go:generate go-bindata-assetfs -nometadata -debug -ignore "static/src/" static/...
 
 const (
-	URL_PATH_NOTES                   = `/notes`
-	URL_PATH_NOTES_ID                = `/notes/{id}`
-	URL_PATH_DATE_FROM_DATE_TO       = `/notes/{date_from:\d{4}-\d{2}-\d{2}}_{date_to:\d{4}-\d{2}-\d{2}}`
-	URL_PATH_DATE_FROM_DATE_TO_MATCH = `/notes/{date_from:\d{4}-\d{2}-\d{2}}_{date_to:\d{4}-\d{2}-\d{2}}/match`
+	URL_PATH_NOTES                         = `/notes`
+	URL_PATH_NOTES_ID                      = `/notes/{id}`
+	URL_PATH_NOTES_DATE_FROM_DATE_TO       = `/notes/{date_from:\d{4}-\d{2}-\d{2}}_{date_to:\d{4}-\d{2}-\d{2}}`
+	URL_PATH_NOTES_DATE_FROM_DATE_TO_MATCH = `/notes/{date_from:\d{4}-\d{2}-\d{2}}_{date_to:\d{4}-\d{2}-\d{2}}/match`
+
+	URL_PATH_HISTORY_DATE_FROM_DATE_TO = `/history/{date_from:\d{4}-\d{2}-\d{2}}_{date_to:\d{4}-\d{2}-\d{2}}`
 )
 
 func initDb() (*sql.DB, error) {
@@ -52,11 +54,11 @@ func main() {
 		log.Println(r.URL.Path, 4)
 		noteMapper.DeleteNote(1)
 	})
-	r.Path(URL_PATH_DATE_FROM_DATE_TO).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Path(URL_PATH_NOTES_DATE_FROM_DATE_TO).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path, 5)
 		noteMapper.GetNotesByTimeRange(time.Unix(0, 0), time.Now())
 	})
-	r.Path(URL_PATH_DATE_FROM_DATE_TO_MATCH).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Path(URL_PATH_NOTES_DATE_FROM_DATE_TO_MATCH).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path, 6)
 		noteMapper.GetNotesByTimeRangeMatch(time.Unix(0, 0), time.Now(), "text to match")
 	})
