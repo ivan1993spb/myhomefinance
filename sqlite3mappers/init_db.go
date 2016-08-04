@@ -39,14 +39,6 @@ CREATE TABLE IF NOT EXISTS outflow (
     metric_unit   VARCHAR(100),
     satisfaction  FLOAT
 );
-
-CREATE VIEW IF NOT EXISTS transactions AS
-    SELECT * FROM (
-        SELECT document_guid, unixtimestamp, name, amount, description FROM inflow
-        UNION
-        SELECT document_guid, unixtimestamp, name, amount AS amount, description FROM outflow
-    ) result_union
-    ORDER BY (result_union.unixtimestamp) DESC;
 `
 
 func init() {
