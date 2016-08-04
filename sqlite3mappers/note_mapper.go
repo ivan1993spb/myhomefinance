@@ -20,6 +20,7 @@ const (
 		"WHERE `unixtimestamp` BETWEEN ? AND ? AND match(`name`, ?)"
 )
 
+// NoteMapper provides useful access to note table in db
 type NoteMapper struct {
 	db *sql.DB
 
@@ -35,6 +36,7 @@ type NoteMapper struct {
 	selectNotesByTimeRangeMatch *sql.Stmt
 }
 
+// NewNoteMapper creates new NoteMapper using passed db
 func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
 	err := db.Ping()
 	if err != nil {
@@ -76,6 +78,7 @@ func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
 	return noteMapper, nil
 }
 
+// CreateNote creates new note with passed name, time and text
 func (nm *NoteMapper) CreateNote(time time.Time, name string, text string) (*models.Note, error) {
 	if len(name) == 0 {
 		return nil, mappers.ErrCreateNoteEmptyName
@@ -99,6 +102,7 @@ func (nm *NoteMapper) CreateNote(time time.Time, name string, text string) (*mod
 	}, nil
 }
 
+// DeleteNote deletes note by id
 func (nm *NoteMapper) DeleteNote(id int64) error {
 	result, err := nm.deleteNote.Exec(id)
 	if err != nil {
@@ -113,6 +117,7 @@ func (nm *NoteMapper) DeleteNote(id int64) error {
 	return nil
 }
 
+// UpdateNote updates note attributes by id
 func (nm *NoteMapper) UpdateNote(id int64, time time.Time, name, text string) error {
 	if len(name) == 0 {
 		return mappers.ErrUpdateNoteEmptyName
@@ -131,6 +136,7 @@ func (nm *NoteMapper) UpdateNote(id int64, time time.Time, name, text string) er
 	return nil
 }
 
+// GetNoteById returns note by given id
 func (nm *NoteMapper) GetNoteById(id int64) (*models.Note, error) {
 	var (
 		note          = &models.Note{}
@@ -150,6 +156,7 @@ func (nm *NoteMapper) GetNoteById(id int64) (*models.Note, error) {
 	return note, nil
 }
 
+// GetNotesByTimeRange returns list of notes from the passed time range
 func (nm *NoteMapper) GetNotesByTimeRange(from time.Time, to time.Time) ([]*models.Note, error) {
 	if from.Unix() >= to.Unix() {
 		return nil, mappers.ErrGetNotesByTimeRangeInvalidTimeRange

@@ -53,7 +53,7 @@ func init() {
 	})
 }
 
-// InitSQLiteDB tries to load sqlite db from file or creates new db file with tables and views
+// InitSQLiteDB tries to load sqlite db from file or creates new db file with all necessary tables
 func InitSQLiteDB(dbFileName string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3_mhf", dbFileName)
 	if err != nil {
