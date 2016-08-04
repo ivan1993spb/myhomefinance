@@ -54,7 +54,7 @@ gulp.task('styles', function () {
 });
 
 gulp.task('watch', function () {
-    gulp.watch(["static/src/*.jsx"], ['scripts']);
+    gulp.watch(["static/src/*.jsx", "static/src/*.js"], ['scripts']);
     gulp.watch(["static/src/styles/*.less", "static/src/style/*.css"], ['styles']);
 });
 
