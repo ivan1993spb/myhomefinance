@@ -20,14 +20,16 @@ gulp.task('scripts', function() {
             debug: false,
             extensions: ['.jsx', '.js', '.json'],
             transform: [reactify, literalify.configure({
-                'react':     'window.React',
-                'react-dom': 'window.ReactDOM'
+                'react':          'window.React',
+                'react-dom':      'window.ReactDOM',
+                'jquery':         'window.jQuery',
+                'swagger-client': 'window.SwaggerClient'
             })]
         }))
         .on('error', function(err) {
             gutil.log(err.message)
         })
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(rename('client.js'))
         .pipe(gulp.dest('static/dist'));
 });
@@ -36,7 +38,9 @@ gulp.task('vendor', function() {
     gulp.src([
         'bower_components/react/react.min.js',
         'bower_components/react/react-dom.min.js',
-        'bower_components/jquery/dist/jquery.min.js'
+        'bower_components/jquery/dist/jquery.min.js',
+        'bower_components/swagger-js/browser/swagger-client.min.js',
+        'bower_components/jpillora/jquery.rest/dist/1/jquery.rest.min.js'
     ])
         .pipe(concat('vendor.js'))
         .pipe(uglify())
