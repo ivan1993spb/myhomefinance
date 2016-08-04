@@ -1,13 +1,22 @@
 
 exports.yyyymmdd = function(date) {
-    var mm = date.getMonth() + 1; // getMonth() is zero-based
-    var dd = date.getDate();
+    var month = '' + (date.getMonth() + 1),
+        day = '' + date.getDate(),
+        year = date.getFullYear();
 
-    return [date.getFullYear(), !mm[1] && '0', mm, !dd[1] && '0', dd].join('');
+    if (month.length < 2) {
+        month = '0' + month;
+    }
+
+    if (day.length < 2) {
+        day = '0' + day;
+    }
+
+    return [year, month, day].join('-');
 };
 
 exports.addDays = function(date, days) {
     var newDate = new Date();
-    newDate.setDate(date.getDate() + days);
+    newDate.setTime(date.getTime() + days * 86400000);
     return newDate;
 };
