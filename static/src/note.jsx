@@ -1,6 +1,7 @@
 
 var React = require('react');
 var dates = require('./dates');
+var client = require('./client');
 
 var Note = React.createClass({
     propTypes: {
@@ -67,7 +68,7 @@ var NoteList = React.createClass({
                 from:  date,
                 notes: this.state.notes.concat(notes)
             });
-        }.bind(this, dateFrom));
+        }.bind(this, dates.addDays(dateFrom, -1)));
     },
 
     componentDidMount: function() {
