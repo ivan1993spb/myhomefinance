@@ -27,3 +27,13 @@ clean:
 		static/dist \
 		bower_components \
 		node_modules
+
+start:
+
+	./myhomefinance &
+	gulp watch &
+
+stop:
+
+	kill -9 `pidof myhomefinance`
+	kill -9 `ps -A -o pid,cmd | grep "gulp" | head -n 1 | awk '{print $$1}'`
