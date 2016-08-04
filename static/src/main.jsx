@@ -8,7 +8,7 @@ var Link = require('react-router').Link;
 var browserHistory = require('react-router').browserHistory;
 var IndexLink = require('react-router').IndexLink;
 
-var NoteList = require('./note').noteList;
+var NoteList = require('./note').NoteList;
 var dates = require('./dates');
 var ACTIVE = { color: 'red' };
 
