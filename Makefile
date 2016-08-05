@@ -4,7 +4,6 @@ deps:
 install:
 
 	npm install
-	bower install
 
 build:
 
@@ -25,7 +24,6 @@ clean:
 		*.db \
 		*.db-journal \
 		static/dist \
-		bower_components \
 		node_modules
 
 start:

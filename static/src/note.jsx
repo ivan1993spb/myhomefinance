@@ -110,7 +110,7 @@ var NoteList = React.createClass({
                 <div>
                     {notes}
                 </div>
-                <button onClick={this.handleLoadMore.bind(this)}>load more</button>
+                <button onClick={this.handleLoadMore}>load more</button>
             </div>
         );
     }
