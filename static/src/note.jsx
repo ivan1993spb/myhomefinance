@@ -29,6 +29,23 @@ var Note = React.createClass({
     }
 });
 
+var NoteForm = React.createClass({
+    handleSave: function() {
+
+    },
+
+    render: function() {
+        return (
+            <form>
+                <input />
+                <input />
+                <input />
+                <button type="button" onClick={this.handleSave}>Save</button>
+            </form>
+        );
+    }
+});
+
 var NoteList = React.createClass({
     propTypes: {
         from: React.PropTypes.object.isRequired,
@@ -108,6 +125,7 @@ var NoteList = React.createClass({
         return (
             <div>
                 <h1>Notes list {this.state.page}</h1>
+                <NoteForm />
                 <div>
                     {notes}
                 </div>

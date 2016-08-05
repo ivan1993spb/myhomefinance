@@ -16,49 +16,35 @@ make build
 Document examples
 -----------------
 
-### transaction ###
+### Outflow ###
 
 ```
-{
-    'guid':         '237bb707-3b52-11e5-ba37-00d4ee77da23',
-    'type':         '',
-    'datetime':     '',
-    'name':         'milk',
-    'amount':       1,
-    'currency':     '',
-    'description':  '',
-}
-```
-
-### outflow ###
-
-```
-{
-    'guid':         '237bb707-3b52-11e5-ba37-00d4ee77da23',
-    'datetime':     '',
-    'name':         'milk',
-    'amount':       1,
-    'currency':     '',
-    'description':  '',
-    'destination':  ''
-    'count':        ''
-    'metric_unit':  'liter',
-    'target':       '',
-    'satisfaction': '',
+type Outflow struct {
+	Id           int64
+	DocumentGUID string
+	Time         time.Time
+	Name         string
+	Amount       float64
+	Description  string
+	Destination  string
+	Target       string
+	Count        float64
+	MetricUnit   string
+	Satisfaction float32
 }
 ```
 
 ### inflow ###
 
 ```
-{
-    'guid':         '237bb707-3b52-11e5-ba37-00d4ee77da23',
-    'datetime':     '',
-    'name':         '',
-    'amount':       '',
-    'currency':     '',
-    'description':  '',
-    'source':       '',
+type Inflow struct {
+	Id           int64
+	DocumentGUID string
+	Time         time.Time
+	Name         string
+	Amount       float64
+	Description  string
+	Source       string
 }
 ```
 
@@ -71,17 +57,6 @@ Server params
 -default_satisfaction=0.5
 ```
 
-RESTful API
------------
-
-```
-
-$ go get -u github.com/go-swagger/go-swagger/cmd/swagger
-$ go install github.com/go-swagger/go-swagger/cmd/swagger
-$ swagger generate server -f swagger.yaml
-
-```
-
 Tools
 -----
 
@@ -91,6 +66,7 @@ Tools
 - [guid lib](github.com/satori/go.uuid)
 - [swagger editor](http://swagger.io/swagger-editor/)
 - [JSON API for foreign exchange rates and currency conversion](http://fixer.io/)
+- [React-bootstrap](https://github.com/react-bootstrap/react-bootstrap)
 
 Code generation:
 
