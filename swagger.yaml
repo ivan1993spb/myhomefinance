@@ -1,14 +1,14 @@
 swagger: '2.0'
 info:
   version: '1.0.0'
-  title: myHomeFinance API
+  title: MyHomeFinance API
   description: |
-    This is small finance program named myHomeFinance
+    This is small finance program named MyHomeFinance
   contact:
     name: Ivan Pushkin
     url: https://twitter.com/IvanDeveloper
-host: localhost
-basePath: /api
+host: localhost:8888
+basePath: /
 schemes:
   - http
 # format of bodies a client can send (Content-Type)
@@ -25,12 +25,12 @@ paths:
   #
   # Transactions
   #
-  /transactions/{guid}:
+  /transaction:
     get:
       tags: ["transactions"]
       parameters:
         - name: guid
-          in: path
+          in: query
           type: string
           pattern: "^[{(]?[0-9A-F]{8}[-]?([0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$"
           required: true
@@ -44,18 +44,18 @@ paths:
           description: transaction not found
         503:
           description: server is currently unavailable
-  /transactions/{date_from}_{date_to}:
+  /transactions/range:
     get:
       tags: ["transactions"]
       description: Returns list of transactions in specified time range ordered by timestamp
       parameters:
         - name: date_from
-          in: path
+          in: query
           type: string
           format: date
           required: true
         - name: date_to
-          in: path
+          in: query
           type: string
           format: date
           required: true
@@ -70,18 +70,18 @@ paths:
           description: invalid date range supplied
         503:
           description: server is currently unavailable
-  /transactions/{date_from}_{date_to}/match:
+  /transactions/range/match:
     get:
       tags: ["transactions"]
       description: Returns list of transactions matched with passed attributes in specified time range
       parameters:
         - name: date_from
-          in: path
+          in: query
           type: string
           format: date
           required: true
         - name: date_to
-          in: path
+          in: query
           type: string
           format: date
           required: true
@@ -106,7 +106,7 @@ paths:
   #
   # Notes
   #
-  /notes:
+  /note:
     post:
       tags: ["notes"]
       parameters:
@@ -135,12 +135,11 @@ paths:
           description: invalid parameter(s) supplied
         503:
           description: server is currently unavailable
-  /notes/{id}:
     get:
       tags: ["notes"]
       parameters:
         - name: id
-          in: path
+          in: query
           type: integer
           format: int64
           required: true
@@ -159,7 +158,7 @@ paths:
       tags: ["notes"]
       parameters:
         - name: id
-          in: path
+          in: query
           type: integer
           format: int64
           required: true
@@ -197,7 +196,7 @@ paths:
         - name: id
           type: integer
           format: int64
-          in: path
+          in: query
           required: true
           description: note id
           minimum: 1
@@ -208,17 +207,17 @@ paths:
           description: note not found
         503:
           description: server is currently unavailable
-  /notes/{date_from}_{date_to}:
+  /notes/range:
     get:
       tags: ["notes"]
       parameters:
         - name: date_from
-          in: path
+          in: query
           type: string
           format: date
           required: true
         - name: date_to
-          in: path
+          in: query
           type: string
           format: date
           required: true
@@ -233,17 +232,17 @@ paths:
           description: invalid data range supplied
         503:
           description: server is currently unavailable
-  /notes/{date_from}_{date_to}/match:
+  /notes/range/match:
     get:
       tags: ["notes"]
       parameters:
         - name: date_from
-          in: path
+          in: query
           type: string
           format: date
           required: true
         - name: date_to
-          in: path
+          in: query
           type: string
           format: date
           required: true
