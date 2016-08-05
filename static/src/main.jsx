@@ -73,5 +73,5 @@ var NoteList = require('./note').NoteList;
 // ), document.getElementById('content'));
 
 ReactDOM.render(
-    (<NoteList from={new Date("2016-08-04")} days={20} />), document.getElementById('content')
+    (<NoteList from={new Date()} days={20} />), document.getElementById('content')
 );

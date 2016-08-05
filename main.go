@@ -68,6 +68,8 @@ func main() {
 			return
 		}
 
+		log.Println("from", from, "to", to)
+
 		//////////////////////////////////
 		notes, err := noteMapper.GetNotesByTimeRange(from, to)
 		if err != nil {
