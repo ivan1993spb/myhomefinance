@@ -1,6 +1,9 @@
 
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept',
+    'Oct', 'Nov', 'Dec'];
+
 exports.yyyymmdd = function(date) {
-    var month = '' + (date.getMonth() + 1),
+    var month = months[date.getMonth()],
         day = '' + date.getDate(),
         year = date.getFullYear();
 

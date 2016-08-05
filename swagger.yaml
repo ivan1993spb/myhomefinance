@@ -52,12 +52,10 @@ paths:
         - name: date_from
           in: query
           type: string
-          format: date
           required: true
         - name: date_to
           in: query
           type: string
-          format: date
           required: true
       responses:
         200:
@@ -78,12 +76,10 @@ paths:
         - name: date_from
           in: query
           type: string
-          format: date
           required: true
         - name: date_to
           in: query
           type: string
-          format: date
           required: true
         - name: name
           in: formData
@@ -214,12 +210,10 @@ paths:
         - name: date_from
           in: query
           type: string
-          format: date
           required: true
         - name: date_to
           in: query
           type: string
-          format: date
           required: true
       responses:
         200:
@@ -239,12 +233,10 @@ paths:
         - name: date_from
           in: query
           type: string
-          format: date
           required: true
         - name: date_to
           in: query
           type: string
-          format: date
           required: true
         - name: name
           type: string
@@ -392,12 +384,10 @@ paths:
         - name: date_from
           in: path
           type: string
-          format: date
           required: true
         - name: date_to
           in: path
           type: string
-          format: date
           required: true
       responses:
         200:
@@ -418,12 +408,10 @@ paths:
         - name: date_from
           in: path
           type: string
-          format: date
           required: true
         - name: date_to
           in: path
           type: string
-          format: date
           required: true
         - name: name
           in: formData
@@ -576,12 +564,10 @@ paths:
         - name: date_from
           in: path
           type: string
-          format: date
           required: true
         - name: date_to
           in: path
           type: string
-          format: date
           required: true
       responses:
         200:
@@ -601,12 +587,10 @@ paths:
         - name: date_from
           in: path
           type: string
-          format: date
           required: true
         - name: date_to
           in: path
           type: string
-          format: date
           required: true
         - name: name
           in: formData
@@ -722,12 +706,10 @@ paths:
         - name: date_from
           in: formData
           type: string
-          format: date
           required: true
         - name: date_to
           in: formData
           type: string
-          format: date
           required: true
       responses:
           200:
@@ -947,10 +929,8 @@ definitions:
     properties:
       date_from:
         type: string
-        format: date
       date_to:
         type: string
-        format: date
       inflow:
         type: number
         format: double

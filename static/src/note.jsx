@@ -97,6 +97,7 @@ var NoteList = React.createClass({
             return (
                 <Note
                     id={note.id}
+                    key={i}
                     name={note.name}
                     text={note.text}
                     removeCallback={this.handleRemove.bind(this, i)}

@@ -57,12 +57,12 @@ func main() {
 			log.Println("err", err)
 			return
 		}
-		from, err := time.Parse("2016-Jan-22", rawFrom)
+		from, err := time.Parse("2006-Jan-02", rawFrom)
 		if err != nil {
 			log.Println("err", err)
 			return
 		}
-		to, err := time.Parse("2016-Jan-22", rawTo)
+		to, err := time.Parse("2006-Jan-02", rawTo)
 		if err != nil {
 			log.Println("err", err)
 			return
