@@ -43,32 +43,35 @@ var NoteList = React.createClass({
         };
     },
 
-    doLoadMore: function(dateFrom, dateTo, callback) {
+    doLoadMore: function(from, to, callback) {
         console.log("called NoteList.doLoadMore");
-        console.log("dates", dates.yyyymmdd(dateFrom), dates.yyyymmdd(dateTo));
+        console.log("dates", dates.yyyymmdd(from), dates.yyyymmdd(to));
 
         if (typeof callback === 'function') {
-            callback([
-                {id: 1, time: "2016-08-02T13:55:32Z", name: "name", text: "text"},
-                {id: 2, time: "2016-08-01T13:50:00Z", name: "eman", text: "txet"},
-                {id: 3, time: "2016-07-25T12:10:30Z", name: "1234", text: "5678"}
-            ]);
+            client.getNotesByDateRange(from, to, function() {
+
+                callback([
+                    {id: 1, time: "2016-08-02T13:55:32Z", name: "name", text: "text"},
+                    {id: 2, time: "2016-08-01T13:50:00Z", name: "eman", text: "txet"},
+                    {id: 3, time: "2016-07-25T12:10:30Z", name: "1234", text: "5678"}
+                ]);
+            });
         }
     },
 
     handleLoadMore: function() {
         console.log("state", this.state);
 
-        var dateFrom = dates.addDays(this.state.from, -this.state.days),
-            dateTo = this.state.from;
-        console.log("====>", dateTo, "-", this.state.days, "=", dateFrom);
-        this.doLoadMore(dateFrom, dateTo, function(date, notes) {
-            console.log("okok123");
+        var from = dates.addDays(this.state.from, -this.state.days),
+            to   = this.state.from;
+        console.log("====>", to, "-", this.state.days, "=", from);
+        this.doLoadMore(from, to, function(date, notes) {
+            console.log("load more: setting component state");
             this.setState({
                 from:  date,
                 notes: this.state.notes.concat(notes)
             });
-        }.bind(this, dates.addDays(dateFrom, -1)));
+        }.bind(this, dates.addDays(from, -1)));
     },
 
     componentDidMount: function() {
