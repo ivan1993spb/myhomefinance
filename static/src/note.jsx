@@ -8,7 +8,16 @@ var Note = React.createClass({
         id:             React.PropTypes.number.isRequired,
         name:           React.PropTypes.string.isRequired,
         text:           React.PropTypes.string.isRequired,
-        removeCallback: React.PropTypes.func.isRequired
+        removeCallback: React.PropTypes.func.isRequired,
+        editCallback:   React.PropTypes.func.isRequired
+    },
+
+    getInitialState: function() {
+        return {
+            id:   this.props.id,
+            name: this.props.name,
+            text: this.props.text,
+        };
     },
 
     handleRemove: function(id) {
@@ -17,29 +26,52 @@ var Note = React.createClass({
         this.props.removeCallback();
     },
 
+    handleEdit: function() {
+        console.log("called Note.handleEdit");
+        this.props.editCallback(this.update);
+    },
+
+    update: function(time, name, text) {
+        this.setState({
+            name: name,
+            text: text,
+            time: time
+        })
+    },
+
     render: function() {
         return (
             <div>
-                <p>{this.props.id}</p>
-                <p>{this.props.name}</p>
-                <p>{this.props.text}</p>
+                <p>{this.state.id}</p>
+                <p>{this.state.name}</p>
+                <p>{this.state.text}</p>
                 <p><button onClick={this.handleRemove.bind(this, this.props.id)}>delete</button></p>
+                <p><button onClick={this.handleEdit}>edit</button></p>
             </div>
         );
     }
 });
 
 var NoteForm = React.createClass({
+    propTypes: {
+        id:   React.PropTypes.number,
+        time: React.PropTypes.string,
+        name: React.PropTypes.string,
+        text: React.PropTypes.string
+    },
+
     handleSave: function() {
 
     },
 
     render: function() {
+        console.log("okok");
         return (
             <form>
-                <input />
-                <input />
-                <input />
+                <input value={this.props.note ? this.props.note.id : ""} />
+                <input value={this.props.note ? this.props.note.time : ""} />
+                <input value={this.props.note ? this.props.note.name : ""} />
+                <input value={this.props.note ? this.props.note.text : ""} />
                 <button type="button" onClick={this.handleSave}>Save</button>
             </form>
         );
@@ -109,23 +141,34 @@ var NoteList = React.createClass({
         });
     },
 
+    handleEdit: function(note, handleUpdate) {
+        console.log("edit", note, handleUpdate);
+        this.setState({
+            noteToEdit: note
+        });
+    },
+
     render: function() {
-        var notes = this.state.notes.map(function(note, i) {
+        console.log("render note list");
+        var notes = this.state.notes.map(function(note, index) {
             return (
                 <Note
                     id={note.id}
-                    key={i}
+                    key={index}
                     name={note.name}
                     text={note.text}
-                    removeCallback={this.handleRemove.bind(this, i)}
+                    removeCallback={this.handleRemove.bind(this, index)}
+                    editCallback={this.handleEdit.bind(this, note)}
                 />
             );
         }.bind(this));
 
+        console.log(this.state.noteToEdit);
+
         return (
             <div>
                 <h1>Notes list {this.state.page}</h1>
-                <NoteForm />
+                <NoteForm note={this.state.noteToEdit} />
                 <div>
                     {notes}
                 </div>
