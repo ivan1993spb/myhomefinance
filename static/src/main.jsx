@@ -9,7 +9,7 @@ var React = require('react');
 // var browserHistory = require('react-router').browserHistory;
 // var IndexLink = require('react-router').IndexLink;
 
-var NoteList = require('./note').NoteList;
+var NoteList = require('./NoteList').NoteList;
 // var dates = require('./dates');
 // var ACTIVE = { color: 'red' };
 
@@ -73,5 +73,5 @@ var NoteList = require('./note').NoteList;
 // ), document.getElementById('content'));
 
 ReactDOM.render(
-    (<NoteList from={new Date()} days={20} />), document.getElementById('main')
+    (<NoteList handleEdit={function(){}} handleRemove={function(){}} />), document.getElementById('main')
 );
