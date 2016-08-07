@@ -8,7 +8,7 @@ var NoteList = React.createClass({
     displayName: "NoteList",
 
     propTypes: {
-        dateTo:       React.PropTypes.object,
+        dateFrom:     React.PropTypes.object,
         loadDays:     React.PropTypes.number,
         handleEdit:   React.PropTypes.func.isRequired,
         handleRemove: React.PropTypes.func.isRequired
@@ -16,17 +16,22 @@ var NoteList = React.createClass({
 
     getDefaultProps: function() {
         return {
-            dateTo:   new Date("2016-08-08"),
+            dateFrom: new Date("2016-08-08"),
             loadDays: 1
         };
     },
 
     getInitialState: function() {
         return {
-            dateTo:  this.props.dateTo,
-            notes:   [],
-            loading: true
+            dateTo:   this.props.dateFrom,
+            loadDays: this.props.loadDays,
+            notes:    [],
+            loading:  true
         };
+    },
+
+    increaseLoadDays: function(loadDays) {
+        return loadDays * 2;
     },
 
     doLoadMore: function(from, to, callback) {
@@ -42,22 +47,28 @@ var NoteList = React.createClass({
     },
 
     handleLoadMore: function() {
-        var from = dates.addDays(this.state.dateTo, -this.props.loadDays),
+        var from = dates.addDays(this.state.dateTo, -this.state.loadDays),
             to   = this.state.dateTo;
 
         this.setState({
-            loading: true
+            loading: true,
+            dateTo:  from
         });
 
         this.doLoadMore(from, to, function(notes) {
             console.log("load more: setting component state" );
             var newState = {
-                dateTo:  from,
                 loading: false
             };
 
-            if (notes) {
+            if (notes.length) {
                 newState.notes = this.state.notes.concat(notes);
+                // return initial value
+                if (this.state.loadDays != this.props.loadDays) {
+                    newState.loadDays = this.props.loadDays;
+                }
+            } else {
+                newState.loadDays = this.increaseLoadDays(this.state.loadDays);
             }
 
             this.setState(newState);
@@ -111,14 +122,18 @@ var NoteList = React.createClass({
         return (
             <div>
                 <h2>Notes list {this.state.page}</h2>
+                <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
+                <hr />
                 <div>
-                    {notes}
+                    {this.state.loading && this.state.notes.length == 0 ? "loading" : notes}
                 </div>
-                {
-                    this.state.loading ?
-                    "loading" :
-                    <button onClick={this.handleLoadMore}>load more: {this.props.loadDays} days</button>
-                }
+                <hr />
+                <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
+
+                {this.state.loading ? "loading..." : "loaded: "+this.state.notes.length}
+                <button
+                    onClick={this.handleLoadMore}
+                    disabled={this.state.loading}>load more: {this.state.loadDays} days</button>
 
             </div>
         );
