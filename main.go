@@ -45,7 +45,7 @@ func main() {
 		noteMapper.GetNotesByTimeRangeMatch(time.Unix(0, 0), time.Now(), "text to match")
 	})
 
-	apiRouter.Path(urlPathNotesRange).Methods(http.MethodGet).Handler(handlers.NewNoteHandler(noteMapper))
+	apiRouter.Path(urlPathNotesRange).Methods(http.MethodGet).Handler(handlers.NewGetNotesByTimeRangeHandler(noteMapper))
 
 	apiRouter.Path(urlPathNote).Methods(http.MethodPut).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path, 3)
