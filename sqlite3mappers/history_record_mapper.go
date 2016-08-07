@@ -8,7 +8,7 @@ import (
 	"github.com/ivan1993spb/myhomefinance/models"
 )
 
-const _SQL_SELECT_HISTORY_RECORDS_BY_TIME_RANGE = `
+const sqlSelectHistoryRecordsByTimeRange = `
 SELECT t1.document_guid, t1.unixtimestamp, t1.name, t1.amount, ROUND(SUM(t2.amount), 2) AS balance
 FROM (
     SELECT document_guid, unixtimestamp, name, amount, description
@@ -51,7 +51,7 @@ func NewHistoryRecordMapper(db *sql.DB) (*HistoryRecordMapper, error) {
 
 	historyRecordMapper := &HistoryRecordMapper{db: db}
 
-	historyRecordMapper.selectHistoryRecordsByTimeRange, err = db.Prepare(_SQL_SELECT_HISTORY_RECORDS_BY_TIME_RANGE)
+	historyRecordMapper.selectHistoryRecordsByTimeRange, err = db.Prepare(sqlSelectHistoryRecordsByTimeRange)
 	if err != nil {
 		return nil, mappers.ErrCreateHistoryRecordMapper(err.Error())
 	}

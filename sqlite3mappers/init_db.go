@@ -8,11 +8,11 @@ import (
 	sqlite "github.com/mattn/go-sqlite3"
 )
 
-const _TABLES_QUERY = `
+const tablesQuery = `
 CREATE TABLE IF NOT EXISTS notes (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
+	unixtimestamp INT8 DEFAULT (strftime('%s', 'now')) NOT NULL,
     name          VARCHAR(300) NOT NULL,
-    unixtimestamp INT8 DEFAULT (strftime('%s', 'now')) NOT NULL,
     text          TEXT
 );
 
@@ -61,7 +61,7 @@ func InitSQLiteDB(dbFileName string) (*sql.DB, error) {
 	}
 
 	if _, err := os.Stat(dbFileName); os.IsNotExist(err) {
-		_, err = db.Exec(_TABLES_QUERY)
+		_, err = db.Exec(tablesQuery)
 		if err != nil {
 			panic("cannot execute init db queries for tables and views creation: " + err.Error())
 		}

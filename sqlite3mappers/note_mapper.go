@@ -9,15 +9,15 @@ import (
 )
 
 const (
-	_SQL_INSERT_NOTE       = "INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)"
-	_SQL_DELETE_NOTE_BY_ID = "DELETE FROM `notes` WHERE `id` = ?"
-	_SQL_SELECT_NOTE_BY_ID = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?"
-	_SQL_UPDATE_NOTE_BY_ID = "UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?"
+	sqlInsertNote     = "INSERT INTO `notes` (`name`, `unixtimestamp`, `text`) VALUES (?, ?, ?)"
+	sqlDeleteNoteById = "DELETE FROM `notes` WHERE `id` = ?"
+	sqlSelectNoteById = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` WHERE `id` = ?"
+	sqlUpdateNoteById = "UPDATE `notes` SET `name` = ?, `unixtimestamp` = ?, `text` = ? WHERE `id` = ?"
 
-	_SQL_SELECT_NOTES_BY_TIME_RANGE = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
-		"WHERE `unixtimestamp` BETWEEN ? AND ?"
-	_SQL_SELECT_NOTES_BY_TIME_RANGE_MATCH = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
-		"WHERE `unixtimestamp` BETWEEN ? AND ? AND match(`name`, ?)"
+	sqlSelectNotesByTimeRange = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
+		"WHERE `unixtimestamp` BETWEEN ? AND ? ORDER BY `unixtimestamp` DESC"
+	sqlSelectNotesByTimeRangeMatch = "SELECT `id`, `unixtimestamp`, `name`, `text` FROM `notes` " +
+		"WHERE `unixtimestamp` BETWEEN ? AND ? AND match(`name`, ?) ORDER BY `unixtimestamp` DESC"
 )
 
 // NoteMapper provides useful access to note table in db
@@ -45,32 +45,32 @@ func NewNoteMapper(db *sql.DB) (*NoteMapper, error) {
 
 	noteMapper := &NoteMapper{db: db}
 
-	noteMapper.insertNote, err = db.Prepare(_SQL_INSERT_NOTE)
+	noteMapper.insertNote, err = db.Prepare(sqlInsertNote)
 	if err != nil {
 		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.deleteNote, err = db.Prepare(_SQL_DELETE_NOTE_BY_ID)
+	noteMapper.deleteNote, err = db.Prepare(sqlDeleteNoteById)
 	if err != nil {
 		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.selectNoteById, err = db.Prepare(_SQL_SELECT_NOTE_BY_ID)
+	noteMapper.selectNoteById, err = db.Prepare(sqlSelectNoteById)
 	if err != nil {
 		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.updateNoteById, err = db.Prepare(_SQL_UPDATE_NOTE_BY_ID)
+	noteMapper.updateNoteById, err = db.Prepare(sqlUpdateNoteById)
 	if err != nil {
 		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.selectNotesByTimeRange, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE)
+	noteMapper.selectNotesByTimeRange, err = db.Prepare(sqlSelectNotesByTimeRange)
 	if err != nil {
 		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}
 
-	noteMapper.selectNotesByTimeRangeMatch, err = db.Prepare(_SQL_SELECT_NOTES_BY_TIME_RANGE_MATCH)
+	noteMapper.selectNotesByTimeRangeMatch, err = db.Prepare(sqlSelectNotesByTimeRangeMatch)
 	if err != nil {
 		return nil, mappers.ErrCreateNoteMapper(err.Error())
 	}

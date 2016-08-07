@@ -7,15 +7,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const TEST_DB_FILE_NAME = "test.db"
+const testDBName = "test.db"
 
 func TestInitSQLiteDB(t *testing.T) {
-	os.Remove(TEST_DB_FILE_NAME)
-	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
+	os.Remove(testDBName)
+	db, err := InitSQLiteDB(testDBName)
 	require.Nil(t, err, "init db returns error")
 	defer func() {
 		db.Close()
-		os.Remove(TEST_DB_FILE_NAME)
+		os.Remove(testDBName)
 	}()
 
 	var grepTest bool

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const TEST_TRANSACTIONS = `
+const testTransactions = `
 INSERT INTO inflow (document_guid, unixtimestamp, name, amount, source)
 VALUES
 ("203481d2-8026-4613-ae27-c102fb6685df", 1,  "test transaction 1",  10.20, "src"),
@@ -51,15 +51,15 @@ func round(v float64, decimals int) float64 {
 }
 
 func TestHistoryRecordMapper(t *testing.T) {
-	os.Remove(TEST_DB_FILE_NAME)
-	db, err := InitSQLiteDB(TEST_DB_FILE_NAME)
+	os.Remove(testDBName)
+	db, err := InitSQLiteDB(testDBName)
 	require.Nil(t, err, "init db returns error")
 	defer func() {
 		db.Close()
-		os.Remove(TEST_DB_FILE_NAME)
+		os.Remove(testDBName)
 	}()
 
-	_, err = db.Exec(TEST_TRANSACTIONS)
+	_, err = db.Exec(testTransactions)
 	require.Nil(t, err)
 
 	historyRecordMapper, err := NewHistoryRecordMapper(db)
