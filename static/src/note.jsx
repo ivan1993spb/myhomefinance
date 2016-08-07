@@ -39,6 +39,10 @@ var Note = React.createClass({
         })
     },
 
+    handleTest: function() {
+        console.log("ok333");
+    },
+
     render: function() {
         return (
             <div>
@@ -47,6 +51,7 @@ var Note = React.createClass({
                 <p>{this.state.text}</p>
                 <p><button onClick={this.handleRemove.bind(this, this.props.id)}>delete</button></p>
                 <p><button onClick={this.handleEdit}>edit</button></p>
+                <p><button ref={this.handleTest}>ref</button></p>
             </div>
         );
     }
