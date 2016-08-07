@@ -16,8 +16,8 @@ var NoteList = React.createClass({
 
     getDefaultProps: function() {
         return {
-            dateTo:   new Date(),
-            loadDays: 20
+            dateTo:   new Date("2016-08-08"),
+            loadDays: 1
         };
     },
 
@@ -35,12 +35,8 @@ var NoteList = React.createClass({
         console.log("dates 2", from, to);
 
         if (typeof callback === 'function') {
-            client.getNotesByDateRange(from, to, function() {
-                callback([
-                    {id: 1, time: "2016-08-02T13:55:32Z", name: "name", text: "text"},
-                    {id: 2, time: "2016-08-01T13:50:00Z", name: "eman", text: "txet"},
-                    {id: 3, time: "2016-07-25T12:10:30Z", name: "1234", text: "5678"}
-                ]);
+            client.getNotesByDateRange(from, to, function(notes) {
+                callback(notes);
             });
         }
     },
@@ -53,14 +49,19 @@ var NoteList = React.createClass({
             loading: true
         });
 
-        this.doLoadMore(from, to, function(date, notes) {
-            console.log("load more: setting component state");
-            this.setState({
-                from:    date,
-                notes:   this.state.notes.concat(notes),
+        this.doLoadMore(from, to, function(notes) {
+            console.log("load more: setting component state" );
+            var newState = {
+                dateTo:  from,
                 loading: false
-            });
-        }.bind(this, dates.addDays(from, -1)));
+            };
+
+            if (notes) {
+                newState.notes = this.state.notes.concat(notes);
+            }
+
+            this.setState(newState);
+        }.bind(this));
     },
 
     componentDidMount: function() {
@@ -68,31 +69,29 @@ var NoteList = React.createClass({
         this.handleLoadMore();
     },
 
-    handleRemove: function(index) {
-        console.log("called NoteList.handleRemove");
+    handleEdit: function(index, id) {
         console.log("index:", index);
-        console.log(index);
-
-        // TODO if (this.props.handleRemove(id)) {
-        var notes = this.state.notes;
-        notes.splice(index, 1);
-
-        this.setState({
-            notes: notes
-        });
-        // }
-    },
-
-    handleEdit: function(note, handleUpdate) {
-        console.log("edit", note, handleUpdate);
-        this.setState({
-            noteToEdit: note
-        });
+        console.log("id:", id);
         // TODO this.props.handleEdit(id)
     },
 
+    handleRemove: function(index, id) {
+        console.log("called NoteList.handleRemove");
+        console.log("index:", index);
+        console.log("id:", id);
+
+        // TODO if (this.props.handleRemove(id)) {
+        // var notes = this.state.notes;
+        // notes.splice(index, 1);
+
+        // this.setState({
+            // notes: notes
+        // });
+        // }
+    },
+
     render: function() {
-        console.log("render note list");
+        console.log("render note list", this.state.notes);
         var notes = this.state.notes.map(function(note, index) {
             return (
                 <Note
@@ -101,8 +100,8 @@ var NoteList = React.createClass({
                     time={note.time}
                     name={note.name}
                     text={note.text}
+                    handleEdit={this.handleEdit.bind(this, index)}
                     handleRemove={this.handleRemove.bind(this, index)}
-                    handleEdit={this.handleEdit.bind(this, note)}
                 />
             );
         }.bind(this));
@@ -111,14 +110,14 @@ var NoteList = React.createClass({
 
         return (
             <div>
-                <h1>Notes list {this.state.page}</h1>
+                <h2>Notes list {this.state.page}</h2>
                 <div>
                     {notes}
                 </div>
                 {
                     this.state.loading ?
                     "loading" :
-                    <button onClick={this.handleLoadMore}>load more</button>
+                    <button onClick={this.handleLoadMore}>load more: {this.props.loadDays} days</button>
                 }
 
             </div>

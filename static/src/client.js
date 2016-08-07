@@ -41,7 +41,7 @@ exports.getNotesByDateRange = function(from, to, callback) {
         success: function(data, status, xhr) {
             console.log(data);
             if (typeof callback === 'function') {
-                callback();
+                callback(data);
             }
         }
     });
