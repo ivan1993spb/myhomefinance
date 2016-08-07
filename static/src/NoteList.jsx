@@ -4,6 +4,8 @@ var React = require('react'),
     dates = require("./dates"),
     client = require("./client");
 
+var loadDaysLimit = 70;
+
 var NoteList = React.createClass({
     displayName: "NoteList",
 
@@ -24,13 +26,16 @@ var NoteList = React.createClass({
     getInitialState: function() {
         return {
             dateTo:   this.props.dateFrom,
-            loadDays: this.props.loadDays,
+            loadDays: this.props.loadDays < loadDaysLimit ? this.props.loadDays : loadDaysLimit,
             notes:    [],
             loading:  true
         };
     },
 
     increaseLoadDays: function(loadDays) {
+        if (loadDays >= loadDaysLimit) {
+            return loadDays;
+        }
         return loadDays * 2;
     },
 
