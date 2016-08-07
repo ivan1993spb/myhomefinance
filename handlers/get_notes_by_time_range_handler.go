@@ -12,6 +12,9 @@ import (
 
 // NewGetNotesByTimeRangeHandler returns new getNotesByTimeRangeHandler
 func NewGetNotesByTimeRangeHandler(noteMapper mappers.NoteMapper) http.Handler {
+	if noteMapper == nil {
+		panic(ErrCreateHandlerWithNilMapper)
+	}
 	return &getNotesByTimeRangeHandler{noteMapper}
 }
 
