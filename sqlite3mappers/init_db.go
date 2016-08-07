@@ -60,7 +60,7 @@ func InitSQLiteDB(dbFileName string) (*sql.DB, error) {
 		return db, fmt.Errorf("init sqlite db error: %s", err)
 	}
 
-	if _, err := os.Stat(dbFileName); os.IsNotExist(err) {
+	if _, err = os.Stat(dbFileName); os.IsNotExist(err) {
 		_, err = db.Exec(tablesQuery)
 		if err != nil {
 			panic("cannot execute init db queries for tables and views creation: " + err.Error())
