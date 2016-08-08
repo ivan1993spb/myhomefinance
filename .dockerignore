@@ -8,6 +8,7 @@ myhomefinance.iml
 .travis.yml
 node_modules
 static/dist
+bindata_assetfs.go
 
 # tests
 test.db
