@@ -6,10 +6,8 @@ Install
 -------
 
 ```bash
-go get github.com/jteeuwen/go-bindata/...
-go get github.com/elazarl/go-bindata-assetfs/...
-
-make install
+make deps
+make test
 make build
 ```
 
