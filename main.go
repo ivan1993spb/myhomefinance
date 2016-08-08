@@ -22,6 +22,8 @@ const (
 	urlPathNote            = `/note`
 	urlPathNotesRange      = `/notes/range`
 	urlPathNotesRangeMatch = `/notes/range/match`
+
+	urlPathHistoryRange = `/history/range`
 )
 
 func initDb() (*sql.DB, error) {
@@ -35,9 +37,10 @@ func main() {
 		log.Println(err)
 	}
 	var noteMapper mappers.NoteMapper
-
 	noteMapper, err = sqlite3mappers.NewNoteMapper(db)
 
+	var historyRecordMapper mappers.HistoryRecordMapper
+	historyRecordMapper, err = sqlite3mappers.NewHistoryRecordMapper(db)
 	apiRouter := r.PathPrefix(urlPathAPI).Subrouter()
 
 	apiRouter.Path(urlPathNotesRangeMatch).Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +69,8 @@ func main() {
 		log.Println(r.URL.Path, 2)
 		noteMapper.GetNoteById(1)
 	})
+
+	apiRouter.Path(urlPathHistoryRange).Methods(http.MethodGet).Handler(handlers.NewGetHistoryRecordsByTimeRangeHandler(historyRecordMapper))
 
 	r.PathPrefix("/").Methods(http.MethodGet).Handler(http.FileServer(assetFS()))
 

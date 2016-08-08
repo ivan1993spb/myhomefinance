@@ -10,19 +10,19 @@ import (
 	"github.com/ivan1993spb/myhomefinance/mappers"
 )
 
-// NewGetNotesByTimeRangeHandler returns new getNotesByTimeRangeHandler
-func NewGetNotesByTimeRangeHandler(noteMapper mappers.NoteMapper) http.Handler {
-	if noteMapper == nil {
+// NewGetHistoryRecordsByTimeRangeHandler returns new getHistoryRecordsByTimeRangeHandler
+func NewGetHistoryRecordsByTimeRangeHandler(historyRecordMapper mappers.HistoryRecordMapper) http.Handler {
+	if historyRecordMapper == nil {
 		panic(ErrCreateHandlerWithNilMapper)
 	}
-	return &getNotesByTimeRangeHandler{noteMapper}
+	return &getHistoryRecordsByTimeRangeHandler{historyRecordMapper}
 }
 
-type getNotesByTimeRangeHandler struct {
-	noteMapper mappers.NoteMapper
+type getHistoryRecordsByTimeRangeHandler struct {
+	historyRecordMapper mappers.HistoryRecordMapper
 }
 
-func (h *getNotesByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *getHistoryRecordsByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL.Path)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
@@ -32,20 +32,20 @@ func (h *getNotesByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	notes, err := h.noteMapper.GetNotesByTimeRange(from, to)
+	historyRecords, err := h.historyRecordMapper.GetHistoryRecordsByTimeRange(from, to)
 	if err != nil {
 		log.Println("err", err)
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(notes)
+	err = json.NewEncoder(w).Encode(historyRecords)
 	if err != nil {
 		log.Println("err", err)
 		return
 	}
 }
 
-func (h *getNotesByTimeRangeHandler) getParams(r *http.Request) (time.Time, time.Time, error) {
+func (h *getHistoryRecordsByTimeRangeHandler) getParams(r *http.Request) (time.Time, time.Time, error) {
 	rawFrom := r.URL.Query().Get("from")
 	if len(rawFrom) == 0 {
 		return time.Time{}, time.Time{}, fmt.Errorf("received empty date from")
