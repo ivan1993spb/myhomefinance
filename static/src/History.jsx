@@ -10,21 +10,21 @@ var History = React.createClass({
     displayName: "History",
 
     propTypes: {
-        dateFrom: React.PropTypes.object,
-        loadDays: React.PropTypes.number
+        dateStart: React.PropTypes.object,
+        loadDays:  React.PropTypes.number
     },
 
     getDefaultProps: function() {
         var currentDate = dates.addDays(new Date(), 1);
         return {
-            dateFrom: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0, 0),
-            loadDays: 1
+            dateStart: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0, 0),
+            loadDays:  1
         };
     },
 
     getInitialState: function() {
         return {
-            dateTo:         this.props.dateFrom,
+            dateTo:         this.props.dateStart,
             loadDays:       this.props.loadDays < loadDaysLimit ? this.props.loadDays : loadDaysLimit,
             historyRecords: [],
             loading:        true
@@ -44,28 +44,9 @@ var History = React.createClass({
         console.log("dates 2", from, to);
 
         if (typeof callback === 'function') {
-            // TODO use client.getHistoryRecordsByDateRange(from, to, callback)
-
-            // test:
-            callback([{
-                guid:    "f536509e-bbc8-4da8-9028-32fab440e2fc",
-                time:    "2016-08-08T10:59:15+03:00",
-                name:    "name 1",
-                amount:  545.56,
-                balance: 596.22
-            }, {
-                guid:    "972fe78d-4571-437e-aa05-108dfd02633d",
-                time:    "2016-08-07T10:59:15+03:00",
-                name:    "name 2",
-                amount:  -45.55,
-                balance: 659
-            }, {
-                guid:    "673e9b4b-6960-4f2c-8e05-47101c4a536c",
-                time:    "2016-08-06T10:59:15+03:00",
-                name:    "name 3",
-                amount:  33.25,
-                balance: 5465.05
-            }]);
+            client.getHistoryRecordsByDateRange(from, to, function(data) {
+                callback(data);
+            });
         }
     },
 
@@ -121,13 +102,13 @@ var History = React.createClass({
         return (
             <div>
                 <h2>History</h2>
-                <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
+                <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
                 <hr />
                 <div>
                     {historyRecords.length > 0 ? historyRecords : (this.state.loading ? "loading" : "empty")}
                 </div>
                 <hr />
-                <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
+                <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
 
                 {this.state.loading ? "loading..." : "loaded: "+this.state.historyRecords.length}
 

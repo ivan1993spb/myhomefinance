@@ -25,3 +25,10 @@ footer {
     color: white;
     background: black;
 }
+
+i {
+    background: black;
+    color: white;
+    font-weight: bold;
+    padding: 2px;
+}

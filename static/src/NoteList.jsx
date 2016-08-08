@@ -10,21 +10,21 @@ var NoteList = React.createClass({
     displayName: "NoteList",
 
     propTypes: {
-        dateFrom: React.PropTypes.object,
-        loadDays: React.PropTypes.number
+        dateStart: React.PropTypes.object,
+        loadDays:  React.PropTypes.number
     },
 
     getDefaultProps: function() {
         var currentDate = dates.addDays(new Date(), 1);
         return {
-            dateFrom: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0, 0),
-            loadDays: 1
+            dateStart: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0, 0),
+            loadDays:  1
         };
     },
 
     getInitialState: function() {
         return {
-            dateTo:   this.props.dateFrom,
+            dateTo:   this.props.dateStart,
             loadDays: this.props.loadDays < loadDaysLimit ? this.props.loadDays : loadDaysLimit,
             notes:    [],
             loading:  true
@@ -115,13 +115,13 @@ var NoteList = React.createClass({
         return (
             <div>
                 <h2>Notes list</h2>
-                <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
+                <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
                 <hr />
                 <div>
                     {notes.length > 0 ? notes : (this.state.loading ? "loading" : "empty")}
                 </div>
                 <hr />
-                <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
+                <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
 
                 {this.state.loading ? "loading..." : "loaded: "+this.state.notes.length}
 
