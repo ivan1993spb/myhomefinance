@@ -3,8 +3,12 @@ sudo: false
 go:
   - 1.6.2
   - tip
+node_js:
+  - 6
+  - node
 env:
   global:
     - GOARCH=amd64
 install:
-  - go install
+  - make install
+  - make build
