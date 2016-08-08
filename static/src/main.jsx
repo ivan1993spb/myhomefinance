@@ -10,6 +10,7 @@ var React = require('react');
 // var IndexLink = require('react-router').IndexLink;
 
 var NoteList = require('./NoteList').NoteList;
+var History = require('./History').History;
 // var dates = require('./dates');
 // var ACTIVE = { color: 'red' };
 

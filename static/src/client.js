@@ -46,3 +46,7 @@ exports.getNotesByDateRange = function(from, to, callback) {
         }
     });
 };
+
+exports.getHistoryRecordsByDateRange = function(from, to, callback) {
+    // TODO implement ajax request
+};
