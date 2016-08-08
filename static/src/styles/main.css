@@ -20,3 +20,8 @@ header {
 footer {
     margin-top: 30px;
 }
+
+.menu-btn-active {
+    color: white;
+    background: black;
+}
