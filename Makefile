@@ -1,6 +1,9 @@
 
 deps:
 
+	go get -u github.com/jteeuwen/go-bindata/...
+	go get -u github.com/elazarl/go-bindata-assetfs/...
+
 install:
 
 	npm install
