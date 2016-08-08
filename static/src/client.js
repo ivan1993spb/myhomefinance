@@ -48,5 +48,18 @@ exports.getNotesByDateRange = function(from, to, callback) {
 };
 
 exports.getHistoryRecordsByDateRange = function(from, to, callback) {
-    // TODO implement ajax request
+    $.ajax({
+        mathod:  'GET',
+        url:     urlPathAPI + '/history/range',
+        data:    {
+            from: dates.yyyymmdd(from),
+            to:   dates.yyyymmdd(to)
+        },
+        success: function(data, status, xhr) {
+            console.log(data);
+            if (typeof callback === 'function') {
+                callback(data);
+            }
+        }
+    });
 };
