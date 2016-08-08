@@ -1,11 +1,13 @@
 # idea files
 .idea
-http-proxy-image-retriever.iml
+myhomefinance.iml
 
 # dev
 .git
 .gitignore
 .travis.yml
+node_modules
+static/dist
 
 # tests
 test.db
