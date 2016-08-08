@@ -23,9 +23,6 @@ type getHistoryRecordsByTimeRangeHandler struct {
 }
 
 func (h *getHistoryRecordsByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL.Path)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
 	from, to, err := h.getParams(r)
 	if err != nil {
 		log.Println("err", err)
