@@ -112,11 +112,9 @@ var NoteList = React.createClass({
             );
         }.bind(this));
 
-        console.log(this.state.noteToEdit);
-
         return (
             <div>
-                <h2>Notes list {this.state.page}</h2>
+                <h2>Notes list</h2>
                 <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
                 <hr />
                 <div>

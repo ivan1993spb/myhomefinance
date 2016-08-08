@@ -2,6 +2,8 @@
 var React = require('react');
 
 var Note = React.createClass({
+    displayName: "Note",
+
     propTypes: {
         id:           React.PropTypes.number.isRequired,
         time:         React.PropTypes.string.isRequired,
