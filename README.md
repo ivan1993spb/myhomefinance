@@ -1,5 +1,5 @@
 
-MyHomeFinance [![Build Status](https://travis-ci.org/ivan1993spb/myhomefinance.svg?branch=master)](https://travis-ci.org/ivan1993spb/myhomefinance)
+MyHomeFinance [![Build Status](https://travis-ci.org/ivan1993spb/myhomefinance.svg?branch=master)](https://travis-ci.org/ivan1993spb/myhomefinance) [![Go Report Card](https://goreportcard.com/badge/github.com/ivan1993spb/myhomefinance)](https://goreportcard.com/report/github.com/ivan1993spb/myhomefinance)
 =============
 
 Install
