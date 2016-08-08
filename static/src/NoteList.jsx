@@ -10,15 +10,14 @@ var NoteList = React.createClass({
     displayName: "NoteList",
 
     propTypes: {
-        dateFrom:     React.PropTypes.object,
-        loadDays:     React.PropTypes.number,
-        handleEdit:   React.PropTypes.func.isRequired,
-        handleRemove: React.PropTypes.func.isRequired
+        dateFrom: React.PropTypes.object,
+        loadDays: React.PropTypes.number
     },
 
     getDefaultProps: function() {
+        var currentDate = dates.addDays(new Date(), 1);
         return {
-            dateFrom: new Date("2016-08-08"),
+            dateFrom: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0, 0),
             loadDays: 1
         };
     },
@@ -88,22 +87,13 @@ var NoteList = React.createClass({
     handleEdit: function(index, id) {
         console.log("index:", index);
         console.log("id:", id);
-        // TODO this.props.handleEdit(id)
+        // TODO implement handleEdit
     },
 
     handleRemove: function(index, id) {
-        console.log("called NoteList.handleRemove");
         console.log("index:", index);
         console.log("id:", id);
-
-        // TODO if (this.props.handleRemove(id)) {
-        // var notes = this.state.notes;
-        // notes.splice(index, 1);
-
-        // this.setState({
-            // notes: notes
-        // });
-        // }
+        // TODO implement handleRemove
     },
 
     render: function() {
@@ -130,12 +120,13 @@ var NoteList = React.createClass({
                 <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
                 <hr />
                 <div>
-                    {this.state.loading && this.state.notes.length == 0 ? "loading" : notes}
+                    {notes.length > 0 ? notes : (this.state.loading ? "loading" : "empty")}
                 </div>
                 <hr />
                 <p>Between {this.props.dateFrom.toDateString()} and {this.state.dateTo.toDateString()}</p>
 
                 {this.state.loading ? "loading..." : "loaded: "+this.state.notes.length}
+
                 <button
                     onClick={this.handleLoadMore}
                     disabled={this.state.loading}>load more: {this.state.loadDays} days</button>

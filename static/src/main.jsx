@@ -73,5 +73,5 @@ var NoteList = require('./NoteList').NoteList;
 // ), document.getElementById('content'));
 
 ReactDOM.render(
-    (<NoteList handleEdit={function(){}} handleRemove={function(){}} />), document.getElementById('main')
+    (<NoteList />), document.getElementById('main')
 );

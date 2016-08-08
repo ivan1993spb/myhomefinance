@@ -26,8 +26,8 @@ var Note = React.createClass({
             <div>
                 <p>{this.props.id}</p>
                 <p>{this.props.time}</p>
-                <p>{this.props.name}</p>
-                <p>{this.props.text}</p>
+                <p>{this.props.name.trim()}</p>
+                <p>{this.props.text.trim()}</p>
                 <p><button onClick={this.handleEdit}>edit</button></p>
                 <p><button onClick={this.handleRemove}>delete</button></p>
             </div>
