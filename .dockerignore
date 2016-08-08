@@ -1,0 +1,16 @@
+# idea files
+.idea
+http-proxy-image-retriever.iml
+
+# dev
+.git
+.gitignore
+.travis.yml
+
+# tests
+test.db
+test_data.sql
+
+# compiled
+myhomefinance
+myhomefinance.exe
