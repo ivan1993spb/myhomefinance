@@ -3,9 +3,9 @@ package models
 import "time"
 
 type HistoryRecord struct {
-	DocumentGUID string
-	Time         time.Time
-	Name         string
-	Amount       float64
-	Balance      float64
+	DocumentGUID string    `json:"guid"`
+	Time         time.Time `json:"time"`
+	Name         string    `json:"name"`
+	Amount       float64   `json:"amount"`
+	Balance      float64   `json:"balance"`
 }
