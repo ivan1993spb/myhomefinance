@@ -1,22 +1,23 @@
 
+install: deps test build
+
+	go install
+
 deps:
 
 	go get -u github.com/jteeuwen/go-bindata/...
 	go get -u github.com/elazarl/go-bindata-assetfs/...
-
-install:
-
 	npm install
+
+test:
+
+	go test -v ./sqlite3mappers
 
 build:
 
 	gulp build
 	go generate -v
 	go build -v
-
-test:
-
-	go test -v ./sqlite3mappers
 
 clean:
 
