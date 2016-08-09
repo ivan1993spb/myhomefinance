@@ -4,7 +4,7 @@ var urlPathAPI = '/api';
 var $ = require("jquery");
 var dates = require('./dates');
 
-exports.createNote = function(time, name, text, callback) {
+exports.createNote = function(time, name, text, success, error) {
     var data = {
         name: name
     };
@@ -23,14 +23,22 @@ exports.createNote = function(time, name, text, callback) {
         data:    data,
         success: function(data, status, xhr) {
             console.log(data);
-            if (typeof callback === 'function') {
-                callback();
+            if (typeof success === 'function') {
+                success();
             }
         }
     });
 };
 
-exports.getNotesByDateRange = function(from, to, callback) {
+exports.deleteNote = function(id, success, error) {
+    // TODO implement request to delete note
+    console.log("delete note id", id);
+    if (typeof success === 'function') {
+        success();
+    }
+};
+
+exports.getNotesByDateRange = function(from, to, success, error) {
     $.ajax({
         mathod:  'GET',
         url:     urlPathAPI + '/notes/range',
@@ -40,14 +48,14 @@ exports.getNotesByDateRange = function(from, to, callback) {
         },
         success: function(data, status, xhr) {
             console.log(data);
-            if (typeof callback === 'function') {
-                callback(data);
+            if (typeof success === 'function') {
+                success(data);
             }
         }
     });
 };
 
-exports.getHistoryRecordsByDateRange = function(from, to, callback) {
+exports.getHistoryRecordsByDateRange = function(from, to, success, error) {
     $.ajax({
         mathod:  'GET',
         url:     urlPathAPI + '/history/range',
@@ -57,8 +65,8 @@ exports.getHistoryRecordsByDateRange = function(from, to, callback) {
         },
         success: function(data, status, xhr) {
             console.log(data);
-            if (typeof callback === 'function') {
-                callback(data);
+            if (typeof success === 'function') {
+                success(data);
             }
         }
     });

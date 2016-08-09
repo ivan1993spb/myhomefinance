@@ -1,6 +1,7 @@
 
 var React = require('react'),
     Note = require("./Note").Note,
+    Overlay = require('./Overlay').Overlay,
     dates = require("./dates"),
     client = require("./client");
 
@@ -27,7 +28,11 @@ var NoteList = React.createClass({
             dateTo:   this.props.dateStart,
             loadDays: this.props.loadDays < loadDaysLimit ? this.props.loadDays : loadDaysLimit,
             notes:    [],
-            loading:  true
+            loading:  true,
+
+            noteIndex:    -1,    // Index of note to remove or edit
+            deleteDialog: false,
+            formDialog:   false
         };
     },
 
@@ -87,13 +92,33 @@ var NoteList = React.createClass({
     handleEdit: function(index, id) {
         console.log("index:", index);
         console.log("id:", id);
-        // TODO implement handleEdit
+
+        this.setState({
+            noteIndex:  index,
+            formDialog: true
+        });
     },
 
     handleRemove: function(index, id) {
         console.log("index:", index);
         console.log("id:", id);
-        // TODO implement handleRemove
+
+        this.setState({
+            noteIndex:    index,
+            deleteDialog: true
+        });
+    },
+
+    doDelete: function(index) {
+        client.deleteNote(this.state.notes[index].id, function() {
+            var notes = this.state.notes;
+            notes.splice(index, 1);
+            this.setState({
+                notes:        notes,
+                noteIndex:    -1,
+                deleteDialog: false
+            });
+        }.bind(this));
     },
 
     render: function() {
@@ -114,6 +139,28 @@ var NoteList = React.createClass({
 
         return (
             <div>
+
+                {/* DELETE DIALOG */}
+                {this.state.deleteDialog ? <Overlay topic="Delete" close={function(){this.setState({
+                    deleteDialog: false
+                });}.bind(this)} >
+                    <h3>{this.state.notes[this.state.noteIndex].name}</h3>
+                    <b>{this.state.notes[this.state.noteIndex].time}</b>
+                    <p>{this.state.notes[this.state.noteIndex].text}</p>
+                    <button onClick={this.doDelete.bind(this, this.state.noteIndex)}>delete</button>
+                </Overlay> : null}
+
+                {/* FORM DIALOG */}
+                {this.state.formDialog ? <Overlay topic="Form" close={function(){this.setState({
+                    formDialog: false
+                });}.bind(this)} >
+                    <input value={this.state.noteIndex > -1 ? this.state.notes[this.state.noteIndex].name : null} />
+                    <input value={this.state.noteIndex > -1 ? this.state.notes[this.state.noteIndex].time : null} />
+                    <textarea value={this.state.noteIndex > -1 ? this.state.notes[this.state.noteIndex].text : null} />
+                    <br />
+                    <button>save</button>
+                </Overlay> : null}
+
                 <h2>Notes list</h2>
                 <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
                 <hr />
