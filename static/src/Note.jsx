@@ -6,7 +6,7 @@ var Note = React.createClass({
 
     propTypes: {
         id:           React.PropTypes.number.isRequired,
-        time:         React.PropTypes.string.isRequired,
+        time:         React.PropTypes.object.isRequired,
         name:         React.PropTypes.string.isRequired,
         text:         React.PropTypes.string.isRequired,
         handleEdit:   React.PropTypes.func.isRequired,
@@ -14,12 +14,10 @@ var Note = React.createClass({
     },
 
     handleEdit: function() {
-        console.log("called Note.handleEdit");
         this.props.handleEdit(this.props.id);
     },
 
     handleRemove: function() {
-        console.log("called Note.handleRemove");
         this.props.handleRemove(this.props.id);
     },
 
@@ -27,7 +25,7 @@ var Note = React.createClass({
         return (
             <div>
                 <p>{this.props.id}</p>
-                <p>{this.props.time}</p>
+                <p>{this.props.time.toDateString()}</p>
                 <p>{this.props.name.trim()}</p>
                 <p>{this.props.text.trim()}</p>
                 <p><button onClick={this.handleEdit}>edit</button></p>

@@ -43,18 +43,6 @@ var NoteList = React.createClass({
         return loadDays * 2;
     },
 
-    doLoadMore: function(from, to, callback) {
-        console.log("called NoteList.doLoadMore");
-        console.log("dates 1", dates.yyyymmdd(from), dates.yyyymmdd(to));
-        console.log("dates 2", from, to);
-
-        if (typeof callback === 'function') {
-            client.getNotesByDateRange(from, to, function(notes) {
-                callback(notes);
-            });
-        }
-    },
-
     handleCloseDialog: function() {
         var newState = {};
         if (this.state.formDialog) {
@@ -75,8 +63,7 @@ var NoteList = React.createClass({
             dateTo:  from
         });
 
-        this.doLoadMore(from, to, function(notes) {
-            console.log("load more: setting component state" );
+        client.getNotesByDateRange(from, to, function(notes) {
             var newState = {
                 loading: false
             };
@@ -178,7 +165,6 @@ var NoteList = React.createClass({
     },
 
     render: function() {
-        console.log("render note list", this.state.notes);
         var notes = this.state.notes.map(function(note, index) {
             return (
                 <Note
@@ -204,6 +190,7 @@ var NoteList = React.createClass({
                 <h2>Notes list</h2>
                 <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
                 <hr />
+                <button onClick={this.handleEdit}>create</button>
                 <div>
                     {notes.length > 0 ? notes : (this.state.loading ? "loading" : "empty")}
                 </div>

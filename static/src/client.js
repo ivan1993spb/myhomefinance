@@ -4,6 +4,17 @@ var urlPathAPI = '/api';
 var $ = require("jquery");
 var dates = require('./dates');
 
+function Note(id, time, name, text) {
+    this.id = id;
+    if (typeof time == 'object') {
+        this.time = time;
+    } else {
+        this.time = new Date(time);
+    }
+    this.name = name;
+    this.text = text;
+};
+
 exports.createNote = function(time, name, text, success, error) {
     var data = {
         name: name
@@ -49,7 +60,11 @@ exports.getNotesByDateRange = function(from, to, success, error) {
         success: function(data, status, xhr) {
             console.log(data);
             if (typeof success === 'function') {
-                success(data);
+                success(data.map(function(rawNote) {
+                    with (rawNote) {
+                        return new Note(id, time, name, text);
+                    }
+                }));
             }
         }
     });
