@@ -55,6 +55,17 @@ var NoteList = React.createClass({
         }
     },
 
+    handleCloseDialog: function() {
+        var newState = {};
+        if (this.state.formDialog) {
+            newState['formDialog'] = false;
+        }
+        if (this.state.deleteDialog) {
+            newState['deleteDialog'] = false;
+        }
+        this.setState(newState);
+    },
+
     handleLoadMore: function() {
         var from = dates.addDays(this.state.dateTo, -this.state.loadDays),
             to   = this.state.dateTo;
@@ -72,7 +83,7 @@ var NoteList = React.createClass({
 
             if (notes.length) {
                 newState.notes = this.state.notes.concat(notes);
-                // return initial value
+                // return to initial value if was loaded notes
                 if (this.state.loadDays != this.props.loadDays) {
                     newState.loadDays = this.props.loadDays;
                 }
@@ -99,6 +110,34 @@ var NoteList = React.createClass({
         });
     },
 
+    renderEditDialog: function() {
+        if (!this.state.formDialog) {
+            return null;
+        }
+
+        var name = '',
+            time = '',
+            text = '';
+
+        with (this.state) {
+            if (noteIndex in notes) {
+                name = notes[noteIndex].name;
+                time = notes[noteIndex].time;
+                text = notes[noteIndex].text;
+            }
+        }
+
+        return (
+            <Overlay topic="Form" close={this.handleCloseDialog}>
+                <input value={name} />
+                <input value={time} />
+                <textarea value={text} />
+                <br />
+                <button>save</button>
+            </Overlay>
+        );
+    },
+
     handleRemove: function(index, id) {
         console.log("index:", index);
         console.log("id:", id);
@@ -121,6 +160,23 @@ var NoteList = React.createClass({
         }.bind(this));
     },
 
+    renderDeleteDialog: function() {
+        if (!this.state.deleteDialog || !(this.state.noteIndex in this.state.notes)) {
+            return null
+        }
+
+        var note = this.state.notes[this.state.noteIndex];
+
+        return (
+            <Overlay topic="Delete" close={this.handleCloseDialog}>
+                <h3>{note.name}</h3>
+                <b>{note.time}</b>
+                <p>{note.text}</p>
+                <button onClick={this.doDelete.bind(this, this.state.noteIndex)}>delete</button>
+            </Overlay>
+        );
+    },
+
     render: function() {
         console.log("render note list", this.state.notes);
         var notes = this.state.notes.map(function(note, index) {
@@ -140,26 +196,10 @@ var NoteList = React.createClass({
         return (
             <div>
 
-                {/* DELETE DIALOG */}
-                {this.state.deleteDialog ? <Overlay topic="Delete" close={function(){this.setState({
-                    deleteDialog: false
-                });}.bind(this)} >
-                    <h3>{this.state.notes[this.state.noteIndex].name}</h3>
-                    <b>{this.state.notes[this.state.noteIndex].time}</b>
-                    <p>{this.state.notes[this.state.noteIndex].text}</p>
-                    <button onClick={this.doDelete.bind(this, this.state.noteIndex)}>delete</button>
-                </Overlay> : null}
+                {this.renderDeleteDialog()}
 
-                {/* FORM DIALOG */}
-                {this.state.formDialog ? <Overlay topic="Form" close={function(){this.setState({
-                    formDialog: false
-                });}.bind(this)} >
-                    <input value={this.state.noteIndex > -1 ? this.state.notes[this.state.noteIndex].name : null} />
-                    <input value={this.state.noteIndex > -1 ? this.state.notes[this.state.noteIndex].time : null} />
-                    <textarea value={this.state.noteIndex > -1 ? this.state.notes[this.state.noteIndex].text : null} />
-                    <br />
-                    <button>save</button>
-                </Overlay> : null}
+                {this.renderEditDialog()}
+
 
                 <h2>Notes list</h2>
                 <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
