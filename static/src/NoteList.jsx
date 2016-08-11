@@ -157,7 +157,7 @@ var NoteList = React.createClass({
         return (
             <Overlay topic="Delete" close={this.handleCloseDialog}>
                 <h3>{note.name}</h3>
-                <b>{note.time}</b>
+                <b>{note.time.toDateString()}</b>
                 <p>{note.text}</p>
                 <button onClick={this.doDelete.bind(this, this.state.noteIndex)}>delete</button>
             </Overlay>
