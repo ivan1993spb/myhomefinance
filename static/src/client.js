@@ -15,6 +15,18 @@ function Note(id, time, name, text) {
     this.text = text;
 };
 
+function HistoryRecord(guid, time, name, amount, balance) {
+    this.guid = guid;
+    if (typeof time == 'object') {
+        this.time = time;
+    } else {
+        this.time = new Date(time);
+    }
+    this.name = name;
+    this.amount = amount;
+    this.balance = balance;
+};
+
 exports.createNote = function(time, name, text, success, error) {
     var data = {
         name: name
@@ -81,7 +93,11 @@ exports.getHistoryRecordsByDateRange = function(from, to, success, error) {
         success: function(data, status, xhr) {
             console.log(data);
             if (typeof success === 'function') {
-                success(data);
+                success(data.map(function(rawHistoryRecord) {
+                    with (rawHistoryRecord) {
+                        return new HistoryRecord(guid, time, name, amount, balance);
+                    }
+                }));
             }
         }
     });

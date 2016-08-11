@@ -4,6 +4,7 @@ var React = require('react'),
     dates = require("./dates"),
     client = require("./client");
 
+var parallel = require('async/parallel');
 var loadDaysLimit = 70;
 
 var History = React.createClass({
@@ -27,6 +28,7 @@ var History = React.createClass({
             dateTo:         this.props.dateStart,
             loadDays:       this.props.loadDays < loadDaysLimit ? this.props.loadDays : loadDaysLimit,
             historyRecords: [],
+            notes:          [],
             loading:        true
         };
     },
@@ -38,18 +40,6 @@ var History = React.createClass({
         return loadDays * 2;
     },
 
-    doLoadMore: function(from, to, callback) {
-        console.log("called History.doLoadMore");
-        console.log("dates 1", dates.yyyymmdd(from), dates.yyyymmdd(to));
-        console.log("dates 2", from, to);
-
-        if (typeof callback === 'function') {
-            client.getHistoryRecordsByDateRange(from, to, function(data) {
-                callback(data);
-            });
-        }
-    },
-
     handleLoadMore: function() {
         var from = dates.addDays(this.state.dateTo, -this.state.loadDays),
             to   = this.state.dateTo;
@@ -59,14 +49,31 @@ var History = React.createClass({
             dateTo:  from
         });
 
-        this.doLoadMore(from, to, function(historyRecords) {
-            console.log("load more: setting component state" );
+        parallel({
+            notes: function(callback) {
+                client.getNotesByDateRange(from, to, function(notes) {
+                    callback(null, notes);
+                });
+            },
+            historyRecords: function(callback) {
+                client.getHistoryRecordsByDateRange(from, to, function(historyRecords) {
+                    callback(null, historyRecords);
+                });
+            }
+        }, function(err, results) {
             var newState = {
                 loading: false
             };
 
-            if (historyRecords.length) {
-                newState.historyRecords = this.state.historyRecords.concat(historyRecords);
+            if (results.historyRecords.length) {
+                newState.historyRecords = this.state.historyRecords.concat(results.historyRecords);
+            }
+
+            if (results.notes.length) {
+                newState.notes = this.state.notes.concat(results.notes);
+            }
+
+            if (results.historyRecords.length || results.notes.length) {
                 // return initial value
                 if (this.state.loadDays != this.props.loadDays) {
                     newState.loadDays = this.props.loadDays;
@@ -80,24 +87,71 @@ var History = React.createClass({
     },
 
     componentDidMount: function() {
-        console.log("ok");
         this.handleLoadMore();
     },
 
+    renderHistoryRecord: function(historyRecord, key) {
+        return (
+            <HistoryRecord
+                guid={historyRecord.guid}
+                time={historyRecord.time}
+                name={historyRecord.name}
+                amount={historyRecord.amount}
+                balance={historyRecord.balance}
+                key={key}
+            />
+        );
+    },
+
+    renderNote: function(note, key) {
+        return (
+            <div style={{'backgroundColor': '#ff0'}} key={key}>
+                <p>{note.time.toDateString()}</p>
+                <p>{note.name}</p>
+                <p>{note.text}</p>
+            </div>
+        );
+    },
+
+    renderHostoryRecordsAndNotes: function() {
+        var i = 0,
+            j = 0;
+
+        var note, historyRecord;
+
+        var renderedHostoryRecordsAndNotes = [];
+        var key = 0;
+
+        while (i < this.state.historyRecords.length && j < this.state.notes.length) {
+            historyRecord = this.state.historyRecords[i];
+            note = this.state.notes[j];
+
+            if (historyRecord.time > note.time) {
+                renderedHostoryRecordsAndNotes[key] = this.renderHistoryRecord(historyRecord, key);
+                i++;
+            } else {
+                renderedHostoryRecordsAndNotes[key] = this.renderNote(note, key);
+                j++;
+            }
+
+            key++;
+        }
+
+        if (i < this.state.historyRecords.length) {
+            this.state.historyRecords.slice(i+1).forEach(function(historyRecord) {
+                renderedHostoryRecordsAndNotes[key] = this.renderHistoryRecord(historyRecord, key++);
+            }.bind(this));
+        } else if (j < this.state.notes.length) {
+            this.state.notes.slice(i+1).forEach(function(note) {
+                renderedHostoryRecordsAndNotes[key] = this.renderNote(note, key++);
+            }.bind(this));
+        }
+
+        return renderedHostoryRecordsAndNotes;
+    },
+
     render: function() {
-        console.log("render history");
-        var historyRecords = this.state.historyRecords.map(function(historyRecord, index) {
-            return (
-                <HistoryRecord
-                    guid={historyRecord.guid}
-                    key={index}
-                    time={historyRecord.time}
-                    name={historyRecord.name}
-                    amount={historyRecord.amount}
-                    balance={historyRecord.balance}
-                />
-            );
-        }.bind(this));
+        var historyRecordsAndNotes = this.renderHostoryRecordsAndNotes();
 
         return (
             <div>
@@ -105,7 +159,7 @@ var History = React.createClass({
                 <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>
                 <hr />
                 <div>
-                    {historyRecords.length > 0 ? historyRecords : (this.state.loading ? "loading" : "empty")}
+                    {historyRecordsAndNotes.length > 0 ? historyRecordsAndNotes : (this.state.loading ? "loading" : "empty")}
                 </div>
                 <hr />
                 <p>Between <i>{this.state.dateTo.toDateString()}</i> and {this.props.dateStart.toDateString()}</p>

@@ -6,7 +6,7 @@ var HistoryRecord = React.createClass({
 
     propTypes: {
         guid:    React.PropTypes.string.isRequired,
-        time:    React.PropTypes.string.isRequired,
+        time:    React.PropTypes.object.isRequired,
         name:    React.PropTypes.string.isRequired,
         amount:  React.PropTypes.number.isRequired,
         balance: React.PropTypes.number.isRequired
@@ -16,7 +16,7 @@ var HistoryRecord = React.createClass({
         return (
             <div>
                 <p>{this.props.guid}</p>
-                <p>{this.props.time}</p>
+                <p>{this.props.time.toDateString()}</p>
                 <p>{this.props.name.trim()}</p>
                 <p>{this.props.amount}</p>
                 <p>{this.props.balance}</p>
