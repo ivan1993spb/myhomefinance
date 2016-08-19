@@ -129,7 +129,6 @@ var History = React.createClass({
             historyRecord = this.state.historyRecords[i];
             note = this.state.notes[j];
 
-
             if (historyRecord.time > note.time) {
                 renderedHostoryRecordsAndNotes[key] = this.renderHistoryRecord(historyRecord, key);
                 i++;

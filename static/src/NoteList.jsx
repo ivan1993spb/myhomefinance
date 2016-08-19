@@ -83,7 +83,6 @@ var NoteList = React.createClass({
     },
 
     componentDidMount: function() {
-        console.log("ok");
         this.handleLoadMore();
     },
 
