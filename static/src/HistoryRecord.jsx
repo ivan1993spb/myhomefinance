@@ -14,12 +14,12 @@ var HistoryRecord = React.createClass({
 
     render: function() {
         return (
-            <div>
+            <div className="history-record">
                 <p>{this.props.guid}</p>
                 <p>{this.props.time.toDateString()} {this.props.time.toTimeString()}</p>
                 <p>{this.props.name.trim()}</p>
-                <p>{this.props.amount}</p>
-                <p>{this.props.balance}</p>
+                <p className={this.props.amount > 0 ? "inflow" : "outflow"}>{this.props.amount}</p>
+                <p className="balance">{this.props.balance}</p>
             </div>
         );
     }

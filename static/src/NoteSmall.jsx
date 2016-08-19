@@ -13,7 +13,7 @@ var NoteSmall = React.createClass({
 
     render: function() {
         return (
-            <div style={{'backgroundColor': '#ff0'}}>
+            <div className="note-small">
                 <p>{this.props.time.toDateString()} {this.props.time.toTimeString()}</p>
                 <p>{this.props.name}</p>
                 <p>{this.props.text}</p>
