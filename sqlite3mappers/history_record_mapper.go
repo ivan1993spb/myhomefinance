@@ -20,8 +20,7 @@ FROM (
     SELECT document_guid, unixtimestamp, name, -amount AS amount, description
     FROM outflow
     WHERE unixtimestamp BETWEEN $1 AND $2
-) AS t1,
-(
+) AS t1, (
     SELECT document_guid, unixtimestamp, name, amount, description
     FROM inflow
     WHERE unixtimestamp BETWEEN $1 AND $2
