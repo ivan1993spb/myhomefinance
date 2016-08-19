@@ -13,6 +13,7 @@ var Main = React.createClass({
                     <li><IndexLink to="/" activeClassName="menu-btn-active">index</IndexLink></li>
                     <li><Link to="/notes" activeClassName="menu-btn-active">notes</Link></li>
                     <li><Link to="/history" activeClassName="menu-btn-active">history</Link></li>
+                    <li><Link to="/graphs" activeClassName="menu-btn-active">graphs</Link></li>
                 </ul>
                 <p>_______</p>
                 {this.props.children}

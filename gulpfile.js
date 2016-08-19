@@ -23,7 +23,7 @@ gulp.task('scripts', function() {
         .on('error', function(err) {
             gutil.log(err.message)
         })
-        //.pipe(uglify())
+        // .pipe(uglify())
         .pipe(rename('client.js'))
         .pipe(gulp.dest('static/dist'));
 });
@@ -31,7 +31,7 @@ gulp.task('scripts', function() {
 gulp.task('styles', function() {
     return merge(
         gulp.src('static/src/styles/*.less').pipe(less()),
-        gulp.src('static/src/styles/*.css')
+        gulp.src(['static/src/styles/*.css', 'node_modules/chartist/dist/chartist.css'])
     )
         .pipe(concat('styles.css'))
         .pipe(cleanCSS({compatibility: 'ie8'}))

@@ -78,6 +78,11 @@ exports.getNotesByDateRange = function(from, to, success, error) {
                     }
                 }));
             }
+        },
+        error: function(jqXHR, textStatus, error) {
+            if (typeof error === 'function') {
+                error();
+            }
         }
     });
 };
@@ -98,6 +103,11 @@ exports.getHistoryRecordsByDateRange = function(from, to, success, error) {
                         return new HistoryRecord(guid, time, name, amount, balance);
                     }
                 }));
+            }
+        },
+        error: function(jqXHR, textStatus, error) {
+            if (typeof error === 'function') {
+                error();
             }
         }
     });

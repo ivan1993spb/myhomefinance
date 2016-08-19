@@ -10,6 +10,7 @@ var ReactDOM = require('react-dom'),
     Main = require('./Main').Main,
     NoteList = require('./NoteList').NoteList,
     History = require('./History').History,
+    Graphs = require('./Graphs').Graphs,
     Index = require('./Index').Index;
 
 ReactDOM.render((
@@ -19,6 +20,7 @@ ReactDOM.render((
 
             <Route path="/history" component={History} />
             <Route path="/notes" component={NoteList} />
+            <Route path="/graphs" component={Graphs} />
         </Route>
     </Router>
 ), document.getElementById('main'));

@@ -88,9 +88,7 @@ func main() {
 	n := negroni.Classic()
 	n.UseFunc(func(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		switch r.URL.Path {
-		case "/notes":
-			fallthrough
-		case "/history":
+		case "/notes", "/history", "/graphs":
 			r.URL.Path = "/index.html"
 		}
 
