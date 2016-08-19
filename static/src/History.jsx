@@ -1,6 +1,7 @@
 
 var React = require('react'),
     HistoryRecord = require("./HistoryRecord").HistoryRecord,
+    NoteSmall = require("./NoteSmall").NoteSmall,
     dates = require("./dates"),
     client = require("./client"),
     parallel = require('async/parallel');
@@ -105,11 +106,13 @@ var History = React.createClass({
 
     renderNote: function(note, key) {
         return (
-            <div style={{'backgroundColor': '#ff0'}} key={key}>
-                <p>{note.time.toDateString()} {note.time.toTimeString()}</p>
-                <p>{note.name}</p>
-                <p>{note.text}</p>
-            </div>
+            <NoteSmall
+                id={note.id}
+                time={note.time}
+                name={note.name}
+                text={note.text}
+                key={key}
+            />
         );
     },
 
@@ -122,15 +125,12 @@ var History = React.createClass({
         var renderedHostoryRecordsAndNotes = [];
         var key = 0;
 
-        console.log("output", this.state.historyRecords);
-
         while (i < this.state.historyRecords.length && j < this.state.notes.length) {
             historyRecord = this.state.historyRecords[i];
             note = this.state.notes[j];
 
 
             if (historyRecord.time > note.time) {
-                console.log(historyRecord);
                 renderedHostoryRecordsAndNotes[key] = this.renderHistoryRecord(historyRecord, key);
                 i++;
             } else {
