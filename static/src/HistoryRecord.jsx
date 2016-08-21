@@ -15,11 +15,9 @@ var HistoryRecord = React.createClass({
     render: function() {
         return (
             <div className="history-record">
-                <p>{this.props.guid}</p>
-                <p>{this.props.time.toDateString()} {this.props.time.toTimeString()}</p>
-                <p>{this.props.name.trim()}</p>
+                <h2>{this.props.name.trim()} {this.props.guid} - {this.props.time.toDateString()} {this.props.time.toTimeString()}</h2>
                 <p className={this.props.amount > 0 ? "inflow" : "outflow"}>{this.props.amount}</p>
-                <p className="balance">{this.props.balance}</p>
+                <p className="balance">Balance: {this.props.balance}</p>
             </div>
         );
     }
