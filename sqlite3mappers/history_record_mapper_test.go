@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ivan1993spb/myhomefinance/mappers"
 	"github.com/stretchr/testify/require"
+
+	"github.com/ivan1993spb/myhomefinance/mappers"
 )
 
 const testTransactions = `
@@ -38,8 +39,8 @@ VALUES
 `
 
 const (
-	TRANSACTION_COUNT = 20
-	FINISH_BALANCE    = 54.52
+	transactionCount = 20
+	finishBalance    = 54.52
 )
 
 func round(v float64, decimals int) float64 {
@@ -71,14 +72,14 @@ func TestHistoryRecordMapper(t *testing.T) {
 
 	records, err := historyRecordMapper.GetHistoryRecordsByTimeRange(time.Unix(0, 0), time.Unix(21, 0))
 	require.Nil(t, err)
-	require.Equal(t, len(records), TRANSACTION_COUNT)
+	require.Equal(t, len(records), transactionCount)
 
-	var balance float64 = 0
+	var balance float64
 	for _, record := range records {
 		balance += record.Amount
 	}
 
 	balance = round(balance, 2)
-	require.Equal(t, FINISH_BALANCE, balance)
-	require.Equal(t, FINISH_BALANCE, records[0].Balance)
+	require.Equal(t, finishBalance, balance)
+	require.Equal(t, finishBalance, records[0].Balance)
 }
