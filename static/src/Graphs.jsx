@@ -24,11 +24,12 @@ var Graphs = React.createClass({
 
     getInitialState: function() {
         return {
-            dateTo:       this.props.dateStart,
-            loadDays:     this.props.loadDays < loadDaysLimit ? this.props.loadDays : loadDaysLimit,
-            balances:     [],
-            transactions: [],
-            loading:      true
+            dateTo:   this.props.dateStart,
+            loadDays: this.props.loadDays < loadDaysLimit ? this.props.loadDays : loadDaysLimit,
+            balances: [],
+            inflow:   [],
+            outflow:  [],
+            loading:  true
         };
     },
 
@@ -47,11 +48,18 @@ var Graphs = React.createClass({
             };
 
             var balances = [],
-                transactions = [];
+                inflow = [],
+                outflow = [];
 
             historyRecords.forEach(function(historyRecord) {
-                balances.push(historyRecord.balance);
-                transactions.push(historyRecord.amount);
+                balances.push(historyRecord.balance-Math.abs(historyRecord.amount));
+                if (historyRecord.amount > 0) {
+                    inflow.push(historyRecord.amount);
+                    outflow.push(0);
+                } else {
+                    inflow.push(0);
+                    outflow.push(historyRecord.amount);
+                }
             });
 
             if (balances.length) {
@@ -59,9 +67,14 @@ var Graphs = React.createClass({
                 newState.balances = balances;
             }
 
-            if (transactions.length) {
-                transactions.reverse();
-                newState.transactions = transactions;
+            if (inflow.length) {
+                inflow.reverse();
+                newState.inflow = inflow;
+            }
+
+            if (outflow.length) {
+                outflow.reverse();
+                newState.outflow = outflow;
             }
 
             this.setState(newState);
@@ -85,17 +98,19 @@ var Graphs = React.createClass({
             labels: labels,
             series: [
                 this.state.balances,
-                this.state.transactions
+                this.state.inflow,
+                this.state.outflow
             ]
         };
 
         var options = {
             axisX: {
                 labelInterpolationFnc: function(value, index) {
-                    return index % 2 === 0 ? value : null;
+                    console.log(index, value);
+                    return value;
                 }
             },
-            // showArea: true
+            stackBars: true
         };
 
         var type = 'Bar';
