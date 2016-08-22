@@ -52,13 +52,15 @@ var Graphs = React.createClass({
                 outflow = [];
 
             historyRecords.forEach(function(historyRecord) {
-                balances.push(historyRecord.balance-Math.abs(historyRecord.amount));
+                var amount = Math.abs(historyRecord.amount);
                 if (historyRecord.amount > 0) {
+                    balances.push(historyRecord.balance-amount);
                     inflow.push(historyRecord.amount);
                     outflow.push(0);
                 } else {
+                    balances.push(historyRecord.balance);
                     inflow.push(0);
-                    outflow.push(historyRecord.amount);
+                    outflow.push(amount);
                 }
             });
 
@@ -76,6 +78,8 @@ var Graphs = React.createClass({
                 outflow.reverse();
                 newState.outflow = outflow;
             }
+
+            console.log("newState", newState);
 
             this.setState(newState);
         }.bind(this));
@@ -106,7 +110,6 @@ var Graphs = React.createClass({
         var options = {
             axisX: {
                 labelInterpolationFnc: function(value, index) {
-                    console.log(index, value);
                     return value;
                 }
             },
