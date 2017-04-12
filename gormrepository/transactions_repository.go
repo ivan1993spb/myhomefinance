@@ -1,6 +1,7 @@
 package gormrepository
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -13,10 +14,17 @@ type TransactionsRepository struct {
 }
 
 func NewTransactionsRepository(db *gorm.DB) (*TransactionsRepository, error) {
-	return nil, nil
+	r := &TransactionsRepository{db: db}
+	if err := r.init(); err != nil {
+		return nil, fmt.Errorf("cannot create transaction repository: %s", err)
+	}
+	return r, nil
 }
 
 func (r *TransactionsRepository) init() error {
+	if err := r.db.AutoMigrate(&transaction{}).Error; err != nil {
+		return fmt.Errorf("cannot initialize table: %s", err)
+	}
 	return nil
 }
 
