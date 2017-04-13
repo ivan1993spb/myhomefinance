@@ -26,7 +26,7 @@ func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if t.Time.Equal(from) || t.Time.Equal(to) || t.Time.After(from) && t.Time.Before(to) {
+		if between(from, to, t.Time) {
 			var transaction models.Transaction = *t
 			transactions = append(transactions, &transaction)
 		}
@@ -35,13 +35,17 @@ func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 	return transactions, nil
 }
 
+func between(from, to, t time.Time) bool {
+	return t.Equal(from) || t.Equal(to) || t.After(from) && t.Before(to)
+}
+
 func (r *TransactionsRepository) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if contains(t.Category, categories) && (t.Time.Equal(from) || t.Time.Equal(to) || t.Time.After(from) && t.Time.Before(to)) {
+		if contains(t.Category, categories) && between(from, to, t.Time) {
 			var transaction models.Transaction = *t
 			transactions = append(transactions, &transaction)
 		}
