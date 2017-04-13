@@ -9,4 +9,5 @@ import (
 type TransactionsRepository interface {
 	GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error)
 	CreateTransaction(transaction *models.Transaction) error
+	UpdateTransaction(transaction *models.Transaction) error
 }

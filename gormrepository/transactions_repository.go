@@ -35,19 +35,33 @@ func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 	return []*models.Transaction{}, nil
 }
 
-func (r *TransactionsRepository) CreateTransaction(t *models.Transaction) error {
+func (r *TransactionsRepository) CreateTransaction(transaction *models.Transaction) error {
 	newTransaction := &transaction{
-		Time:     t.Time,
-		Amount:   t.Amount,
-		Title:    t.Title,
-		Category: t.Category,
+		Time:     transaction.Time,
+		Amount:   transaction.Amount,
+		Title:    transaction.Title,
+		Category: transaction.Category,
 	}
 
 	if err := r.db.Create(newTransaction).Error; err != nil {
 		return fmt.Errorf("cannot create transaction: %s", err)
 	}
 
-	t.ID = t.ID
+	transaction.ID = transaction.ID
+
+	return nil
+}
+
+func (r *TransactionsRepository) UpdateTransaction(transaction *models.Transaction) error {
+	if err := r.db.Save(&transaction{
+		ID:       transaction.ID,
+		Time:     transaction.Time,
+		Amount:   transaction.Amount,
+		Title:    transaction.Title,
+		Category: transaction.Category,
+	}).Error; err != nil {
+		return fmt.Errorf("cannot update transaction: %s", err)
+	}
 
 	return nil
 }

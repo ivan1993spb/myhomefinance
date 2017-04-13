@@ -22,6 +22,10 @@ func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 	return []*models.Transaction{}, nil
 }
 
-func (r *TransactionsRepository) CreateTransaction(t *models.Transaction) error {
+func (r *TransactionsRepository) CreateTransaction(transaction *models.Transaction) error {
+	return nil
+}
+
+func (r *TransactionsRepository) UpdateTransaction(transaction *models.Transaction) error {
 	return nil
 }

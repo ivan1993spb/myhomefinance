@@ -22,3 +22,7 @@ func (c *Core) CreateTransaction(transaction *models.Transaction) error {
 func (c *Core) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error) {
 	return c.transactionsRepository.GetTransactionsByTimeRange(from, to)
 }
+
+func (c *Core) UpdateTransaction(transaction *models.Transaction) error {
+	return c.transactionsRepository.UpdateTransaction(transaction)
+}
