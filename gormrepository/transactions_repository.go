@@ -67,7 +67,7 @@ func (r *TransactionsRepository) CreateTransaction(t *models.Transaction) error 
 	}
 
 	if err := r.db.Create(newTransaction).Error; err != nil {
-		return fmt.Errorf("cannot create t: %s", err)
+		return fmt.Errorf("cannot create transaction: %s", err)
 	}
 
 	t.ID = t.ID
@@ -83,7 +83,7 @@ func (r *TransactionsRepository) UpdateTransaction(t *models.Transaction) error 
 		Title:    t.Title,
 		Category: t.Category,
 	}).Error; err != nil {
-		return fmt.Errorf("cannot update t: %s", err)
+		return fmt.Errorf("cannot update transaction: %s", err)
 	}
 
 	return nil
