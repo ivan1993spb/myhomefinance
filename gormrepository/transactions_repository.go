@@ -54,6 +54,10 @@ func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 	return out, nil
 }
 
+func (r *TransactionsRepository) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+	return nil, nil
+}
+
 func (r *TransactionsRepository) CreateTransaction(t *models.Transaction) error {
 	newTransaction := &transaction{
 		Time:     t.Time,
