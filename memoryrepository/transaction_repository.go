@@ -25,33 +25,32 @@ func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 	defer r.mutex.RUnlock()
 
 	transactions := make([]*models.Transaction, 0, len(r.transactions))
-	for _, transaction := range r.transactions {
-		if transaction.Time.Equal(from) || transaction.Time.Equal(to) || transaction.Time.After(from) && transaction.Time.Before(to) {
-			var t *models.Transaction
-			*t = *transaction
-			transactions = append(transactions, t)
+	for _, t := range r.transactions {
+		if t.Time.Equal(from) || t.Time.Equal(to) || t.Time.After(from) && t.Time.Before(to) {
+			var transaction models.Transaction = *t
+			transactions = append(transactions, &transaction)
 		}
 	}
 
 	return transactions, nil
 }
 
-func (r *TransactionsRepository) CreateTransaction(transaction *models.Transaction) error {
+func (r *TransactionsRepository) CreateTransaction(t *models.Transaction) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.transactions = append(r.transactions, transaction)
+	r.transactions = append(r.transactions, t)
 
 	return nil
 }
 
-func (r *TransactionsRepository) UpdateTransaction(transaction *models.Transaction) error {
+func (r *TransactionsRepository) UpdateTransaction(t *models.Transaction) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
 	for i := range r.transactions {
-		if r.transactions[i].ID == transaction.ID {
-			r.transactions[i] = transaction
+		if r.transactions[i].ID == t.ID {
+			r.transactions[i] = t
 			break
 		}
 	}
