@@ -63,7 +63,8 @@ func (r *TransactionsRepository) CreateTransaction(t *models.Transaction) error 
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.transactions = append(r.transactions, t)
+	var transaction models.Transaction = *t
+	r.transactions = append(r.transactions, &transaction)
 
 	return nil
 }
@@ -74,7 +75,7 @@ func (r *TransactionsRepository) UpdateTransaction(t *models.Transaction) error 
 
 	for i := range r.transactions {
 		if r.transactions[i].ID == t.ID {
-			r.transactions[i] = t
+			*r.transactions[i] = *t
 			break
 		}
 	}
