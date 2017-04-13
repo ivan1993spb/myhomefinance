@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"github.com/ivan1993spb/myhomefinance/models"
+	"github.com/ivan1993spb/myhomefinance/repository"
 )
 
 type TransactionsRepository struct {
 	transactions []*models.Transaction
 }
 
-func NewTransactionsRepository() (*TransactionsRepository, error) {
+func NewTransactionsRepository() (repository.TransactionsRepository, error) {
 	return &TransactionsRepository{}, nil
 }
 

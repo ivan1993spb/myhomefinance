@@ -7,13 +7,14 @@ import (
 	"github.com/jinzhu/gorm"
 
 	"github.com/ivan1993spb/myhomefinance/models"
+	"github.com/ivan1993spb/myhomefinance/repository"
 )
 
 type TransactionsRepository struct {
 	db *gorm.DB
 }
 
-func NewTransactionsRepository(db *gorm.DB) (*TransactionsRepository, error) {
+func NewTransactionsRepository(db *gorm.DB) (repository.TransactionsRepository, error) {
 	r := &TransactionsRepository{db: db}
 
 	if err := r.init(); err != nil {
