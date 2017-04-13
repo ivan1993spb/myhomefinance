@@ -33,7 +33,25 @@ func (r *TransactionsRepository) init() error {
 }
 
 func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error) {
-	return []*models.Transaction{}, nil
+	transactions := []*transaction{}
+
+	if err := r.db.Where("time BETWEEN ? AND ?", from, to).Find(&transactions).Error; err != nil {
+		return []*models.Transaction{}, fmt.Errorf("cannot get transactions by time range: %s", err)
+	}
+
+	out := make([]*models.Transaction, len(transactions))
+
+	for i := range transactions {
+		out[i] = &models.Transaction{
+			ID:       transactions[i].ID,
+			Time:     transactions[i].Time,
+			Amount:   transactions[i].Amount,
+			Title:    transactions[i].Title,
+			Category: transactions[i].Category,
+		}
+	}
+
+	return out, nil
 }
 
 func (r *TransactionsRepository) CreateTransaction(transaction *models.Transaction) error {
