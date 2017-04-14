@@ -19,10 +19,18 @@ func (c *Core) CreateTransaction(t *models.Transaction) error {
 	return c.transactionsRepository.CreateTransaction(t)
 }
 
+func (c *Core) UpdateTransaction(t *models.Transaction) error {
+	return c.transactionsRepository.UpdateTransaction(t)
+}
+
+func (c *Core) DeleteTransaction(t *models.Transaction) error {
+	return c.transactionsRepository.DeleteTransaction(t)
+}
+
 func (c *Core) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error) {
 	return c.transactionsRepository.GetTransactionsByTimeRange(from, to)
 }
 
-func (c *Core) UpdateTransaction(t *models.Transaction) error {
-	return c.transactionsRepository.UpdateTransaction(t)
+func (c *Core) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+	return c.transactionsRepository.GetTransactionsByTimeRangeCategories(from, to, categories)
 }
