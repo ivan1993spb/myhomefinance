@@ -7,8 +7,9 @@ import (
 )
 
 type TransactionsRepository interface {
-	GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error)
-	GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error)
 	CreateTransaction(t *models.Transaction) error
 	UpdateTransaction(t *models.Transaction) error
+	DeleteTransaction(t *models.Transaction) error
+	GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error)
+	GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error)
 }

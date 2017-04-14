@@ -2,6 +2,7 @@ package gormrepository
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -10,12 +11,24 @@ import (
 	"github.com/ivan1993spb/myhomefinance/repository"
 )
 
-type TransactionsRepository struct {
-	db *gorm.DB
+type transactionsRepository struct {
+	db   *gorm.DB
+	pool *sync.Pool
 }
 
 func NewTransactionsRepository(db *gorm.DB) (repository.TransactionsRepository, error) {
-	r := &TransactionsRepository{db: db}
+	return newTransactionsRepository(db)
+}
+
+func newTransactionsRepository(db *gorm.DB) (*transactionsRepository, error) {
+	r := &transactionsRepository{
+		db: db,
+		pool: &sync.Pool{
+			New: func() interface{} {
+				return new(transaction)
+			},
+		},
+	}
 
 	if err := r.init(); err != nil {
 		return nil, fmt.Errorf("cannot create transaction repository: %s", err)
@@ -24,7 +37,7 @@ func NewTransactionsRepository(db *gorm.DB) (repository.TransactionsRepository, 
 	return r, nil
 }
 
-func (r *TransactionsRepository) init() error {
+func (r *transactionsRepository) init() error {
 	if err := r.db.AutoMigrate(&transaction{}).Error; err != nil {
 		return fmt.Errorf("cannot initialize table: %s", err)
 	}
@@ -32,7 +45,45 @@ func (r *TransactionsRepository) init() error {
 	return nil
 }
 
-func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error) {
+func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error {
+	newTransaction := r.pool.Get().(*transaction)
+	newTransaction.ID = t.ID
+	newTransaction.Time = t.Time
+	newTransaction.Amount = t.Amount
+	newTransaction.Title = t.Title
+	newTransaction.Category = t.Category
+	defer r.pool.Put(newTransaction)
+
+	if err := r.db.Create(newTransaction).Error; err != nil {
+		return fmt.Errorf("cannot create transaction: %s", err)
+	}
+
+	t.ID = t.ID
+
+	return nil
+}
+
+func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error {
+	updatedTransaction := r.pool.Get().(*transaction)
+	updatedTransaction.ID = t.ID
+	updatedTransaction.Time = t.Time
+	updatedTransaction.Amount = t.Amount
+	updatedTransaction.Title = t.Title
+	updatedTransaction.Category = t.Category
+	defer r.pool.Put(updatedTransaction)
+
+	if err := r.db.Save(updatedTransaction).Error; err != nil {
+		return fmt.Errorf("cannot update transaction: %s", err)
+	}
+
+	return nil
+}
+
+func (r transactionsRepository) DeleteTransaction(t *models.Transaction) error {
+	return nil
+}
+
+func (r *transactionsRepository) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error) {
 	transactions := []*transaction{}
 
 	if err := r.db.Where("time BETWEEN ? AND ?", from, to).Find(&transactions).Error; err != nil {
@@ -54,37 +105,6 @@ func (r *TransactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 	return out, nil
 }
 
-func (r *TransactionsRepository) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
 	return nil, nil
-}
-
-func (r *TransactionsRepository) CreateTransaction(t *models.Transaction) error {
-	newTransaction := &transaction{
-		Time:     t.Time,
-		Amount:   t.Amount,
-		Title:    t.Title,
-		Category: t.Category,
-	}
-
-	if err := r.db.Create(newTransaction).Error; err != nil {
-		return fmt.Errorf("cannot create transaction: %s", err)
-	}
-
-	t.ID = t.ID
-
-	return nil
-}
-
-func (r *TransactionsRepository) UpdateTransaction(t *models.Transaction) error {
-	if err := r.db.Save(&transaction{
-		ID:       t.ID,
-		Time:     t.Time,
-		Amount:   t.Amount,
-		Title:    t.Title,
-		Category: t.Category,
-	}).Error; err != nil {
-		return fmt.Errorf("cannot update transaction: %s", err)
-	}
-
-	return nil
 }
