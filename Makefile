@@ -11,7 +11,7 @@ deps:
 
 test:
 
-	go test -v ./sqlite3mappers
+	go list ./... | grep -v vendor | xargs go test -v
 
 build:
 
