@@ -17,7 +17,9 @@ const (
 )
 
 type SimpleCSVParser struct {
-	counter uint64
+	counter      uint64
+	AddIDs       bool
+	SkipFirstRow bool
 	*csv.Reader
 }
 
@@ -51,8 +53,12 @@ func (p *SimpleCSVParser) ReadTransaction() (*models.Transaction, error) {
 		return nil, errReadTransaction(err.Error())
 	}
 
+	var ID uint64
+	if p.AddIDs {
+		ID = atomic.AddUint64(&p.counter, 1)
+	}
+
 	var (
-		ID       = atomic.AddUint64(&p.counter, 1)
 		title    = row[simpleCSVFieldTitle]
 		category = row[simpleCSVFieldCategory]
 	)

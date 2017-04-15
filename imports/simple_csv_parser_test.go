@@ -32,9 +32,8 @@ func TestSimpleCSVParser_ReadTransaction(t *testing.T) {
 
 	reader.Reader.FieldsPerRecord = 4
 	reader.Reader.Comma = ';'
-	//reader.Reader.Comment
 	reader.Reader.LazyQuotes = true
-	//reader.Reader.TrailingComma
+	reader.AddIDs = true
 	//reader.Reader.TrimLeadingSpace
 
 	for {
