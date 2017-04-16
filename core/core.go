@@ -34,3 +34,26 @@ func (c *Core) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*mode
 func (c *Core) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
 	return c.transactionsRepository.GetTransactionsByTimeRangeCategories(from, to, categories)
 }
+
+func (c *Core) GetStats() (float64, float64, float64) {
+	transactions, err := c.GetTransactionsByTimeRange(time.Unix(0, 0), time.Now())
+	if err != nil {
+		return 0, 0, 0
+	}
+	var inflow, outlow, balance float64
+	for _, t := range transactions {
+		if t.Amount > 0 {
+			inflow += t.Amount
+		} else if t.Amount < 0 {
+			outlow += t.Amount
+		}
+
+		balance += t.Amount
+	}
+
+	if outlow < 0 {
+		outlow *= -1
+	}
+
+	return inflow, outlow, balance
+}
