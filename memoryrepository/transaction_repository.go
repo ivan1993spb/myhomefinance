@@ -31,6 +31,11 @@ func newTransactionsRepository() (*transactionsRepository, error) {
 }
 
 func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error {
+	if t == nil {
+		// todo return error
+		return nil
+	}
+
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -42,6 +47,11 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 }
 
 func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error {
+	if t == nil {
+		// todo return error
+		return nil
+	}
+
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -56,6 +66,11 @@ func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error 
 }
 
 func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error {
+	if t == nil {
+		// todo return error
+		return nil
+	}
+
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 

@@ -46,6 +46,11 @@ func (r *transactionsRepository) init() error {
 }
 
 func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error {
+	if t == nil {
+		// todo return error
+		return nil
+	}
+
 	newTransaction := r.pool.Get().(*transaction)
 	newTransaction.ID = t.ID
 	newTransaction.Time = t.Time
@@ -64,6 +69,11 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 }
 
 func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error {
+	if t == nil {
+		// todo return error
+		return nil
+	}
+
 	updatedTransaction := r.pool.Get().(*transaction)
 	updatedTransaction.ID = t.ID
 	updatedTransaction.Time = t.Time
@@ -80,6 +90,11 @@ func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error 
 }
 
 func (r transactionsRepository) DeleteTransaction(t *models.Transaction) error {
+	if t == nil {
+		// todo return error
+		return nil
+	}
+
 	return nil
 }
 
