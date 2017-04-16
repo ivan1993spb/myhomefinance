@@ -3,7 +3,7 @@
 myhomefinance.iml
 
 # build
-myhomefinance
+/myhomefinance
 static/dist
 bindata_assetfs.go
 
