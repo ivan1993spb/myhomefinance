@@ -123,3 +123,7 @@ func (r *transactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 func (r *transactionsRepository) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
 	return nil, nil
 }
+
+func (r *transactionsRepository) StatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64) {
+	return 0, 0, 0, 0
+}
