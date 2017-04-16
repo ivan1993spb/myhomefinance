@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/ivan1993spb/myhomefinance/core"
 	"github.com/ivan1993spb/myhomefinance/imports"
@@ -23,16 +24,24 @@ func main() {
 	c := core.New(repository)
 
 	for {
-		t, _ := parser.ReadTransaction()
-		if t == nil {
+		t, err := parser.ReadTransaction()
+		if err != nil {
 			break
 		}
 		c.CreateTransaction(t)
 	}
 
-	inflow, outflow, balance := c.GetStats()
-	fmt.Printf("All time\ninflow: %0.2f\noutflow: %0.2f\nbalance: %0.2f\n", inflow, outflow, balance)
-	fmt.Println("----")
-	inflow, outflow, profit := c.GetStatsMonth()
-	fmt.Printf("Month\ninflow: %0.2f\noutflow: %0.2f\nprofit: %0.2f\n", inflow, outflow, profit)
+	unixTime := time.Unix(0, 0)
+	now := time.Now()
+	monthStart := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
+
+	// All time
+	inflow, outflow, balance, count := c.GetStatsByTimeRange(unixTime, now)
+	fmt.Print("# Stats\n\n")
+	fmt.Printf("## All time\n\n* inflow: %0.2f\n* outflow: %0.2f\n* balance: %0.2f\n* transactions: %d\n", inflow, outflow, balance, count)
+	fmt.Println()
+
+	// Month
+	inflow, outflow, profit, count := c.GetStatsByTimeRange(monthStart, now)
+	fmt.Printf("## %s\n\n* inflow: %0.2f\n* outflow: %0.2f\n* profit: %0.2f\n* transactions: %d\n", monthStart.Month(), inflow, outflow, profit, count)
 }
