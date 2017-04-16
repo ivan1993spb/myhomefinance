@@ -31,5 +31,8 @@ func main() {
 	}
 
 	inflow, outflow, balance := c.GetStats()
-	fmt.Printf("inflow: %0.2f\noutflow: %0.2f\nbalance: %0.2f\n", inflow, outflow, balance)
+	fmt.Printf("All time\ninflow: %0.2f\noutflow: %0.2f\nbalance: %0.2f\n", inflow, outflow, balance)
+	fmt.Println("----")
+	inflow, outflow, profit := c.GetStatsMonth()
+	fmt.Printf("Month\ninflow: %0.2f\noutflow: %0.2f\nprofit: %0.2f\n", inflow, outflow, profit)
 }
