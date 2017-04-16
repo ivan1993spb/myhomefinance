@@ -134,6 +134,6 @@ func TestTransactionsRepository_GetTransactionsByTimeRangeCategories(t *testing.
 	// todo add test
 }
 
-func TestTransactionsRepository_StatsByTimeRange(t *testing.T) {
+func TestTransactionsRepository_GetStatsByTimeRange(t *testing.T) {
 	// todo add test
 }

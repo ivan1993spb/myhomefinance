@@ -128,7 +128,7 @@ func contains(str string, slice []string) bool {
 	return false
 }
 
-func (r *transactionsRepository) StatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetStatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -141,6 +141,38 @@ func (r *transactionsRepository) StatsByTimeRange(from time.Time, to time.Time) 
 
 	for _, t := range r.transactions {
 		if between(from, to, t.Time) {
+			count += 1
+
+			if t.Amount > 0 {
+				inflow += t.Amount
+			} else if t.Amount < 0 {
+				outflow += t.Amount
+			}
+
+			profit += t.Amount
+		}
+	}
+
+	if outflow < 0 {
+		outflow *= -1
+	}
+
+	return inflow, outflow, profit, count
+}
+
+func (r *transactionsRepository) GetStatsByTimeRangeCategories(from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
+	if len(r.transactions) == 0 {
+		return 0, 0, 0, 0
+	}
+
+	var inflow, outflow, profit float64
+	var count uint64
+
+	for _, t := range r.transactions {
+		if contains(t.Category, categories) && between(from, to, t.Time) {
 			count += 1
 
 			if t.Amount > 0 {

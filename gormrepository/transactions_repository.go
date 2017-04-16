@@ -124,6 +124,10 @@ func (r *transactionsRepository) GetTransactionsByTimeRangeCategories(from time.
 	return nil, nil
 }
 
-func (r *transactionsRepository) StatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetStatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64) {
+	return 0, 0, 0, 0
+}
+
+func (r *transactionsRepository) GetStatsByTimeRangeCategories(from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
 	return 0, 0, 0, 0
 }

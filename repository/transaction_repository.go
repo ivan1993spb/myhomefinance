@@ -12,7 +12,8 @@ type TransactionsRepository interface {
 	DeleteTransaction(t *models.Transaction) error
 	GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error)
 	GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error)
-	StatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64)
+	GetStatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64)
+	GetStatsByTimeRangeCategories(from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64)
 
 	// todo create foreach func
 }

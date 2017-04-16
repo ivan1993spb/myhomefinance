@@ -88,3 +88,7 @@ func TestTransactionsRepository_GetTransactionsByTimeRange(t *testing.T) {
 func TestTransactionsRepository_GetTransactionsByTimeRangeCategories(t *testing.T) {
 	// todo add test
 }
+
+func TestTransactionsRepository_GetStatsByTimeRange(t *testing.T) {
+	// todo add test
+}
