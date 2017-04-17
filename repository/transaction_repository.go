@@ -10,10 +10,8 @@ type TransactionsRepository interface {
 	CreateTransaction(t *models.Transaction) error
 	UpdateTransaction(t *models.Transaction) error
 	DeleteTransaction(t *models.Transaction) error
-	GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error)
-	GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error)
-	GetStatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64)
-	GetStatsByTimeRangeCategories(from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64)
-
-	// todo create foreach func
+	GetAccountTransactionsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.Transaction, error)
+	GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error)
+	GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64)
+	GetAccountStatsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64)
 }
