@@ -15,8 +15,9 @@ func New(transactionsRepository repository.TransactionsRepository) *Core {
 	return &Core{transactionsRepository: transactionsRepository}
 }
 
-func (c *Core) CreateTransaction(t *models.Transaction) error {
-	return c.transactionsRepository.CreateTransaction(t)
+func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, title, category string) error {
+	// todo implement creating
+	return c.transactionsRepository.CreateTransaction(&models.Transaction{})
 }
 
 func (c *Core) UpdateTransaction(t *models.Transaction) error {

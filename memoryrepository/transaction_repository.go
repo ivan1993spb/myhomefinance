@@ -10,6 +10,7 @@ import (
 
 type transactionsRepository struct {
 	transactions []*models.Transaction
+	cursorID     uint64
 	mutex        *sync.RWMutex
 	pool         *sync.Pool
 }
@@ -36,8 +37,16 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 		return nil
 	}
 
+	if t.ID != 0 {
+		// todo return error
+		return nil
+	}
+
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
+
+	r.cursorID++
+	t.ID = r.cursorID
 
 	transaction := r.pool.Get().(*models.Transaction)
 	*transaction = *t
@@ -48,6 +57,11 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 
 func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error {
 	if t == nil {
+		// todo return error
+		return nil
+	}
+
+	if t.ID == 0 {
 		// todo return error
 		return nil
 	}
@@ -71,6 +85,11 @@ func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error 
 		return nil
 	}
 
+	if t.ID == 0 {
+		// todo return error
+		return nil
+	}
+
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -85,13 +104,14 @@ func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error 
 	return nil
 }
 
-func (r *transactionsRepository) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.Transaction, error) {
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if between(from, to, t.Time) {
+		if accountID == t.AccountID && between(from, to, t.Time) {
 			var transaction models.Transaction = *t
 			transactions = append(transactions, &transaction)
 		}
@@ -104,13 +124,14 @@ func between(from, to, t time.Time) bool {
 	return t.Equal(from) || t.Equal(to) || t.After(from) && t.Before(to)
 }
 
-func (r *transactionsRepository) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if contains(t.Category, categories) && between(from, to, t.Time) {
+		if accountID == t.AccountID && contains(t.Category, categories) && between(from, to, t.Time) {
 			transaction := *t
 			transactions = append(transactions, &transaction)
 		}
@@ -128,7 +149,8 @@ func contains(str string, slice []string) bool {
 	return false
 }
 
-func (r *transactionsRepository) GetStatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64) {
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -140,7 +162,7 @@ func (r *transactionsRepository) GetStatsByTimeRange(from time.Time, to time.Tim
 	var count uint64
 
 	for _, t := range r.transactions {
-		if between(from, to, t.Time) {
+		if accountID == t.AccountID && between(from, to, t.Time) {
 			count += 1
 
 			if t.Amount > 0 {
@@ -160,7 +182,8 @@ func (r *transactionsRepository) GetStatsByTimeRange(from time.Time, to time.Tim
 	return inflow, outflow, profit, count
 }
 
-func (r *transactionsRepository) GetStatsByTimeRangeCategories(from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -172,7 +195,7 @@ func (r *transactionsRepository) GetStatsByTimeRangeCategories(from time.Time, t
 	var count uint64
 
 	for _, t := range r.transactions {
-		if contains(t.Category, categories) && between(from, to, t.Time) {
+		if accountID == t.AccountID && contains(t.Category, categories) && between(from, to, t.Time) {
 			count += 1
 
 			if t.Amount > 0 {

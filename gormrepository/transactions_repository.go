@@ -53,6 +53,7 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 
 	newTransaction := r.pool.Get().(*transaction)
 	newTransaction.ID = t.ID
+	newTransaction.AccountID = t.AccountID
 	newTransaction.Time = t.Time
 	newTransaction.Amount = t.Amount
 	newTransaction.Title = t.Title
@@ -76,6 +77,7 @@ func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error 
 
 	updatedTransaction := r.pool.Get().(*transaction)
 	updatedTransaction.ID = t.ID
+	updatedTransaction.AccountID = t.AccountID
 	updatedTransaction.Time = t.Time
 	updatedTransaction.Amount = t.Amount
 	updatedTransaction.Title = t.Title
@@ -98,10 +100,10 @@ func (r transactionsRepository) DeleteTransaction(t *models.Transaction) error {
 	return nil
 }
 
-func (r *transactionsRepository) GetTransactionsByTimeRange(from time.Time, to time.Time) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.Transaction, error) {
 	transactions := []*transaction{}
 
-	if err := r.db.Where("time BETWEEN ? AND ?", from, to).Find(&transactions).Error; err != nil {
+	if err := r.db.Where("account_id = ? AND time BETWEEN ? AND ?", accountID, from, to).Find(&transactions).Error; err != nil {
 		return []*models.Transaction{}, fmt.Errorf("cannot get transactions by time range: %s", err)
 	}
 
@@ -109,25 +111,29 @@ func (r *transactionsRepository) GetTransactionsByTimeRange(from time.Time, to t
 
 	for i := range transactions {
 		out[i] = &models.Transaction{
-			ID:       transactions[i].ID,
-			Time:     transactions[i].Time,
-			Amount:   transactions[i].Amount,
-			Title:    transactions[i].Title,
-			Category: transactions[i].Category,
+			ID:        transactions[i].ID,
+			AccountID: transactions[i].AccountID,
+			Time:      transactions[i].Time,
+			Amount:    transactions[i].Amount,
+			Title:     transactions[i].Title,
+			Category:  transactions[i].Category,
 		}
 	}
 
 	return out, nil
 }
 
-func (r *transactionsRepository) GetTransactionsByTimeRangeCategories(from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+
 	return nil, nil
 }
 
-func (r *transactionsRepository) GetStatsByTimeRange(from time.Time, to time.Time) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64) {
+
 	return 0, 0, 0, 0
 }
 
-func (r *transactionsRepository) GetStatsByTimeRangeCategories(from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
+
 	return 0, 0, 0, 0
 }
