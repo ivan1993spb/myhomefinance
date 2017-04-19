@@ -105,7 +105,6 @@ func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error 
 }
 
 func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.Transaction, error) {
-
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -125,7 +124,6 @@ func between(from, to, t time.Time) bool {
 }
 
 func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
-
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -150,7 +148,6 @@ func contains(str string, slice []string) bool {
 }
 
 func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64) {
-
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -183,7 +180,6 @@ func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, fr
 }
 
 func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
-
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 

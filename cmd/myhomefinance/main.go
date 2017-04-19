@@ -18,12 +18,16 @@ func main() {
 	parser.Reader.FieldsPerRecord = 4
 	parser.Reader.Comma = ';'
 	parser.Reader.LazyQuotes = true
-	parser.AddIDs = true
+	parser.AddIDs = false
 
 	transactionsRepository, _ := memoryrepository.NewTransactionsRepository()
 	accountsRepository, _ := memoryrepository.NewAccountRepository()
 	c := core.New(transactionsRepository, accountsRepository)
 	account, _ := c.CreateAccount()
+	if err := accountsRepository.CreateAccount(account); err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	for {
 		t, err := parser.ReadTransaction()
@@ -31,7 +35,10 @@ func main() {
 			break
 		}
 		t.AccountID = account.ID
-		transactionsRepository.CreateTransaction(t)
+		if err := transactionsRepository.CreateTransaction(t); err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 
 	unixTime := time.Unix(0, 0)
