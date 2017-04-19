@@ -210,3 +210,42 @@ func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID 
 
 	return inflow, outflow, profit, count
 }
+
+func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
+	categorySums := make([]*models.CategorySum, 0)
+
+	for _, t := range r.transactions {
+		if accountID == t.AccountID && between(from, to, t.Time) {
+			doSumCategoryTransaction(categorySums, t, from, to)
+		}
+	}
+
+	return categorySums, nil
+
+}
+
+func doSumCategoryTransaction(categorySums []*models.CategorySum, t *models.Transaction, from, to time.Time) {
+	if t == nil {
+		return
+	}
+
+	for _, categorySum := range categorySums {
+		if categorySum.Category == t.Category {
+			categorySum.TransactionCount += 1
+			categorySum.Sum += t.Amount
+			return
+		}
+	}
+
+	categorySums = append(categorySums, &models.CategorySum{
+		AccountID:        t.AccountID,
+		From:             from,
+		To:               to,
+		Category:         t.Category,
+		Sum:              t.Amount,
+		TransactionCount: 1,
+	})
+}

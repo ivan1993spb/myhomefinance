@@ -124,16 +124,17 @@ func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uin
 }
 
 func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
-
 	return nil, nil
 }
 
 func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64) {
-
 	return 0, 0, 0, 0
 }
 
 func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
-
 	return 0, 0, 0, 0
+}
+
+func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
+	return []*models.CategorySum{}, nil
 }
