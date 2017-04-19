@@ -72,3 +72,7 @@ func (c *Core) DeleteAccount(ID uint64) error {
 		ID: ID,
 	})
 }
+
+func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
+	return c.transactionsRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
+}
