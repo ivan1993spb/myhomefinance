@@ -55,6 +55,10 @@ func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to t
 	return c.transactionsRepository.GetAccountStatsByTimeRange(accountID, from, to)
 }
 
+func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
+	return c.transactionsRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
+}
+
 func (c *Core) CreateAccount() (*models.Account, error) {
 	a := &models.Account{}
 	if err := c.accountRepository.CreateAccount(a); err != nil {
@@ -71,8 +75,4 @@ func (c *Core) DeleteAccount(ID uint64) error {
 	return c.accountRepository.DeleteAccount(&models.Account{
 		ID: ID,
 	})
-}
-
-func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
-	return c.transactionsRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
 }
