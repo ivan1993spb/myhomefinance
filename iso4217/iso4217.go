@@ -2,6 +2,19 @@ package iso4217
 
 type Currency byte
 
+func (c Currency) String() string {
+	if code, ok := codes[c]; ok {
+		return code
+	}
+
+	return defaultCode
+}
+
+const (
+	defaultCode = "UNKNOWN"
+	defaultName = "Unknown"
+)
+
 const (
 	AED Currency = iota
 	AFN
