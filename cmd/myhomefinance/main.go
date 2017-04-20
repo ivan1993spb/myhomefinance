@@ -8,6 +8,7 @@ import (
 
 	"github.com/ivan1993spb/myhomefinance/core"
 	"github.com/ivan1993spb/myhomefinance/imports"
+	"github.com/ivan1993spb/myhomefinance/iso4217"
 	"github.com/ivan1993spb/myhomefinance/memoryrepository"
 )
 
@@ -23,7 +24,7 @@ func main() {
 	transactionsRepository, _ := memoryrepository.NewTransactionsRepository()
 	accountsRepository, _ := memoryrepository.NewAccountRepository()
 	c := core.New(transactionsRepository, accountsRepository)
-	account, _ := c.CreateAccount()
+	account, _ := c.CreateAccount(iso4217.RUB)
 	if err := accountsRepository.CreateAccount(account); err != nil {
 		fmt.Println(err)
 		return

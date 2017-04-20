@@ -3,6 +3,7 @@ package core
 import (
 	"time"
 
+	"github.com/ivan1993spb/myhomefinance/iso4217"
 	"github.com/ivan1993spb/myhomefinance/models"
 	"github.com/ivan1993spb/myhomefinance/repository"
 )
@@ -59,8 +60,10 @@ func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time
 	return c.transactionsRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
 }
 
-func (c *Core) CreateAccount() (*models.Account, error) {
-	a := &models.Account{}
+func (c *Core) CreateAccount(currency iso4217.Currency) (*models.Account, error) {
+	a := &models.Account{
+		Currency: currency,
+	}
 	if err := c.accountRepository.CreateAccount(a); err != nil {
 		return nil, err
 	}
