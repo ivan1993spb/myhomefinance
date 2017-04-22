@@ -219,7 +219,7 @@ func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID
 
 	for _, t := range r.transactions {
 		if accountID == t.AccountID && between(from, to, t.Time) {
-			doSumCategoryTransaction(&categorySums, t, from, to)
+			categorySums = sumCategoryTransaction(categorySums, t, from, to)
 		}
 	}
 
@@ -227,20 +227,20 @@ func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID
 
 }
 
-func doSumCategoryTransaction(categorySums *[]*models.CategorySum, t *models.Transaction, from, to time.Time) {
+func sumCategoryTransaction(categorySums []*models.CategorySum, t *models.Transaction, from, to time.Time) []*models.CategorySum {
 	if t == nil {
-		return
+		return categorySums
 	}
 
-	for _, categorySum := range *categorySums {
+	for _, categorySum := range categorySums {
 		if categorySum.Category == t.Category {
 			categorySum.TransactionCount += 1
 			categorySum.Sum += t.Amount
-			return
+			return categorySums
 		}
 	}
 
-	*categorySums = append(*categorySums, &models.CategorySum{
+	return append(categorySums, &models.CategorySum{
 		AccountID:        t.AccountID,
 		From:             from,
 		To:               to,

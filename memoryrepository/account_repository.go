@@ -19,7 +19,15 @@ func NewAccountRepository() (repository.AccountRepository, error) {
 }
 
 func newAccountRepository() (*accountRepository, error) {
-	return &accountRepository{}, nil
+	return &accountRepository{
+		accounts: []*models.Account{},
+		mutex:    &sync.Mutex{},
+		pool: &sync.Pool{
+			New: func() interface{} {
+				return new(models.Account)
+			},
+		},
+	}, nil
 }
 
 func (r *accountRepository) CreateAccount(a *models.Account) error {

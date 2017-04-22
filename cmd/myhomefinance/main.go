@@ -62,10 +62,10 @@ func main() {
 	categoriesSums, _ := c.CountAccountCategoriesSumsByTimeRange(account.ID, monthStart, now)
 
 	if len(categoriesSums) > 0 {
-		fmt.Printf("| %30s | %6s | %17s |\n", "Category", "Count", "Sum")
-		fmt.Println("|:-------------------------------|:-------|:------------------|")
+		fmt.Printf("| %30s | %6s | %15s |\n", "Category", "Count", "Sum")
+		fmt.Println("|:-------------------------------|:-------|:----------------|")
 		for _, categorySum := range categoriesSums {
-			fmt.Printf("| %30s | %6d | `%15.2f` |\n", categorySum.Category, categorySum.TransactionCount, categorySum.Sum)
+			fmt.Printf("| %30s | %6d | %15.2f |\n", categorySum.Category, categorySum.TransactionCount, categorySum.Sum)
 		}
 	} else {
 		fmt.Println("empty")
