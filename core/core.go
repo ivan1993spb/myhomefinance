@@ -34,8 +34,15 @@ func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, 
 	return tr, nil
 }
 
-func (c *Core) UpdateTransaction(t *models.Transaction) error {
-	return c.transactionsRepository.UpdateTransaction(t)
+func (c *Core) UpdateTransaction(ID uint64, t time.Time, amount float64, title, category string) error {
+	return c.transactionsRepository.UpdateTransaction(&models.Transaction{
+		ID: ID,
+		// ignore AccountID
+		Time:     t,
+		Amount:   amount,
+		Title:    title,
+		Category: category,
+	})
 }
 
 func (c *Core) DeleteTransaction(ID uint64) error {
@@ -44,24 +51,26 @@ func (c *Core) DeleteTransaction(ID uint64) error {
 	})
 }
 
-func (c *Core) GetAccountTransactionsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.Transaction, error) {
+func (c *Core) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
 	return c.transactionsRepository.GetAccountTransactionsByTimeRange(accountID, from, to)
 }
 
-func (c *Core) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+func (c *Core) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
 	return c.transactionsRepository.GetAccountTransactionsByTimeRangeCategories(accountID, from, to, categories)
 }
 
-func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64) {
+func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (float64, float64, float64, uint64) {
 	return c.transactionsRepository.GetAccountStatsByTimeRange(accountID, from, to)
 }
 
-func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
+func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
 	return c.transactionsRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
 }
 
-func (c *Core) CreateAccount(currency iso4217.Currency) (*models.Account, error) {
+func (c *Core) CreateAccount(userID uint64, name string, currency iso4217.Currency) (*models.Account, error) {
 	a := &models.Account{
+		UserID:   userID,
+		Name:     name,
 		Currency: currency,
 	}
 	if err := c.accountRepository.CreateAccount(a); err != nil {
@@ -70,8 +79,13 @@ func (c *Core) CreateAccount(currency iso4217.Currency) (*models.Account, error)
 	return a, nil
 }
 
-func (c *Core) UpdateAccount(a *models.Account) error {
-	return c.accountRepository.UpdateAccount(a)
+func (c *Core) UpdateAccount(ID uint64, name string, currency iso4217.Currency) error {
+	return c.accountRepository.UpdateAccount(&models.Account{
+		ID: ID,
+		// ignore UserID
+		Name:     name,
+		Currency: currency,
+	})
 }
 
 func (c *Core) DeleteAccount(ID uint64) error {

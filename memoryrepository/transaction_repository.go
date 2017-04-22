@@ -104,7 +104,11 @@ func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error 
 	return nil
 }
 
-func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
+	if !from.Before(to) {
+		return []*models.Transaction{}, nil
+	}
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -123,7 +127,11 @@ func between(from, to, t time.Time) bool {
 	return t.Equal(from) || t.Equal(to) || t.After(from) && t.Before(to)
 }
 
-func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
+	if !from.Before(to) {
+		return []*models.Transaction{}, nil
+	}
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -147,7 +155,11 @@ func contains(str string, slice []string) bool {
 	return false
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (float64, float64, float64, uint64) {
+	if !from.Before(to) {
+		return 0, 0, 0, 0
+	}
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -179,7 +191,11 @@ func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, fr
 	return inflow, outflow, profit, count
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (float64, float64, float64, uint64) {
+	if !from.Before(to) {
+		return 0, 0, 0, 0
+	}
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -211,7 +227,11 @@ func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID 
 	return inflow, outflow, profit, count
 }
 
-func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
+func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
+	if !from.Before(to) {
+		return []*models.CategorySum{}, nil
+	}
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
@@ -224,7 +244,6 @@ func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID
 	}
 
 	return categorySums, nil
-
 }
 
 func sumCategoryTransaction(categorySums []*models.CategorySum, t *models.Transaction, from, to time.Time) []*models.CategorySum {

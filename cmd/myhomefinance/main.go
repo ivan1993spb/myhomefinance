@@ -24,7 +24,7 @@ func main() {
 	transactionsRepository, _ := memoryrepository.NewTransactionsRepository()
 	accountsRepository, _ := memoryrepository.NewAccountRepository()
 	c := core.New(transactionsRepository, accountsRepository)
-	account, _ := c.CreateAccount(iso4217.RUB)
+	account, _ := c.CreateAccount(0, "main", iso4217.RUB)
 	if err := accountsRepository.CreateAccount(account); err != nil {
 		fmt.Println(err)
 		return

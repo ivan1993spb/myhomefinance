@@ -51,6 +51,11 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 		return nil
 	}
 
+	if t.ID != 0 {
+		// todo return error
+		return nil
+	}
+
 	newTransaction := r.pool.Get().(*transaction)
 	newTransaction.ID = t.ID
 	newTransaction.AccountID = t.AccountID
@@ -75,16 +80,21 @@ func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error 
 		return nil
 	}
 
+	if t.ID == 0 {
+		// todo return error
+		return nil
+	}
+
 	updatedTransaction := r.pool.Get().(*transaction)
 	updatedTransaction.ID = t.ID
-	updatedTransaction.AccountID = t.AccountID
+	// ignore AccountID
 	updatedTransaction.Time = t.Time
 	updatedTransaction.Amount = t.Amount
 	updatedTransaction.Title = t.Title
 	updatedTransaction.Category = t.Category
 	defer r.pool.Put(updatedTransaction)
 
-	if err := r.db.Save(updatedTransaction).Error; err != nil {
+	if err := r.db.Model(updatedTransaction).Update("time", "amount", "title", "category").Error; err != nil {
 		return fmt.Errorf("cannot update transaction: %s", err)
 	}
 
@@ -97,10 +107,27 @@ func (r transactionsRepository) DeleteTransaction(t *models.Transaction) error {
 		return nil
 	}
 
+	if t.ID == 0 {
+		// todo return error
+		return nil
+	}
+
+	deleteTransaction := r.pool.Get().(*transaction)
+	deleteTransaction.ID = t.ID
+	defer r.pool.Put(deleteTransaction)
+
+	if err := r.db.Save(deleteTransaction).Error; err != nil {
+		return fmt.Errorf("cannot delete transaction: %s", err)
+	}
+
 	return nil
 }
 
-func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.Transaction, error) {
+func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
+	if !from.Before(to) {
+		return []*models.Transaction{}, nil
+	}
+
 	transactions := []*transaction{}
 
 	if err := r.db.Where("account_id = ? AND time BETWEEN ? AND ?", accountID, from, to).Find(&transactions).Error; err != nil {
@@ -123,18 +150,61 @@ func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uin
 	return out, nil
 }
 
-func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) ([]*models.Transaction, error) {
-	return nil, nil
+func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
+	if !from.Before(to) {
+		return []*models.Transaction{}, nil
+	}
+
+	transactions := []*transaction{}
+
+	if err := r.db.Where("account_id = ? AND time BETWEEN ? AND ? AND category IN (?)", accountID, from, to, categories).Find(&transactions).Error; err != nil {
+		return []*models.Transaction{}, fmt.Errorf("cannot get transactions by time range and categories: %s", err)
+	}
+
+	out := make([]*models.Transaction, len(transactions))
+
+	for i := range transactions {
+		out[i] = &models.Transaction{
+			ID:        transactions[i].ID,
+			AccountID: transactions[i].AccountID,
+			Time:      transactions[i].Time,
+			Amount:    transactions[i].Amount,
+			Title:     transactions[i].Title,
+			Category:  transactions[i].Category,
+		}
+	}
+
+	return out, nil
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from time.Time, to time.Time) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (float64, float64, float64, uint64) {
+	if !from.Before(to) {
+		return 0, 0, 0, 0
+	}
+
+	var inflow, outflow, profit float64
+	var count uint64
+
+	err := r.db.Model(&transaction{}).Where("account_id = ? AND time BETWEEN ? AND ?", accountID, from, to).Count(&count).Error
+	if err != nil {
+		return 0, 0, 0, 0
+	}
+
+	return inflow, outflow, profit, count
+}
+
+func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (float64, float64, float64, uint64) {
+	if !from.Before(to) {
+		return 0, 0, 0, 0
+	}
+
 	return 0, 0, 0, 0
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from time.Time, to time.Time, categories []string) (float64, float64, float64, uint64) {
-	return 0, 0, 0, 0
-}
+func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
+	if !from.Before(to) {
+		return []*models.CategorySum{}, nil
+	}
 
-func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from time.Time, to time.Time) ([]*models.CategorySum, error) {
 	return []*models.CategorySum{}, nil
 }
