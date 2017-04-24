@@ -6,7 +6,6 @@ func (c Currency) String() string {
 	if code, ok := codes[c]; ok {
 		return code
 	}
-
 	return defaultCode
 }
 
@@ -510,12 +509,16 @@ var names = map[Currency]string{
 	ZWD: "Zimbabwe Dollar",
 }
 
-func GetName(currency Currency) (name string, ok bool) {
-	name, ok = names[currency]
-	return
+func GetName(currency Currency) string {
+	if name, ok := names[currency]; ok {
+		return name
+	}
+	return defaultName
 }
 
-func GetCode(currency Currency) (name string, ok bool) {
-	name, ok = codes[currency]
-	return
+func GetCode(currency Currency) string {
+	if name, ok := codes[currency]; ok {
+		return name
+	}
+	return defaultCode
 }
