@@ -156,13 +156,13 @@ func contains(str string, slice []string) bool {
 	return false
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) *models.StatsTimeRange {
+func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (*models.StatsTimeRange, error) {
 	if !from.Before(to) {
 		return &models.StatsTimeRange{
 			AccountID: accountID,
 			From:      from,
 			To:        to,
-		}
+		}, nil
 	}
 
 	r.mutex.RLock()
@@ -173,49 +173,44 @@ func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, fr
 			AccountID: accountID,
 			From:      from,
 			To:        to,
-		}
+		}, nil
 	}
 
-	var inflow, outflow, profit float64
-	var count uint64
-
-	for _, t := range r.transactions {
-		if accountID == t.AccountID && between(from, to, t.Time) {
-			count += 1
-
-			if t.Amount > 0 {
-				inflow += t.Amount
-			} else if t.Amount < 0 {
-				outflow += t.Amount
-			}
-
-			profit += t.Amount
-		}
-	}
-
-	if outflow < 0 {
-		outflow *= -1
-	}
-
-	return &models.StatsTimeRange{
+	stats := &models.StatsTimeRange{
 		AccountID: accountID,
 		From:      from,
 		To:        to,
-		Inflow:    inflow,
-		Outflow:   outflow,
-		Profit:    profit,
-		Count:     count,
 	}
+
+	for _, t := range r.transactions {
+		if accountID == t.AccountID && between(from, to, t.Time) {
+			stats.Count += 1
+
+			if t.Amount > 0 {
+				stats.Inflow += t.Amount
+			} else if t.Amount < 0 {
+				stats.Outflow += t.Amount
+			}
+
+			stats.Profit += t.Amount
+		}
+	}
+
+	if stats.Outflow < 0 {
+		stats.Outflow *= -1
+	}
+
+	return stats, nil
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) *models.StatsTimeRangeCategories {
+func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
 	if !from.Before(to) {
 		return &models.StatsTimeRangeCategories{
 			AccountID:  accountID,
 			From:       from,
 			To:         to,
 			Categories: categories,
-		}
+		}, nil
 	}
 
 	r.mutex.RLock()
@@ -227,40 +222,35 @@ func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID 
 			From:       from,
 			To:         to,
 			Categories: categories,
-		}
+		}, nil
 	}
 
-	var inflow, outflow, profit float64
-	var count uint64
-
-	for _, t := range r.transactions {
-		if accountID == t.AccountID && contains(t.Category, categories) && between(from, to, t.Time) {
-			count += 1
-
-			if t.Amount > 0 {
-				inflow += t.Amount
-			} else if t.Amount < 0 {
-				outflow += t.Amount
-			}
-
-			profit += t.Amount
-		}
-	}
-
-	if outflow < 0 {
-		outflow *= -1
-	}
-
-	return &models.StatsTimeRangeCategories{
+	stats := &models.StatsTimeRangeCategories{
 		AccountID:  accountID,
 		From:       from,
 		To:         to,
-		Inflow:     inflow,
-		Outflow:    outflow,
-		Profit:     profit,
-		Count:      count,
 		Categories: categories,
 	}
+
+	for _, t := range r.transactions {
+		if accountID == t.AccountID && contains(t.Category, categories) && between(from, to, t.Time) {
+			stats.Count += 1
+
+			if t.Amount > 0 {
+				stats.Inflow += t.Amount
+			} else if t.Amount < 0 {
+				stats.Outflow += t.Amount
+			}
+
+			stats.Profit += t.Amount
+		}
+	}
+
+	if stats.Outflow < 0 {
+		stats.Outflow *= -1
+	}
+
+	return stats, nil
 }
 
 func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {

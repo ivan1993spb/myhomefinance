@@ -177,28 +177,49 @@ func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(acc
 	return out, nil
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) *models.StatsTimeRange {
 	if !from.Before(to) {
-		return 0, 0, 0, 0
+		return &models.StatsTimeRange{
+			AccountID: accountID,
+			From:      from,
+			To:        to,
+		}
 	}
 
-	var inflow, outflow, profit float64
-	var count uint64
+	stats := &models.StatsTimeRange{
+		AccountID: accountID,
+		From:      from,
+		To:        to,
+	}
 
-	err := r.db.Model(&transaction{}).Where("account_id = ? AND time BETWEEN ? AND ?", accountID, from, to).Count(&count).Error
+	err := r.db.Model(&transaction{}).Where("account_id = ? AND time BETWEEN ? AND ?", accountID, from, to).Count(&stats.Count).Error
 	if err != nil {
-		return 0, 0, 0, 0
+		return &models.StatsTimeRange{
+			AccountID: accountID,
+			From:      from,
+			To:        to,
+		}
 	}
 
-	return inflow, outflow, profit, count
+	return stats
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (float64, float64, float64, uint64) {
+func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) *models.StatsTimeRangeCategories {
 	if !from.Before(to) {
-		return 0, 0, 0, 0
+		return &models.StatsTimeRangeCategories{
+			AccountID:  accountID,
+			From:       from,
+			To:         to,
+			Categories: categories,
+		}
 	}
 
-	return 0, 0, 0, 0
+	return &models.StatsTimeRangeCategories{
+		AccountID:  accountID,
+		From:       from,
+		To:         to,
+		Categories: categories,
+	}
 }
 
 func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {

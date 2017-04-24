@@ -49,13 +49,13 @@ func main() {
 	fmt.Print("# Stats\n\n")
 
 	// All time
-	stats := c.GetAccountStatsByTimeRange(account.ID, unixTime, now)
+	stats, _ := c.GetAccountStatsByTimeRange(account.ID, unixTime, now)
 	fmt.Printf("## All time\n\n* inflow: %0.2f\n* outflow: %0.2f\n* balance: %0.2f\n* transactions: %d\n",
 		stats.Inflow, stats.Outflow, stats.Profit, stats.Count)
 	fmt.Println()
 
 	// Month
-	stats = c.GetAccountStatsByTimeRange(account.ID, monthStart, now)
+	stats, _ = c.GetAccountStatsByTimeRange(account.ID, monthStart, now)
 	fmt.Printf("## %s\n\n* inflow: %0.2f\n* outflow: %0.2f\n* profit: %0.2f\n* transactions: %d\n", monthStart.Month(),
 		stats.Inflow, stats.Outflow, stats.Profit, stats.Count)
 	fmt.Println()

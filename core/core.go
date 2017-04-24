@@ -60,11 +60,11 @@ func (c *Core) GetAccountTransactionsByTimeRangeCategories(accountID uint64, fro
 	return c.transactionsRepository.GetAccountTransactionsByTimeRangeCategories(accountID, from, to, categories)
 }
 
-func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) *models.StatsTimeRange {
+func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (*models.StatsTimeRange, error) {
 	return c.transactionsRepository.GetAccountStatsByTimeRange(accountID, from, to)
 }
 
-func (c *Core) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) *models.StatsTimeRangeCategories {
+func (c *Core) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
 	return c.transactionsRepository.GetAccountStatsByTimeRangeCategories(accountID, from, to, categories)
 }
 
