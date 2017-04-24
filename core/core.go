@@ -35,6 +35,7 @@ func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, 
 }
 
 func (c *Core) UpdateTransaction(ID uint64, t time.Time, amount float64, title, category string) error {
+	// todo return new version of transaction
 	return c.transactionsRepository.UpdateTransaction(&models.Transaction{
 		ID: ID,
 		// ignore AccountID
@@ -80,6 +81,7 @@ func (c *Core) CreateAccount(userID uint64, name string, currency iso4217.Curren
 }
 
 func (c *Core) UpdateAccount(ID uint64, name string, currency iso4217.Currency) error {
+	// todo return new version of account
 	return c.accountRepository.UpdateAccount(&models.Account{
 		ID: ID,
 		// ignore UserID

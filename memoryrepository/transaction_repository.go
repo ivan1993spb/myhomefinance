@@ -71,6 +71,7 @@ func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error 
 
 	for i := range r.transactions {
 		if r.transactions[i].ID == t.ID {
+			// todo ignore account id
 			*r.transactions[i] = *t
 			break
 		}
