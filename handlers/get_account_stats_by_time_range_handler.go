@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -53,5 +54,17 @@ func (h *getAccountStatsByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *
 		return
 	}
 
-	h.core.GetAccountStatsByTimeRange(accountID, from, to)
+	stats, err := h.core.GetAccountStatsByTimeRange(accountID, from, to)
+	if err != nil {
+		h.log.Error(errAccountStatsByTimeRangeHandler(err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(stats)
+	if err != nil {
+		h.log.Error(errCreateTransactionHandler(err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 }
