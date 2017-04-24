@@ -60,8 +60,12 @@ func (c *Core) GetAccountTransactionsByTimeRangeCategories(accountID uint64, fro
 	return c.transactionsRepository.GetAccountTransactionsByTimeRangeCategories(accountID, from, to, categories)
 }
 
-func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (float64, float64, float64, uint64) {
+func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) *models.StatsTimeRange {
 	return c.transactionsRepository.GetAccountStatsByTimeRange(accountID, from, to)
+}
+
+func (c *Core) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) *models.StatsTimeRangeCategories {
+	return c.transactionsRepository.GetAccountStatsByTimeRangeCategories(accountID, from, to, categories)
 }
 
 func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
