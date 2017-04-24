@@ -102,3 +102,22 @@ func (r *accountRepository) DeleteAccount(a *models.Account) error {
 
 	return nil
 }
+
+func (r *accountRepository) GetUserAccounts(userID uint64) ([]*models.Account, error) {
+	if userID == 0 {
+		// todo return error
+		return nil, nil
+	}
+
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	accounts := make([]*models.Account, 0)
+	for i := range r.accounts {
+		if r.accounts[i].UserID == userID {
+			accounts = append(accounts, &(*r.accounts[i]))
+		}
+	}
+
+	return accounts, nil
+}
