@@ -12,9 +12,9 @@ import (
 	"github.com/ivan1993spb/myhomefinance/core"
 )
 
-type errAccountStatsByTimeRangeHandler string
+type errGetAccountStatsByTimeRangeHandler string
 
-func (e errAccountStatsByTimeRangeHandler) Error() string {
+func (e errGetAccountStatsByTimeRangeHandler) Error() string {
 	return "error on get account stats by time range handler: " + string(e)
 }
 
@@ -35,35 +35,35 @@ func (h *getAccountStatsByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *
 
 	accountID, err := strconv.ParseUint(vars[routeVarAccountID], 10, 64)
 	if err != nil {
-		h.log.Error(errAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	from, err := time.Parse(apiDateFormat, r.URL.Query().Get(fieldTimeFrom))
 	if err != nil {
-		h.log.Error(errAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	to, err := time.Parse(apiDateFormat, r.URL.Query().Get(fieldTimeTo))
 	if err != nil {
-		h.log.Error(errAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	stats, err := h.core.GetAccountStatsByTimeRange(accountID, from, to)
 	if err != nil {
-		h.log.Error(errAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(stats)
 	if err != nil {
-		h.log.Error(errCreateTransactionHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
