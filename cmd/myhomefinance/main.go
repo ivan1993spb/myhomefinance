@@ -49,13 +49,15 @@ func main() {
 	fmt.Print("# Stats\n\n")
 
 	// All time
-	inflow, outflow, balance, count := c.GetAccountStatsByTimeRange(account.ID, unixTime, now)
-	fmt.Printf("## All time\n\n* inflow: %0.2f\n* outflow: %0.2f\n* balance: %0.2f\n* transactions: %d\n", inflow, outflow, balance, count)
+	stats := c.GetAccountStatsByTimeRange(account.ID, unixTime, now)
+	fmt.Printf("## All time\n\n* inflow: %0.2f\n* outflow: %0.2f\n* balance: %0.2f\n* transactions: %d\n",
+		stats.Inflow, stats.Outflow, stats.Profit, stats.Count)
 	fmt.Println()
 
 	// Month
-	inflow, outflow, profit, count := c.GetAccountStatsByTimeRange(account.ID, monthStart, now)
-	fmt.Printf("## %s\n\n* inflow: %0.2f\n* outflow: %0.2f\n* profit: %0.2f\n* transactions: %d\n", monthStart.Month(), inflow, outflow, profit, count)
+	stats = c.GetAccountStatsByTimeRange(account.ID, monthStart, now)
+	fmt.Printf("## %s\n\n* inflow: %0.2f\n* outflow: %0.2f\n* profit: %0.2f\n* transactions: %d\n", monthStart.Month(),
+		stats.Inflow, stats.Outflow, stats.Profit, stats.Count)
 	fmt.Println()
 
 	fmt.Print("## Month cotegories\n\n")
@@ -65,7 +67,7 @@ func main() {
 		fmt.Printf("| %30s | %6s | %15s |\n", "Category", "Count", "Sum")
 		fmt.Println("|:-------------------------------|:-------|:----------------|")
 		for _, categorySum := range categoriesSums {
-			fmt.Printf("| %30s | %6d | %15.2f |\n", categorySum.Category, categorySum.TransactionCount, categorySum.Sum)
+			fmt.Printf("| %30s | %6d | %15.2f |\n", categorySum.Category, categorySum.Count, categorySum.Sum)
 		}
 	} else {
 		fmt.Println("empty")
