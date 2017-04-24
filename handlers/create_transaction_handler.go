@@ -6,42 +6,68 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 
 	"github.com/ivan1993spb/myhomefinance/core"
 )
 
-type CreateTransactionHandler struct {
-	core *core.Core
+type errCreateTransactionHandler string
+
+func (e errCreateTransactionHandler) Error() string {
+	return "error on create transaction handler: " + string(e)
 }
 
-func (h *CreateTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+type createTransactionHandler struct {
+	core *core.Core
+	log  *logrus.Logger
+}
+
+func NewCreateTransactionHandler(core *core.Core, log *logrus.Logger) http.Handler {
+	return &createTransactionHandler{
+		core: core,
+		log:  log,
+	}
+}
+
+func (h *createTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	accountID, err := strconv.ParseUint(vars["account_id"], 10, 64)
-	if err == nil {
-		http.Error(w, "", http.StatusBadRequest)
+	accountID, err := strconv.ParseUint(vars[routeVarAccountID], 10, 64)
+	if err != nil {
+		h.log.Error(errCreateTransactionHandler(err))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	amount, err := strconv.ParseFloat("", 64)
-	if err == nil {
-		http.Error(w, "", http.StatusBadRequest)
+	amount, err := strconv.ParseFloat(r.PostFormValue(fieldAmount), 64)
+	if err != nil {
+		h.log.Error(errCreateTransactionHandler(err))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	title := r.PostFormValue("")
-	category := r.PostFormValue("")
-
-	transaction, err := h.core.CreateTransaction(accountID, time.Now(), amount, title, category)
-	if err == nil {
-		http.Error(w, "", http.StatusBadRequest)
+	t, err := time.Parse(apiDateFormat, r.PostFormValue(fieldTime))
+	if err != nil {
+		h.log.Error(errCreateTransactionHandler(err))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	err := json.NewEncoder(w).Encode(transaction)
-	if err == nil {
-		http.Error(w, "", http.StatusInternalServerError)
+	title := r.PostFormValue(fieldTitle)
+	category := r.PostFormValue(fieldCategory)
+
+	transaction, err := h.core.CreateTransaction(accountID, t, amount, title, category)
+	if err != nil {
+		h.log.Error(errCreateTransactionHandler(err))
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(transaction)
+	if err != nil {
+		h.log.Error(errCreateTransactionHandler(err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 }

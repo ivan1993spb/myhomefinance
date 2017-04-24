@@ -10,6 +10,8 @@ const (
 	fieldTitle    = "title"
 	fieldCategory = "category"
 	fieldTime     = "time"
+	fieldTimeFrom = "from"
+	fieldTimeTo   = "to"
 )
 
 const (
