@@ -12,7 +12,7 @@ type TransactionsRepository interface {
 	DeleteTransaction(t *models.Transaction) error
 	GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error)
 	GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error)
-	GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (float64, float64, float64, uint64)
-	GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (float64, float64, float64, uint64)
+	GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) *models.StatsTimeRange
+	GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) *models.StatsTimeRangeCategories
 	CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error)
 }
