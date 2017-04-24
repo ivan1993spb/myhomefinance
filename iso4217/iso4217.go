@@ -1,5 +1,7 @@
 package iso4217
 
+import "errors"
+
 type Currency byte
 
 func (c Currency) String() string {
@@ -15,7 +17,8 @@ const (
 )
 
 const (
-	AED Currency = iota
+	defaultCurrency Currency = iota
+	AED
 	AFN
 	ALL
 	AMD
@@ -521,4 +524,13 @@ func GetCode(currency Currency) string {
 		return name
 	}
 	return defaultCode
+}
+
+func Parse(code string) (Currency, error) {
+	for currency, strCode := range codes {
+		if strCode == code {
+			return currency, nil
+		}
+	}
+	return defaultCurrency, errors.New("cannot parse currency code")
 }
