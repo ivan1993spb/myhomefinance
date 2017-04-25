@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -56,10 +57,17 @@ func (h *updateTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	title := r.PostFormValue(fieldTitle)
 	category := r.PostFormValue(fieldCategory)
 
-	err = h.core.UpdateTransaction(transactionID, t, amount, title, category)
+	transaction, err := h.core.UpdateTransaction(transactionID, t, amount, title, category)
 	if err != nil {
 		h.log.Error(errUpdateTransactionHandler(err))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(transaction)
+	if err != nil {
+		h.log.Error(errUpdateTransactionHandler(err))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 }
