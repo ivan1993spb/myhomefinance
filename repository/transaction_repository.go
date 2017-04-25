@@ -6,7 +6,7 @@ import (
 	"github.com/ivan1993spb/myhomefinance/models"
 )
 
-type TransactionsRepository interface {
+type TransactionRepository interface {
 	CreateTransaction(t *models.Transaction) error
 	UpdateTransaction(t *models.Transaction) error
 	DeleteTransaction(t *models.Transaction) error

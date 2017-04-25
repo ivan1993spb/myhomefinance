@@ -35,21 +35,21 @@ func (h *createTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 	accountID, err := strconv.ParseUint(vars[routeVarAccountID], 10, 64)
 	if err != nil {
-		h.log.Error(errCreateTransactionHandler(err))
+		h.log.Error(errCreateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	amount, err := strconv.ParseFloat(r.PostFormValue(fieldAmount), 64)
 	if err != nil {
-		h.log.Error(errCreateTransactionHandler(err))
+		h.log.Error(errCreateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	t, err := time.Parse(apiDateFormat, r.PostFormValue(fieldTime))
 	if err != nil {
-		h.log.Error(errCreateTransactionHandler(err))
+		h.log.Error(errCreateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -59,14 +59,14 @@ func (h *createTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 	transaction, err := h.core.CreateTransaction(accountID, t, amount, title, category)
 	if err != nil {
-		h.log.Error(errCreateTransactionHandler(err))
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		h.log.Error(errCreateTransactionHandler(err.Error()))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(transaction)
 	if err != nil {
-		h.log.Error(errCreateTransactionHandler(err))
+		h.log.Error(errCreateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

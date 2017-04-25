@@ -8,19 +8,19 @@ import (
 	"github.com/ivan1993spb/myhomefinance/repository"
 )
 
-type transactionsRepository struct {
+type transactionRepository struct {
 	transactions []*models.Transaction
 	cursorID     uint64
 	mutex        *sync.RWMutex
 	pool         *sync.Pool
 }
 
-func NewTransactionsRepository() (repository.TransactionsRepository, error) {
-	return newTransactionsRepository()
+func NewTransactionRepository() (repository.TransactionRepository, error) {
+	return newTransactionRepository()
 }
 
-func newTransactionsRepository() (*transactionsRepository, error) {
-	return &transactionsRepository{
+func newTransactionRepository() (*transactionRepository, error) {
+	return &transactionRepository{
 		transactions: []*models.Transaction{},
 		mutex:        &sync.RWMutex{},
 		pool: &sync.Pool{
@@ -37,7 +37,7 @@ func (e errCreateTransaction) Error() string {
 	return "cannot create transaction: " + string(e)
 }
 
-func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error {
+func (r *transactionRepository) CreateTransaction(t *models.Transaction) error {
 	if t == nil {
 		return errCreateTransaction("passed nil transaction")
 	}
@@ -65,7 +65,7 @@ func (e errUpdateTransaction) Error() string {
 	return "cannot update transaction: " + string(e)
 }
 
-func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error {
+func (r *transactionRepository) UpdateTransaction(t *models.Transaction) error {
 	if t == nil {
 		return errUpdateTransaction("passed nil transaction")
 	}
@@ -98,7 +98,7 @@ func (e errDeleteTransaction) Error() string {
 	return "cannot delete transaction: " + string(e)
 }
 
-func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error {
+func (r *transactionRepository) DeleteTransaction(t *models.Transaction) error {
 	if t == nil {
 		return errDeleteTransaction("passed nil transaction")
 	}
@@ -121,7 +121,7 @@ func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error 
 	return nil
 }
 
-func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
+func (r *transactionRepository) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
 	if !from.Before(to) {
 		return []*models.Transaction{}, nil
 	}
@@ -144,7 +144,7 @@ func between(from, to, t time.Time) bool {
 	return t.Equal(from) || t.Equal(to) || t.After(from) && t.Before(to)
 }
 
-func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
+func (r *transactionRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
 	if !from.Before(to) {
 		return []*models.Transaction{}, nil
 	}
@@ -172,7 +172,7 @@ func contains(str string, slice []string) bool {
 	return false
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (*models.StatsTimeRange, error) {
+func (r *transactionRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (*models.StatsTimeRange, error) {
 	if !from.Before(to) {
 		return &models.StatsTimeRange{
 			AccountID: accountID,
@@ -219,7 +219,7 @@ func (r *transactionsRepository) GetAccountStatsByTimeRange(accountID uint64, fr
 	return stats, nil
 }
 
-func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
+func (r *transactionRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
 	if !from.Before(to) {
 		return &models.StatsTimeRangeCategories{
 			AccountID:  accountID,
@@ -269,7 +269,7 @@ func (r *transactionsRepository) GetAccountStatsByTimeRangeCategories(accountID 
 	return stats, nil
 }
 
-func (r *transactionsRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
+func (r *transactionRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
 	if !from.Before(to) {
 		return []*models.CategorySum{}, nil
 	}

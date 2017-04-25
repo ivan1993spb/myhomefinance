@@ -33,14 +33,14 @@ func (h *deleteTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 	transactionID, err := strconv.ParseUint(vars[routeVarTransactionID], 10, 64)
 	if err != nil {
-		h.log.Error(errDeleteTransactionHandler(err))
+		h.log.Error(errDeleteTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	err = h.core.DeleteTransaction(transactionID)
 	if err != nil {
-		h.log.Error(errDeleteTransactionHandler(err))
+		h.log.Error(errDeleteTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

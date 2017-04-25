@@ -9,14 +9,16 @@ import (
 )
 
 type Core struct {
-	transactionsRepository repository.TransactionsRepository
-	accountRepository      repository.AccountRepository
+	userRepository        repository.UserRepository
+	accountRepository     repository.AccountRepository
+	transactionRepository repository.TransactionRepository
 }
 
-func New(transactionsRepository repository.TransactionsRepository, accountRepository repository.AccountRepository) *Core {
+func New(userRepository repository.UserRepository, accountRepository repository.AccountRepository, transactionRepository repository.TransactionRepository) *Core {
 	return &Core{
-		transactionsRepository: transactionsRepository,
-		accountRepository:      accountRepository,
+		userRepository:        userRepository,
+		accountRepository:     accountRepository,
+		transactionRepository: transactionRepository,
 	}
 }
 
@@ -28,7 +30,7 @@ func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, 
 		Title:     title,
 		Category:  category,
 	}
-	if err := c.transactionsRepository.CreateTransaction(tr); err != nil {
+	if err := c.transactionRepository.CreateTransaction(tr); err != nil {
 		return nil, err
 	}
 	return tr, nil
@@ -43,36 +45,36 @@ func (c *Core) UpdateTransaction(ID uint64, t time.Time, amount float64, title, 
 		Title:    title,
 		Category: category,
 	}
-	if err := c.transactionsRepository.UpdateTransaction(tr); err != nil {
+	if err := c.transactionRepository.UpdateTransaction(tr); err != nil {
 		return nil, err
 	}
 	return tr, nil
 }
 
 func (c *Core) DeleteTransaction(ID uint64) error {
-	return c.transactionsRepository.DeleteTransaction(&models.Transaction{
+	return c.transactionRepository.DeleteTransaction(&models.Transaction{
 		ID: ID,
 	})
 }
 
 func (c *Core) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
-	return c.transactionsRepository.GetAccountTransactionsByTimeRange(accountID, from, to)
+	return c.transactionRepository.GetAccountTransactionsByTimeRange(accountID, from, to)
 }
 
 func (c *Core) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
-	return c.transactionsRepository.GetAccountTransactionsByTimeRangeCategories(accountID, from, to, categories)
+	return c.transactionRepository.GetAccountTransactionsByTimeRangeCategories(accountID, from, to, categories)
 }
 
 func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (*models.StatsTimeRange, error) {
-	return c.transactionsRepository.GetAccountStatsByTimeRange(accountID, from, to)
+	return c.transactionRepository.GetAccountStatsByTimeRange(accountID, from, to)
 }
 
 func (c *Core) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
-	return c.transactionsRepository.GetAccountStatsByTimeRangeCategories(accountID, from, to, categories)
+	return c.transactionRepository.GetAccountStatsByTimeRangeCategories(accountID, from, to, categories)
 }
 
 func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
-	return c.transactionsRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
+	return c.transactionRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
 }
 
 func (c *Core) CreateAccount(userID uint64, name string, currency iso4217.Currency) (*models.Account, error) {

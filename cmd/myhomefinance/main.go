@@ -21,11 +21,12 @@ func main() {
 	parser.Reader.LazyQuotes = true
 	parser.AddIDs = false
 
-	transactionsRepository, _ := memoryrepository.NewTransactionsRepository()
-	accountsRepository, _ := memoryrepository.NewAccountRepository()
-	c := core.New(transactionsRepository, accountsRepository)
+	userRepository, _ := memoryrepository.NewUserRepository()
+	accountRepository, _ := memoryrepository.NewAccountRepository()
+	transactionRepository, _ := memoryrepository.NewTransactionRepository()
+	c := core.New(userRepository, accountRepository, transactionRepository)
 	account, _ := c.CreateAccount(0, "main", iso4217.RUB)
-	if err := accountsRepository.CreateAccount(account); err != nil {
+	if err := accountRepository.CreateAccount(account); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -36,7 +37,7 @@ func main() {
 			break
 		}
 		t.AccountID = account.ID
-		if err := transactionsRepository.CreateTransaction(t); err != nil {
+		if err := transactionRepository.CreateTransaction(t); err != nil {
 			fmt.Println(err)
 			return
 		}

@@ -9,8 +9,8 @@ import (
 	"github.com/ivan1993spb/myhomefinance/models"
 )
 
-func TestTransactionsRepository_CreateTransaction(t *testing.T) {
-	r, err := newTransactionsRepository()
+func TestTransactionRepository_CreateTransaction(t *testing.T) {
+	r, err := newTransactionRepository()
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
@@ -25,8 +25,8 @@ func TestTransactionsRepository_CreateTransaction(t *testing.T) {
 	require.Equal(t, transaction, r.transactions[0])
 }
 
-func TestTransactionsRepository_UpdateTransaction(t *testing.T) {
-	r, err := newTransactionsRepository()
+func TestTransactionRepository_UpdateTransaction(t *testing.T) {
+	r, err := newTransactionRepository()
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
@@ -55,8 +55,8 @@ func TestTransactionsRepository_UpdateTransaction(t *testing.T) {
 	require.Equal(t, transaction.Category, r.transactions[0].Category)
 }
 
-func TestTransactionsRepository_DeleteTransaction(t *testing.T) {
-	r, err := newTransactionsRepository()
+func TestTransactionRepository_DeleteTransaction(t *testing.T) {
+	r, err := newTransactionRepository()
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
@@ -72,7 +72,7 @@ func TestTransactionsRepository_DeleteTransaction(t *testing.T) {
 	require.Len(t, r.transactions, 0)
 }
 
-func TestTransactionsRepository_GetTransactionsByTimeRange(t *testing.T) {
+func TestTransactionRepository_GetTransactionsByTimeRange(t *testing.T) {
 	var (
 		beforeBefore = time.Unix(1, 0)
 		before       = time.Unix(2, 0)
@@ -82,7 +82,7 @@ func TestTransactionsRepository_GetTransactionsByTimeRange(t *testing.T) {
 		after        = time.Unix(4, 0)
 		afterAfter   = time.Unix(5, 0)
 	)
-	r, err := newTransactionsRepository()
+	r, err := newTransactionRepository()
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
@@ -130,10 +130,10 @@ func TestTransactionsRepository_GetTransactionsByTimeRange(t *testing.T) {
 	require.Len(t, transactions, 1)
 }
 
-func TestTransactionsRepository_GetTransactionsByTimeRangeCategories(t *testing.T) {
+func TestTransactionRepository_GetTransactionsByTimeRangeCategories(t *testing.T) {
 	// todo add test
 }
 
-func TestTransactionsRepository_GetStatsByTimeRange(t *testing.T) {
+func TestTransactionRepository_GetStatsByTimeRange(t *testing.T) {
 	// todo add test
 }

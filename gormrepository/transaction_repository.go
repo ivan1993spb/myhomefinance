@@ -16,7 +16,7 @@ type transactionsRepository struct {
 	pool *sync.Pool
 }
 
-func NewTransactionsRepository(db *gorm.DB) (repository.TransactionsRepository, error) {
+func NewTransactionsRepository(db *gorm.DB) (repository.TransactionRepository, error) {
 	return newTransactionsRepository(db)
 }
 

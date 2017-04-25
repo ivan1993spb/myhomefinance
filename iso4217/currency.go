@@ -20,8 +20,15 @@ func (c Currency) Value() (driver.Value, error) {
 
 func (c *Currency) Scan(src interface{}) error {
 	var err error
-	*c, err = Parse(string(src))
-	return err
+	str, ok := src.(string)
+	if ok {
+		if *c, err = Parse(str); err != nil {
+			return err
+		}
+		return nil
+	}
+	*c = defaultCurrency
+	return nil
 }
 
 func (c Currency) GetName() string {

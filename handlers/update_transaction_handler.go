@@ -35,21 +35,21 @@ func (h *updateTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 	transactionID, err := strconv.ParseUint(vars[routeVarTransactionID], 10, 64)
 	if err != nil {
-		h.log.Error(errUpdateTransactionHandler(err))
+		h.log.Error(errUpdateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	amount, err := strconv.ParseFloat(r.PostFormValue(fieldAmount), 64)
 	if err != nil {
-		h.log.Error(errUpdateTransactionHandler(err))
+		h.log.Error(errUpdateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	t, err := time.Parse(apiDateFormat, r.PostFormValue(fieldTime))
 	if err != nil {
-		h.log.Error(errUpdateTransactionHandler(err))
+		h.log.Error(errUpdateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -59,14 +59,14 @@ func (h *updateTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 	transaction, err := h.core.UpdateTransaction(transactionID, t, amount, title, category)
 	if err != nil {
-		h.log.Error(errUpdateTransactionHandler(err))
+		h.log.Error(errUpdateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(transaction)
 	if err != nil {
-		h.log.Error(errUpdateTransactionHandler(err))
+		h.log.Error(errUpdateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

@@ -28,35 +28,35 @@ func (h *GetAccountTransactionsByTimeRangeHandler) ServeHTTP(w http.ResponseWrit
 
 	accountID, err := strconv.ParseUint(vars[routeVarAccountID], 10, 64)
 	if err != nil {
-		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	from, err := time.Parse(apiDateFormat, r.URL.Query().Get(fieldTimeFrom))
 	if err != nil {
-		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	to, err := time.Parse(apiDateFormat, r.URL.Query().Get(fieldTimeTo))
 	if err != nil {
-		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	transactions, err := h.core.GetAccountTransactionsByTimeRange(accountID, from, to)
 	if err != nil {
-		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(transactions)
 	if err != nil {
-		h.log.Error(errGetAccountStatsByTimeRangeHandler(err))
+		h.log.Error(errGetAccountStatsByTimeRangeHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
