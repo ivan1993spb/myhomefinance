@@ -30,15 +30,19 @@ func newUserRepository() (*userRepository, error) {
 	}, nil
 }
 
+type errCreateUser string
+
+func (e errCreateUser) Error() string {
+	return "cannot create user: " + string(e)
+}
+
 func (r *userRepository) CreateUser(u *models.User) error {
 	if u == nil {
-		// todo return error
-		return nil
+		return errCreateUser("passed nil user")
 	}
 
 	if u.ID != 0 {
-		// todo return error
-		return nil
+		return errCreateUser("passed user has an identifier")
 	}
 
 	r.mutex.Lock()
@@ -54,15 +58,19 @@ func (r *userRepository) CreateUser(u *models.User) error {
 	return nil
 }
 
+type errUpdateUser string
+
+func (e errUpdateUser) Error() string {
+	return "cannot update user: " + string(e)
+}
+
 func (r *userRepository) UpdateUser(u *models.User) error {
 	if u == nil {
-		// todo return error
-		return nil
+		return errUpdateUser("passed nil user")
 	}
 
 	if u.ID == 0 {
-		// todo return error
-		return nil
+		return errUpdateUser("passed user has zero identifier")
 	}
 
 	r.mutex.Lock()
@@ -78,15 +86,19 @@ func (r *userRepository) UpdateUser(u *models.User) error {
 	return nil
 }
 
+type errDeleteUser string
+
+func (e errDeleteUser) Error() string {
+	return "cannot delete user: " + string(e)
+}
+
 func (r *userRepository) DeleteUser(u *models.User) error {
 	if u == nil {
-		// todo return error
-		return nil
+		return errDeleteUser("passed nil user")
 	}
 
 	if u.ID == 0 {
-		// todo return error
-		return nil
+		return errDeleteUser("passed user does not have identifier")
 	}
 
 	r.mutex.Lock()
