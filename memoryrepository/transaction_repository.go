@@ -1,6 +1,7 @@
 package memoryrepository
 
 import (
+	"errors"
 	"sync"
 	"time"
 
@@ -119,6 +120,20 @@ func (r *transactionRepository) DeleteTransaction(t *models.Transaction) error {
 	}
 
 	return nil
+}
+
+func (r *transactionRepository) GetTransactionByID(ID uint64) (*models.Transaction, error) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
+	for _, t := range r.transactions {
+		if t.ID == ID {
+			var transaction models.Transaction = *t
+			return &transaction, nil
+		}
+	}
+
+	return nil, errors.New("cannot get transaction: not found")
 }
 
 func (r *transactionRepository) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {

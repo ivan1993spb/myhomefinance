@@ -57,6 +57,10 @@ func (c *Core) DeleteTransaction(ID uint64) error {
 	})
 }
 
+func (c *Core) GetTransactionByID(ID uint64) (*models.Transaction, error) {
+	return c.transactionRepository.GetTransactionByID(ID)
+}
+
 func (c *Core) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
 	return c.transactionRepository.GetAccountTransactionsByTimeRange(accountID, from, to)
 }
