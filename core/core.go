@@ -34,16 +34,19 @@ func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, 
 	return tr, nil
 }
 
-func (c *Core) UpdateTransaction(ID uint64, t time.Time, amount float64, title, category string) error {
-	// todo return new version of transaction
-	return c.transactionsRepository.UpdateTransaction(&models.Transaction{
+func (c *Core) UpdateTransaction(ID uint64, t time.Time, amount float64, title, category string) (*models.Transaction, error) {
+	tr := &models.Transaction{
 		ID: ID,
 		// ignore AccountID
 		Time:     t,
 		Amount:   amount,
 		Title:    title,
 		Category: category,
-	})
+	}
+	if err := c.transactionsRepository.UpdateTransaction(tr); err != nil {
+		return nil, err
+	}
+	return tr, nil
 }
 
 func (c *Core) DeleteTransaction(ID uint64) error {
@@ -84,14 +87,17 @@ func (c *Core) CreateAccount(userID uint64, name string, currency iso4217.Curren
 	return a, nil
 }
 
-func (c *Core) UpdateAccount(ID uint64, name string, currency iso4217.Currency) error {
-	// todo return new version of account
-	return c.accountRepository.UpdateAccount(&models.Account{
+func (c *Core) UpdateAccount(ID uint64, name string, currency iso4217.Currency) (*models.Account, error) {
+	a := &models.Account{
 		ID: ID,
 		// ignore UserID
 		Name:     name,
 		Currency: currency,
-	})
+	}
+	if err := c.accountRepository.UpdateAccount(a); err != nil {
+		return nil, err
+	}
+	return a, nil
 }
 
 func (c *Core) DeleteAccount(ID uint64) error {

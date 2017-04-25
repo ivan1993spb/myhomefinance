@@ -3,6 +3,7 @@ package memoryrepository
 import (
 	"sync"
 
+	"github.com/ivan1993spb/myhomefinance/iso4217"
 	"github.com/ivan1993spb/myhomefinance/models"
 	"github.com/ivan1993spb/myhomefinance/repository"
 )
@@ -70,7 +71,10 @@ func (r *accountRepository) UpdateAccount(a *models.Account) error {
 
 	for i := range r.accounts {
 		if r.accounts[i].ID == a.ID {
-			*r.accounts[i] = *a
+			// ignore user id
+			r.accounts[i].Name = a.Name
+			r.accounts[i].Currency = a.Currency
+			*a = *r.accounts[i]
 			break
 		}
 	}
