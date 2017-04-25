@@ -6,5 +6,5 @@ type AccountRepository interface {
 	CreateAccount(a *models.Account) error
 	UpdateAccount(a *models.Account) error
 	DeleteAccount(a *models.Account) error
-	GetUserAccounts(userID uint64) ([]*models.Account, error)
+	GetAccountsByUserID(userID uint64) ([]*models.Account, error)
 }

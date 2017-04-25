@@ -31,15 +31,19 @@ func newTransactionsRepository() (*transactionsRepository, error) {
 	}, nil
 }
 
+type errCreateTransaction string
+
+func (e errCreateTransaction) Error() string {
+	return "cannot create transaction: " + string(e)
+}
+
 func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error {
 	if t == nil {
-		// todo return error
-		return nil
+		return errCreateTransaction("passed nil transaction")
 	}
 
 	if t.ID != 0 {
-		// todo return error
-		return nil
+		return errCreateTransaction("passed transaction has zero identifier")
 	}
 
 	r.mutex.Lock()
@@ -55,15 +59,19 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 	return nil
 }
 
+type errUpdateTransaction string
+
+func (e errUpdateTransaction) Error() string {
+	return "cannot update transaction: " + string(e)
+}
+
 func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error {
 	if t == nil {
-		// todo return error
-		return nil
+		return errUpdateTransaction("passed nil transaction")
 	}
 
 	if t.ID == 0 {
-		// todo return error
-		return nil
+		return errUpdateTransaction("passed transaction has zero identifier")
 	}
 
 	r.mutex.Lock()
@@ -84,15 +92,19 @@ func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error 
 	return nil
 }
 
+type errDeleteTransaction string
+
+func (e errDeleteTransaction) Error() string {
+	return "cannot delete transaction: " + string(e)
+}
+
 func (r *transactionsRepository) DeleteTransaction(t *models.Transaction) error {
 	if t == nil {
-		// todo return error
-		return nil
+		return errDeleteTransaction("passed nil transaction")
 	}
 
 	if t.ID == 0 {
-		// todo return error
-		return nil
+		return errDeleteTransaction("passed transaction has zero identifier")
 	}
 
 	r.mutex.Lock()
