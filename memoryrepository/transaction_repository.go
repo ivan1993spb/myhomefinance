@@ -86,11 +86,11 @@ func (r *transactionRepository) UpdateTransaction(t *models.Transaction) error {
 			r.transactions[i].Title = t.Title
 			r.transactions[i].Category = t.Category
 			*t = *r.transactions[i]
-			break
+			return nil
 		}
 	}
 
-	return nil
+	return errUpdateTransaction("not found")
 }
 
 type errDeleteTransaction string
@@ -115,11 +115,11 @@ func (r *transactionRepository) DeleteTransaction(t *models.Transaction) error {
 		if r.transactions[i].ID == t.ID {
 			r.pool.Put(r.transactions[i])
 			r.transactions = append(r.transactions[:i], r.transactions[i+1:]...)
-			break
+			return nil
 		}
 	}
 
-	return nil
+	return errDeleteTransaction("not found")
 }
 
 func (r *transactionRepository) GetTransactionByID(ID uint64) (*models.Transaction, error) {
