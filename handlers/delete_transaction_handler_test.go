@@ -5,14 +5,15 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 
 	"github.com/ivan1993spb/myhomefinance/core"
+	"github.com/ivan1993spb/myhomefinance/iso4217"
 	"github.com/ivan1993spb/myhomefinance/memoryrepository"
-	"github.com/ivan1993spb/myhomefinance/models"
 )
 
 func TestDeleteTransactionHandler_ServeHTTP_EmptyTransactionID(t *testing.T) {
@@ -30,7 +31,7 @@ func TestDeleteTransactionHandler_ServeHTTP_EmptyTransactionID(t *testing.T) {
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusNotFound)
+	require.Equal(t, http.StatusNotFound, response.Code)
 }
 
 func TestDeleteTransactionHandler_ServeHTTP_InvalidTransactionID(t *testing.T) {
@@ -48,7 +49,7 @@ func TestDeleteTransactionHandler_ServeHTTP_InvalidTransactionID(t *testing.T) {
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusBadRequest)
+	require.Equal(t, http.StatusBadRequest, response.Code)
 }
 
 func TestDeleteTransactionHandler_ServeHTTP_Success(t *testing.T) {
@@ -56,6 +57,9 @@ func TestDeleteTransactionHandler_ServeHTTP_Success(t *testing.T) {
 	accountRepository, _ := memoryrepository.NewAccountRepository()
 	transactionRepository, _ := memoryrepository.NewTransactionRepository()
 	c := core.New(userRepository, accountRepository, transactionRepository)
+	user, _ := c.CreateUser()
+	account, _ := c.CreateAccount(user.ID, "test", iso4217.USD)
+	c.CreateTransaction(account.ID, time.Unix(1, 0), 5, "title 1", "category 1")
 	log := logrus.New()
 	log.Out = ioutil.Discard
 	handler := NewDeleteTransactionHandler(c, log)
@@ -66,5 +70,5 @@ func TestDeleteTransactionHandler_ServeHTTP_Success(t *testing.T) {
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusOK)
+	require.Equal(t, http.StatusOK, response.Code)
 }

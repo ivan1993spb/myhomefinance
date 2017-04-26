@@ -18,12 +18,19 @@ func (e errGetAccountTransactionsByTimeRangeHandler) Error() string {
 	return "error on get account transactions by time range handler: " + string(e)
 }
 
-type GetAccountTransactionsByTimeRangeHandler struct {
+type getAccountTransactionsByTimeRangeHandler struct {
 	core *core.Core
 	log  *logrus.Logger
 }
 
-func (h *GetAccountTransactionsByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func NewGetAccountTransactionsByTimeRangeHandler (core *core.Core, log *logrus.Logger) http.Handler {
+	return &getAccountTransactionsByTimeRangeHandler{
+		core: core,
+		log:  log,
+	}
+}
+
+func (h *getAccountTransactionsByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	accountID, err := strconv.ParseUint(vars[routeVarAccountID], 10, 64)

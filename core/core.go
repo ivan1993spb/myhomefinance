@@ -36,9 +36,9 @@ func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, 
 	return tr, nil
 }
 
-func (c *Core) UpdateTransaction(ID uint64, t time.Time, amount float64, title, category string) (*models.Transaction, error) {
+func (c *Core) UpdateTransaction(transactionID uint64, t time.Time, amount float64, title, category string) (*models.Transaction, error) {
 	tr := &models.Transaction{
-		ID: ID,
+		ID: transactionID,
 		// ignore AccountID
 		Time:     t,
 		Amount:   amount,
@@ -51,14 +51,14 @@ func (c *Core) UpdateTransaction(ID uint64, t time.Time, amount float64, title, 
 	return tr, nil
 }
 
-func (c *Core) DeleteTransaction(ID uint64) error {
+func (c *Core) DeleteTransaction(transactionID uint64) error {
 	return c.transactionRepository.DeleteTransaction(&models.Transaction{
-		ID: ID,
+		ID: transactionID,
 	})
 }
 
-func (c *Core) GetTransactionByID(ID uint64) (*models.Transaction, error) {
-	return c.transactionRepository.GetTransactionByID(ID)
+func (c *Core) GetTransactionByID(transactionID uint64) (*models.Transaction, error) {
+	return c.transactionRepository.GetTransactionByID(transactionID)
 }
 
 func (c *Core) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
@@ -93,9 +93,9 @@ func (c *Core) CreateAccount(userID uint64, name string, currency iso4217.Curren
 	return a, nil
 }
 
-func (c *Core) UpdateAccount(ID uint64, name string, currency iso4217.Currency) (*models.Account, error) {
+func (c *Core) UpdateAccount(accountID uint64, name string, currency iso4217.Currency) (*models.Account, error) {
 	a := &models.Account{
-		ID: ID,
+		ID: accountID,
 		// ignore UserID
 		Name:     name,
 		Currency: currency,
@@ -106,8 +106,32 @@ func (c *Core) UpdateAccount(ID uint64, name string, currency iso4217.Currency) 
 	return a, nil
 }
 
-func (c *Core) DeleteAccount(ID uint64) error {
+func (c *Core) DeleteAccount(accountID uint64) error {
 	return c.accountRepository.DeleteAccount(&models.Account{
-		ID: ID,
+		ID: accountID,
+	})
+}
+
+func (c Core) CreateUser() (*models.User, error) {
+	u := &models.User{}
+	if err := c.userRepository.CreateUser(u); err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func (c Core) UpdateUser(userID uint64) (*models.User, error) {
+	u := &models.User{
+		ID: userID,
+	}
+	if err := c.userRepository.UpdateUser(u); err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func (c Core) DeleteUser(userID uint64) error {
+	return c.userRepository.DeleteUser(&models.User{
+		ID: userID,
 	})
 }

@@ -25,7 +25,7 @@ func TestCreateTransactionHandler_ServeHTTP_EmptyAccountID(t *testing.T) {
 	log.Out = ioutil.Discard
 	handler := NewCreateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}", handler).Methods(http.MethodPost)
+	router.Handle("/account/{account_id}/transaction", handler).Methods(http.MethodPost)
 
 	data := &url.Values{}
 	data.Add(fieldAmount, "22")
@@ -37,7 +37,7 @@ func TestCreateTransactionHandler_ServeHTTP_EmptyAccountID(t *testing.T) {
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusNotFound)
+	require.Equal(t, http.StatusNotFound, response.Code)
 }
 
 func TestCreateTransactionHandler_ServeHTTP_InvalidAccountID(t *testing.T) {
@@ -49,7 +49,7 @@ func TestCreateTransactionHandler_ServeHTTP_InvalidAccountID(t *testing.T) {
 	log.Out = ioutil.Discard
 	handler := NewCreateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}", handler).Methods(http.MethodPost)
+	router.Handle("/account/{account_id}/transaction", handler).Methods(http.MethodPost)
 
 	data := &url.Values{}
 	data.Add(fieldAmount, "22")
@@ -61,7 +61,7 @@ func TestCreateTransactionHandler_ServeHTTP_InvalidAccountID(t *testing.T) {
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusBadRequest)
+	require.Equal(t, http.StatusBadRequest, response.Code)
 }
 
 func TestCreateTransactionHandler_ServeHTTP_EmptyAmount(t *testing.T) {
@@ -73,18 +73,18 @@ func TestCreateTransactionHandler_ServeHTTP_EmptyAmount(t *testing.T) {
 	log.Out = ioutil.Discard
 	handler := NewCreateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}", handler).Methods(http.MethodPost)
+	router.Handle("/account/{account_id}/transaction", handler).Methods(http.MethodPost)
 
 	data := &url.Values{}
 	data.Add(fieldTime, "2006-Jan-02")
 	data.Add(fieldTitle, "title")
 	data.Add(fieldCategory, "category")
-	request := httptest.NewRequest(http.MethodPost, "/account/1", strings.NewReader(data.Encode()))
+	request := httptest.NewRequest(http.MethodPost, "/account/1/transaction", strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusBadRequest)
+	require.Equal(t, http.StatusBadRequest, response.Code)
 }
 
 func TestCreateTransactionHandler_ServeHTTP_InvalidAmount(t *testing.T) {
@@ -96,19 +96,19 @@ func TestCreateTransactionHandler_ServeHTTP_InvalidAmount(t *testing.T) {
 	log.Out = ioutil.Discard
 	handler := NewCreateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}", handler).Methods(http.MethodPost)
+	router.Handle("/account/{account_id}/transaction", handler).Methods(http.MethodPost)
 
 	data := &url.Values{}
 	data.Add(fieldAmount, "invalid")
 	data.Add(fieldTime, "2006-Jan-02")
 	data.Add(fieldTitle, "title")
 	data.Add(fieldCategory, "category")
-	request := httptest.NewRequest(http.MethodPost, "/account/1", strings.NewReader(data.Encode()))
+	request := httptest.NewRequest(http.MethodPost, "/account/1/transaction", strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusBadRequest)
+	require.Equal(t, http.StatusBadRequest, response.Code)
 }
 
 func TestCreateTransactionHandler_ServeHTTP_EmptyTime(t *testing.T) {
@@ -120,18 +120,18 @@ func TestCreateTransactionHandler_ServeHTTP_EmptyTime(t *testing.T) {
 	log.Out = ioutil.Discard
 	handler := NewCreateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}", handler).Methods(http.MethodPost)
+	router.Handle("/account/{account_id}/transaction", handler).Methods(http.MethodPost)
 
 	data := &url.Values{}
 	data.Add(fieldAmount, "10")
 	data.Add(fieldTitle, "title")
 	data.Add(fieldCategory, "category")
-	request := httptest.NewRequest(http.MethodPost, "/account/1", strings.NewReader(data.Encode()))
+	request := httptest.NewRequest(http.MethodPost, "/account/1/transaction", strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusBadRequest)
+	require.Equal(t, http.StatusBadRequest, response.Code)
 }
 
 func TestCreateTransactionHandler_ServeHTTP_InvalidTime(t *testing.T) {
@@ -143,19 +143,19 @@ func TestCreateTransactionHandler_ServeHTTP_InvalidTime(t *testing.T) {
 	log.Out = ioutil.Discard
 	handler := NewCreateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}", handler).Methods(http.MethodPost)
+	router.Handle("/account/{account_id}/transaction", handler).Methods(http.MethodPost)
 
 	data := &url.Values{}
 	data.Add(fieldAmount, "10")
 	data.Add(fieldTime, "invalid")
 	data.Add(fieldTitle, "title")
 	data.Add(fieldCategory, "category")
-	request := httptest.NewRequest(http.MethodPost, "/account/1", strings.NewReader(data.Encode()))
+	request := httptest.NewRequest(http.MethodPost, "/account/1/transaction", strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusBadRequest)
+	require.Equal(t, http.StatusBadRequest, response.Code)
 }
 
 func TestCreateTransactionHandler_ServeHTTP_Success(t *testing.T) {
@@ -167,17 +167,17 @@ func TestCreateTransactionHandler_ServeHTTP_Success(t *testing.T) {
 	log.Out = ioutil.Discard
 	handler := NewCreateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}", handler).Methods(http.MethodPost)
+	router.Handle("/account/{account_id}/transaction", handler).Methods(http.MethodPost)
 
 	data := &url.Values{}
 	data.Add(fieldAmount, "10")
 	data.Add(fieldTime, "2006-Jan-02")
 	data.Add(fieldTitle, "title")
 	data.Add(fieldCategory, "category")
-	request := httptest.NewRequest(http.MethodPost, "/account/1", strings.NewReader(data.Encode()))
+	request := httptest.NewRequest(http.MethodPost, "/account/1/transaction", strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	require.Equal(t, response.Code, http.StatusOK)
+	require.Equal(t, http.StatusOK, response.Code)
 }

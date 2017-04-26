@@ -69,7 +69,7 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 		return fmt.Errorf("cannot create transaction: %s", err)
 	}
 
-	t.ID = t.ID
+	t.ID = newTransaction.ID
 
 	return nil
 }

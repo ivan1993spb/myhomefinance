@@ -64,10 +64,14 @@ func (h *createTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// todo set all output to json
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+
 	err = json.NewEncoder(w).Encode(transaction)
 	if err != nil {
 		h.log.Error(errCreateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
 }
