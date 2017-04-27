@@ -56,7 +56,7 @@ func TestCreateTransactionHandler_ServeHTTP_InvalidAccountID(t *testing.T) {
 	data.Add(fieldTime, "2006-Jan-02")
 	data.Add(fieldTitle, "title")
 	data.Add(fieldCategory, "category")
-	request := httptest.NewRequest(http.MethodPost, "/account/invalid", strings.NewReader(data.Encode()))
+	request := httptest.NewRequest(http.MethodPost, "/account/invalid/transaction", strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response := httptest.NewRecorder()

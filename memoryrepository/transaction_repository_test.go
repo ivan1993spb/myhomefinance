@@ -14,7 +14,6 @@ func TestTransactionRepository_CreateTransaction(t *testing.T) {
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
-		ID:       1,
 		Time:     time.Now(),
 		Amount:   0,
 		Title:    "Title",
@@ -72,7 +71,7 @@ func TestTransactionRepository_DeleteTransaction(t *testing.T) {
 	require.Len(t, r.transactions, 0)
 }
 
-func TestTransactionRepository_GetTransactionsByTimeRange(t *testing.T) {
+func TestTransactionRepository_GetAccountTransactionsByTimeRange(t *testing.T) {
 	var (
 		beforeBefore = time.Unix(1, 0)
 		before       = time.Unix(2, 0)
@@ -99,33 +98,33 @@ func TestTransactionRepository_GetTransactionsByTimeRange(t *testing.T) {
 
 	var transactions []*models.Transaction
 
-	transactions, err = r.GetTransactionsByTimeRange(beforeBefore, before)
+	transactions, err = r.GetAccountTransactionsByTimeRange(0, beforeBefore, before)
 	require.Nil(t, err)
 	require.Len(t, transactions, 0)
 
-	transactions, err = r.GetTransactionsByTimeRange(before, bitBefore)
+	transactions, err = r.GetAccountTransactionsByTimeRange(0, before, bitBefore)
 	require.Nil(t, err)
 	require.Len(t, transactions, 0)
 
-	transactions, err = r.GetTransactionsByTimeRange(bitAfter, after)
+	transactions, err = r.GetAccountTransactionsByTimeRange(0, bitAfter, after)
 	require.Nil(t, err)
 	require.Len(t, transactions, 0)
 
-	transactions, err = r.GetTransactionsByTimeRange(after, afterAfter)
+	transactions, err = r.GetAccountTransactionsByTimeRange(0, after, afterAfter)
 	require.Nil(t, err)
 	require.Len(t, transactions, 0)
 
 	// ------------------------------------------------------------------------
 
-	transactions, err = r.GetTransactionsByTimeRange(bitBefore, bitAfter)
+	transactions, err = r.GetAccountTransactionsByTimeRange(0, bitBefore, bitAfter)
 	require.Nil(t, err)
 	require.Len(t, transactions, 1)
 
-	transactions, err = r.GetTransactionsByTimeRange(before, after)
+	transactions, err = r.GetAccountTransactionsByTimeRange(0, before, after)
 	require.Nil(t, err)
 	require.Len(t, transactions, 1)
 
-	transactions, err = r.GetTransactionsByTimeRange(beforeBefore, afterAfter)
+	transactions, err = r.GetAccountTransactionsByTimeRange(0, beforeBefore, afterAfter)
 	require.Nil(t, err)
 	require.Len(t, transactions, 1)
 }
