@@ -21,14 +21,13 @@ func main() {
 	log := logrus.New()
 
 	r := mux.NewRouter()
-	apiRouter := r.PathPrefix("/").Subrouter()
 
-	apiRouter.Path("/account/{account_id}/transaction").Methods(http.MethodPost).Handler(handlers.NewCreateTransactionHandler(c, log))
-	apiRouter.Path("/account/{account_id}/transaction/{transaction_id}").Methods(http.MethodPut).Handler(handlers.NewUpdateTransactionHandler(c, log))
-	apiRouter.Path("/account/{account_id}/transaction/{transaction_id}").Methods(http.MethodDelete).Handler(handlers.NewDeleteTransactionHandler(c, log))
+	r.Path("/account/{account_id}/transaction").Methods(http.MethodPost).Handler(handlers.NewCreateTransactionHandler(c, log))
+	r.Path("/account/{account_id}/transaction/{transaction_id}").Methods(http.MethodPut).Handler(handlers.NewUpdateTransactionHandler(c, log))
+	r.Path("/account/{account_id}/transaction/{transaction_id}").Methods(http.MethodDelete).Handler(handlers.NewDeleteTransactionHandler(c, log))
 
 	n := negroni.Classic()
-	n.UseHandler(apiRouter)
+	n.UseHandler(r)
 
 	(&graceful.Server{
 		Server: &http.Server{Addr: ":8888", Handler: n},

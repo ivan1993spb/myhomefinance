@@ -60,7 +60,7 @@ func (h *updateTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	transaction, err := h.core.UpdateTransaction(transactionID, t, amount, title, category)
 	if err != nil {
 		h.log.Error(errUpdateTransactionHandler(err.Error()))
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 

@@ -10,6 +10,7 @@ type TransactionRepository interface {
 	CreateTransaction(t *models.Transaction) error
 	UpdateTransaction(t *models.Transaction) error
 	DeleteTransaction(t *models.Transaction) error
+	// todo GetTransactionByID(accountID uint64, transactionID uint64) (*models.Transaction, error)
 	GetTransactionByID(ID uint64) (*models.Transaction, error)
 	GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error)
 	GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error)
