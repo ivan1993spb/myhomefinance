@@ -43,7 +43,7 @@ func (r *transactionRepository) CreateTransaction(t *models.Transaction) error {
 		return errCreateTransaction("passed nil transaction")
 	}
 
-	if t.ID != 0 {
+	if t.UUID != 0 {
 		return errCreateTransaction("passed transaction has zero identifier")
 	}
 
@@ -51,7 +51,7 @@ func (r *transactionRepository) CreateTransaction(t *models.Transaction) error {
 	defer r.mutex.Unlock()
 
 	r.cursorID++
-	t.ID = r.cursorID
+	t.UUID = r.cursorID
 
 	transaction := r.pool.Get().(*models.Transaction)
 	*transaction = *t
@@ -71,7 +71,7 @@ func (r *transactionRepository) UpdateTransaction(t *models.Transaction) error {
 		return errUpdateTransaction("passed nil transaction")
 	}
 
-	if t.ID == 0 {
+	if t.UUID == 0 {
 		return errUpdateTransaction("passed transaction has zero identifier")
 	}
 
@@ -79,7 +79,7 @@ func (r *transactionRepository) UpdateTransaction(t *models.Transaction) error {
 	defer r.mutex.Unlock()
 
 	for i := range r.transactions {
-		if r.transactions[i].ID == t.ID {
+		if r.transactions[i].UUID == t.UUID {
 			// ignore account id
 			r.transactions[i].Time = t.Time
 			r.transactions[i].Amount = t.Amount
@@ -104,7 +104,7 @@ func (r *transactionRepository) DeleteTransaction(t *models.Transaction) error {
 		return errDeleteTransaction("passed nil transaction")
 	}
 
-	if t.ID == 0 {
+	if t.UUID == 0 {
 		return errDeleteTransaction("passed transaction has zero identifier")
 	}
 
@@ -112,7 +112,7 @@ func (r *transactionRepository) DeleteTransaction(t *models.Transaction) error {
 	defer r.mutex.Unlock()
 
 	for i := range r.transactions {
-		if r.transactions[i].ID == t.ID {
+		if r.transactions[i].UUID == t.UUID {
 			r.pool.Put(r.transactions[i])
 			r.transactions = append(r.transactions[:i], r.transactions[i+1:]...)
 			return nil
@@ -127,7 +127,7 @@ func (r *transactionRepository) GetTransactionByID(ID uint64) (*models.Transacti
 	defer r.mutex.RUnlock()
 
 	for _, t := range r.transactions {
-		if t.ID == ID {
+		if t.UUID == ID {
 			var transaction models.Transaction = *t
 			return &transaction, nil
 		}
@@ -146,7 +146,7 @@ func (r *transactionRepository) GetAccountTransactionsByTimeRange(accountID uint
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if accountID == t.AccountID && between(from, to, t.Time) {
+		if accountID == t.AccountUUID && between(from, to, t.Time) {
 			var transaction models.Transaction = *t
 			transactions = append(transactions, &transaction)
 		}
@@ -169,7 +169,7 @@ func (r *transactionRepository) GetAccountTransactionsByTimeRangeCategories(acco
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if accountID == t.AccountID && contains(t.Category, categories) && between(from, to, t.Time) {
+		if accountID == t.AccountUUID && contains(t.Category, categories) && between(from, to, t.Time) {
 			transaction := *t
 			transactions = append(transactions, &transaction)
 		}
@@ -214,7 +214,7 @@ func (r *transactionRepository) GetAccountStatsByTimeRange(accountID uint64, fro
 	}
 
 	for _, t := range r.transactions {
-		if accountID == t.AccountID && between(from, to, t.Time) {
+		if accountID == t.AccountUUID && between(from, to, t.Time) {
 			stats.Count += 1
 
 			if t.Amount > 0 {
@@ -264,7 +264,7 @@ func (r *transactionRepository) GetAccountStatsByTimeRangeCategories(accountID u
 	}
 
 	for _, t := range r.transactions {
-		if accountID == t.AccountID && contains(t.Category, categories) && between(from, to, t.Time) {
+		if accountID == t.AccountUUID && contains(t.Category, categories) && between(from, to, t.Time) {
 			stats.Count += 1
 
 			if t.Amount > 0 {
@@ -295,7 +295,7 @@ func (r *transactionRepository) CountAccountCategoriesSumsByTimeRange(accountID 
 	categorySums := make([]*models.CategorySum, 0)
 
 	for _, t := range r.transactions {
-		if accountID == t.AccountID && between(from, to, t.Time) {
+		if accountID == t.AccountUUID && between(from, to, t.Time) {
 			categorySums = sumCategoryTransaction(categorySums, t, from, to)
 		}
 	}
@@ -317,11 +317,11 @@ func sumCategoryTransaction(categorySums []*models.CategorySum, t *models.Transa
 	}
 
 	return append(categorySums, &models.CategorySum{
-		AccountID: t.AccountID,
-		From:      from,
-		To:        to,
-		Category:  t.Category,
-		Sum:       t.Amount,
-		Count:     1,
+		AccountUUID: t.AccountUUID,
+		From:        from,
+		To:          to,
+		Category:    t.Category,
+		Sum:         t.Amount,
+		Count:       1,
 	})
 }

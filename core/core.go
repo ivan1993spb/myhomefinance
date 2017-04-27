@@ -3,6 +3,8 @@ package core
 import (
 	"time"
 
+	"github.com/satori/go.uuid"
+
 	"github.com/ivan1993spb/myhomefinance/iso4217"
 	"github.com/ivan1993spb/myhomefinance/models"
 	"github.com/ivan1993spb/myhomefinance/repository"
@@ -22,13 +24,15 @@ func New(userRepository repository.UserRepository, accountRepository repository.
 	}
 }
 
-func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, title, category string) (*models.Transaction, error) {
+func (c *Core) CreateTransaction(userUUID, accountUUID uuid.UUID, t time.Time, amount float64, title, category string) (*models.Transaction, error) {
 	tr := &models.Transaction{
-		AccountID: accountID,
-		Time:      t,
-		Amount:    amount,
-		Title:     title,
-		Category:  category,
+		UUID:        uuid.NewV4(),
+		AccountUUID: accountUUID,
+		UserUUID:    userUUID,
+		Time:        t,
+		Amount:      amount,
+		Title:       title,
+		Category:    category,
 	}
 	if err := c.transactionRepository.CreateTransaction(tr); err != nil {
 		return nil, err
@@ -36,14 +40,15 @@ func (c *Core) CreateTransaction(accountID uint64, t time.Time, amount float64, 
 	return tr, nil
 }
 
-func (c *Core) UpdateTransaction(transactionID uint64, t time.Time, amount float64, title, category string) (*models.Transaction, error) {
+func (c *Core) UpdateTransaction(userUUID, accountUUID, transactionUUID uuid.UUID, t time.Time, amount float64, title, category string) (*models.Transaction, error) {
 	tr := &models.Transaction{
-		ID: transactionID,
-		// ignore AccountID
-		Time:     t,
-		Amount:   amount,
-		Title:    title,
-		Category: category,
+		UUID:        transactionUUID,
+		AccountUUID: accountUUID,
+		UserUUID:    userUUID,
+		Time:        t,
+		Amount:      amount,
+		Title:       title,
+		Category:    category,
 	}
 	if err := c.transactionRepository.UpdateTransaction(tr); err != nil {
 		return nil, err
@@ -51,39 +56,42 @@ func (c *Core) UpdateTransaction(transactionID uint64, t time.Time, amount float
 	return tr, nil
 }
 
-func (c *Core) DeleteTransaction(transactionID uint64) error {
+func (c *Core) DeleteTransaction(userUUID, accountUUID, transactionUUID uuid.UUID) error {
 	return c.transactionRepository.DeleteTransaction(&models.Transaction{
-		ID: transactionID,
+		UUID:        transactionUUID,
+		AccountUUID: accountUUID,
+		UserUUID:    userUUID,
 	})
 }
 
-func (c *Core) GetTransactionByID(transactionID uint64) (*models.Transaction, error) {
-	return c.transactionRepository.GetTransactionByID(transactionID)
+func (c *Core) GetUserAccountTransaction(userUUID, accountUUID, transactionUUID uuid.UUID) (*models.Transaction, error) {
+	return c.transactionRepository.GetUserAccountTransaction(userUUID, accountUUID, transactionUUID)
 }
 
-func (c *Core) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
-	return c.transactionRepository.GetAccountTransactionsByTimeRange(accountID, from, to)
+func (c *Core) GetUserAccountTransactionsByTimeRange(userUUID, accountUUID uuid.UUID, from, to time.Time) ([]*models.Transaction, error) {
+	return c.transactionRepository.GetUserAccountTransactionsByTimeRange(userUUID, accountUUID, from, to)
 }
 
-func (c *Core) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
-	return c.transactionRepository.GetAccountTransactionsByTimeRangeCategories(accountID, from, to, categories)
+func (c *Core) GetUserAccountTransactionsByTimeRangeCategories(userUUID, accountUUID uuid.UUID, from, to time.Time, categories []string) ([]*models.Transaction, error) {
+	return c.transactionRepository.GetUserAccountTransactionsByTimeRangeCategories(userUUID, accountUUID, from, to, categories)
 }
 
-func (c *Core) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (*models.StatsTimeRange, error) {
-	return c.transactionRepository.GetAccountStatsByTimeRange(accountID, from, to)
+func (c *Core) GetUserAccountStatsByTimeRange(userUUID, accountUUID uuid.UUID, from, to time.Time) (*models.StatsTimeRange, error) {
+	return c.transactionRepository.GetUserAccountStatsByTimeRange(userUUID, accountUUID, from, to)
 }
 
-func (c *Core) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
-	return c.transactionRepository.GetAccountStatsByTimeRangeCategories(accountID, from, to, categories)
+func (c *Core) GetUserAccountStatsByTimeRangeCategories(userUUID, accountUUID uuid.UUID, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
+	return c.transactionRepository.GetUserAccountStatsByTimeRangeCategories(userUUID, accountUUID, from, to, categories)
 }
 
-func (c *Core) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
-	return c.transactionRepository.CountAccountCategoriesSumsByTimeRange(accountID, from, to)
+func (c *Core) CountUserAccountCategorySumsByTimeRange(userUUID, accountUUID uuid.UUID, from, to time.Time) ([]*models.CategorySum, error) {
+	return c.transactionRepository.CountUserAccountCategorySumsByTimeRange(userUUID, accountUUID, from, to)
 }
 
-func (c *Core) CreateAccount(userID uint64, name string, currency iso4217.Currency) (*models.Account, error) {
+func (c *Core) CreateAccount(userUUID uuid.UUID, name string, currency iso4217.Currency) (*models.Account, error) {
 	a := &models.Account{
-		UserID:   userID,
+		UUID:     uuid.NewV4(),
+		UserUUID: userUUID,
 		Name:     name,
 		Currency: currency,
 	}
@@ -93,10 +101,10 @@ func (c *Core) CreateAccount(userID uint64, name string, currency iso4217.Curren
 	return a, nil
 }
 
-func (c *Core) UpdateAccount(accountID uint64, name string, currency iso4217.Currency) (*models.Account, error) {
+func (c *Core) UpdateAccount(userUUID, accountUUID uuid.UUID, name string, currency iso4217.Currency) (*models.Account, error) {
 	a := &models.Account{
-		ID: accountID,
-		// ignore UserID
+		UUID:     accountUUID,
+		UserUUID: userUUID,
 		Name:     name,
 		Currency: currency,
 	}
@@ -106,23 +114,26 @@ func (c *Core) UpdateAccount(accountID uint64, name string, currency iso4217.Cur
 	return a, nil
 }
 
-func (c *Core) DeleteAccount(accountID uint64) error {
+func (c *Core) DeleteAccount(userUUID, accountUUID uuid.UUID) error {
 	return c.accountRepository.DeleteAccount(&models.Account{
-		ID: accountID,
+		UUID:     accountUUID,
+		UserUUID: userUUID,
 	})
 }
 
 func (c Core) CreateUser() (*models.User, error) {
-	u := &models.User{}
+	u := &models.User{
+		UUID: uuid.NewV4(),
+	}
 	if err := c.userRepository.CreateUser(u); err != nil {
 		return nil, err
 	}
 	return u, nil
 }
 
-func (c Core) UpdateUser(userID uint64) (*models.User, error) {
+func (c Core) UpdateUser(userUUID uuid.UUID) (*models.User, error) {
 	u := &models.User{
-		ID: userID,
+		UUID: userUUID,
 	}
 	if err := c.userRepository.UpdateUser(u); err != nil {
 		return nil, err
@@ -130,8 +141,8 @@ func (c Core) UpdateUser(userID uint64) (*models.User, error) {
 	return u, nil
 }
 
-func (c Core) DeleteUser(userID uint64) error {
+func (c Core) DeleteUser(userUUID uuid.UUID) error {
 	return c.userRepository.DeleteUser(&models.User{
-		ID: userID,
+		UUID: userUUID,
 	})
 }

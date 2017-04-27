@@ -51,14 +51,14 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 		return nil
 	}
 
-	if t.ID != 0 {
+	if t.UUID != 0 {
 		// todo return error
 		return nil
 	}
 
 	newTransaction := r.pool.Get().(*transaction)
-	newTransaction.ID = t.ID
-	newTransaction.AccountID = t.AccountID
+	newTransaction.ID = t.UUID
+	newTransaction.AccountID = t.AccountUUID
 	newTransaction.Time = t.Time
 	newTransaction.Amount = t.Amount
 	newTransaction.Title = t.Title
@@ -69,7 +69,7 @@ func (r *transactionsRepository) CreateTransaction(t *models.Transaction) error 
 		return fmt.Errorf("cannot create transaction: %s", err)
 	}
 
-	t.ID = newTransaction.ID
+	t.UUID = newTransaction.ID
 
 	return nil
 }
@@ -80,14 +80,14 @@ func (r *transactionsRepository) UpdateTransaction(t *models.Transaction) error 
 		return nil
 	}
 
-	if t.ID == 0 {
+	if t.UUID == 0 {
 		// todo return error
 		return nil
 	}
 
 	updatedTransaction := r.pool.Get().(*transaction)
-	updatedTransaction.ID = t.ID
-	// ignore AccountID
+	updatedTransaction.ID = t.UUID
+	// ignore AccountUUID
 	updatedTransaction.Time = t.Time
 	updatedTransaction.Amount = t.Amount
 	updatedTransaction.Title = t.Title
@@ -107,13 +107,13 @@ func (r transactionsRepository) DeleteTransaction(t *models.Transaction) error {
 		return nil
 	}
 
-	if t.ID == 0 {
+	if t.UUID == 0 {
 		// todo return error
 		return nil
 	}
 
 	deleteTransaction := r.pool.Get().(*transaction)
-	deleteTransaction.ID = t.ID
+	deleteTransaction.ID = t.UUID
 	defer r.pool.Put(deleteTransaction)
 
 	if err := r.db.Save(deleteTransaction).Error; err != nil {
@@ -138,12 +138,12 @@ func (r *transactionsRepository) GetAccountTransactionsByTimeRange(accountID uin
 
 	for i := range transactions {
 		out[i] = &models.Transaction{
-			ID:        transactions[i].ID,
-			AccountID: transactions[i].AccountID,
-			Time:      transactions[i].Time,
-			Amount:    transactions[i].Amount,
-			Title:     transactions[i].Title,
-			Category:  transactions[i].Category,
+			UUID:        transactions[i].ID,
+			AccountUUID: transactions[i].AccountID,
+			Time:        transactions[i].Time,
+			Amount:      transactions[i].Amount,
+			Title:       transactions[i].Title,
+			Category:    transactions[i].Category,
 		}
 	}
 
@@ -165,12 +165,12 @@ func (r *transactionsRepository) GetAccountTransactionsByTimeRangeCategories(acc
 
 	for i := range transactions {
 		out[i] = &models.Transaction{
-			ID:        transactions[i].ID,
-			AccountID: transactions[i].AccountID,
-			Time:      transactions[i].Time,
-			Amount:    transactions[i].Amount,
-			Title:     transactions[i].Title,
-			Category:  transactions[i].Category,
+			UUID:        transactions[i].ID,
+			AccountUUID: transactions[i].AccountID,
+			Time:        transactions[i].Time,
+			Amount:      transactions[i].Amount,
+			Title:       transactions[i].Title,
+			Category:    transactions[i].Category,
 		}
 	}
 

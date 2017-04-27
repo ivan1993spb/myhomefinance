@@ -41,7 +41,7 @@ func (r *accountRepository) CreateAccount(a *models.Account) error {
 		return errCreateAccount("passed nil account")
 	}
 
-	if a.ID != 0 {
+	if a.UUID != 0 {
 		return errCreateAccount("passed account with non zero identifier")
 	}
 
@@ -49,7 +49,7 @@ func (r *accountRepository) CreateAccount(a *models.Account) error {
 	defer r.mutex.Unlock()
 
 	r.cursorID++
-	a.ID = r.cursorID
+	a.UUID = r.cursorID
 
 	account := r.pool.Get().(*models.Account)
 	*account = *a
@@ -69,7 +69,7 @@ func (r *accountRepository) UpdateAccount(a *models.Account) error {
 		return errCreateAccount("passed nil account")
 	}
 
-	if a.ID == 0 {
+	if a.UUID == 0 {
 		return errCreateAccount("passed account with zero identifier")
 	}
 
@@ -77,7 +77,7 @@ func (r *accountRepository) UpdateAccount(a *models.Account) error {
 	defer r.mutex.Unlock()
 
 	for i := range r.accounts {
-		if r.accounts[i].ID == a.ID {
+		if r.accounts[i].UUID == a.UUID {
 			// ignore user id
 			r.accounts[i].Name = a.Name
 			r.accounts[i].Currency = a.Currency
@@ -100,7 +100,7 @@ func (r *accountRepository) DeleteAccount(a *models.Account) error {
 		return errDeleteAccount("passed nil account")
 	}
 
-	if a.ID == 0 {
+	if a.UUID == 0 {
 		return errDeleteAccount("passed account with zero identifier")
 	}
 
@@ -108,7 +108,7 @@ func (r *accountRepository) DeleteAccount(a *models.Account) error {
 	defer r.mutex.Unlock()
 
 	for i := range r.accounts {
-		if r.accounts[i].ID == a.ID {
+		if r.accounts[i].UUID == a.UUID {
 			r.pool.Put(r.accounts[i])
 			r.accounts = append(r.accounts[:i], r.accounts[i+1:]...)
 			break
@@ -134,7 +134,7 @@ func (r *accountRepository) GetAccountsByUserID(userID uint64) ([]*models.Accoun
 
 	accounts := make([]*models.Account, 0)
 	for i := range r.accounts {
-		if r.accounts[i].UserID == userID {
+		if r.accounts[i].UserUUID == userID {
 			accounts = append(accounts, &(*r.accounts[i]))
 		}
 	}

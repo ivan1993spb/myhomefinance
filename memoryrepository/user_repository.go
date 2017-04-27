@@ -41,7 +41,7 @@ func (r *userRepository) CreateUser(u *models.User) error {
 		return errCreateUser("passed nil user")
 	}
 
-	if u.ID != 0 {
+	if u.UUID != 0 {
 		return errCreateUser("passed user has an identifier")
 	}
 
@@ -49,7 +49,7 @@ func (r *userRepository) CreateUser(u *models.User) error {
 	defer r.mutex.Unlock()
 
 	r.cursorID++
-	u.ID = r.cursorID
+	u.UUID = r.cursorID
 
 	user := r.pool.Get().(*models.User)
 	*user = *u
@@ -69,7 +69,7 @@ func (r *userRepository) UpdateUser(u *models.User) error {
 		return errUpdateUser("passed nil user")
 	}
 
-	if u.ID == 0 {
+	if u.UUID == 0 {
 		return errUpdateUser("passed user has zero identifier")
 	}
 
@@ -77,7 +77,7 @@ func (r *userRepository) UpdateUser(u *models.User) error {
 	defer r.mutex.Unlock()
 
 	for i := range r.users {
-		if r.users[i].ID == u.ID {
+		if r.users[i].UUID == u.UUID {
 			*r.users[i] = *u
 			break
 		}
@@ -97,7 +97,7 @@ func (r *userRepository) DeleteUser(u *models.User) error {
 		return errDeleteUser("passed nil user")
 	}
 
-	if u.ID == 0 {
+	if u.UUID == 0 {
 		return errDeleteUser("passed user does not have identifier")
 	}
 
@@ -105,7 +105,7 @@ func (r *userRepository) DeleteUser(u *models.User) error {
 	defer r.mutex.Unlock()
 
 	for i := range r.users {
-		if r.users[i].ID == u.ID {
+		if r.users[i].UUID == u.UUID {
 			r.pool.Put(r.users[i])
 			r.users = append(r.users[:i], r.users[i+1:]...)
 			break

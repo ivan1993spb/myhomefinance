@@ -64,7 +64,7 @@ func (p *SimpleCSVParser) ReadTransaction() (*models.Transaction, error) {
 	)
 
 	return &models.Transaction{
-		ID:       ID,
+		UUID:     ID,
 		Time:     transactionTime,
 		Amount:   amount,
 		Title:    title,

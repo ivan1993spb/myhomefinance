@@ -17,7 +17,7 @@ func TestTransactionsRepository_CreateTransaction(t *testing.T) {
 	r, err := newTransactionsRepository(db)
 	require.Nil(t, err)
 	tr := &models.Transaction{
-		ID:       1,
+		UUID:     1,
 		Time:     time.Now(),
 		Amount:   0,
 		Title:    "Title",
@@ -29,7 +29,7 @@ func TestTransactionsRepository_CreateTransaction(t *testing.T) {
 	err = r.db.First(&dbTransaction).Error
 	require.Nil(t, err)
 
-	require.Equal(t, dbTransaction.ID, tr.ID)
+	require.Equal(t, dbTransaction.ID, tr.UUID)
 	// todo check time
 	require.Equal(t, dbTransaction.Amount, tr.Amount)
 	require.Equal(t, dbTransaction.Title, tr.Title)
@@ -56,7 +56,7 @@ func TestTransactionsRepository_UpdateTransaction(t *testing.T) {
 
 	var amount float64 = 100
 	require.Nil(t, r.UpdateTransaction(&models.Transaction{
-		ID:       1,
+		UUID:     1,
 		Time:     time.Now(),
 		Amount:   amount,
 		Title:    "Title",

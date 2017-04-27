@@ -1,12 +1,17 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/satori/go.uuid"
+)
 
 type CategorySum struct {
-	AccountID uint64
-	From      time.Time
-	To        time.Time
-	Category  string
-	Sum       float64
-	Count     uint64
+	AccountUUID uuid.UUID
+	UserUUID    uuid.UUID
+	From        time.Time
+	To          time.Time
+	Category    string
+	Sum         float64
+	Count       uint64
 }

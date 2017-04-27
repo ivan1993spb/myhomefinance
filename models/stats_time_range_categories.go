@@ -1,14 +1,19 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/satori/go.uuid"
+)
 
 type StatsTimeRangeCategories struct {
-	AccountID  uint64
-	From       time.Time
-	To         time.Time
-	Inflow     float64
-	Outflow    float64
-	Profit     float64
-	Count      uint64
-	Categories []string
+	AccountUUID uuid.UUID
+	UserUUID    uuid.UUID
+	From        time.Time
+	To          time.Time
+	Inflow      float64
+	Outflow     float64
+	Profit      float64
+	Count       uint64
+	Categories  []string
 }

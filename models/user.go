@@ -1,5 +1,7 @@
 package models
 
+import "github.com/satori/go.uuid"
+
 type User struct {
-	ID uint64
+	UUID uuid.UUID
 }

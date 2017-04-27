@@ -29,7 +29,7 @@ func TestTransactionRepository_UpdateTransaction(t *testing.T) {
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
-		ID:       1,
+		UUID:     1,
 		Time:     time.Now(),
 		Amount:   0,
 		Title:    "Title",
@@ -39,7 +39,7 @@ func TestTransactionRepository_UpdateTransaction(t *testing.T) {
 	require.Len(t, r.transactions, 1)
 	var amount float64 = 100
 	require.Nil(t, r.UpdateTransaction(&models.Transaction{
-		ID:       1,
+		UUID:     1,
 		Time:     time.Now(),
 		Amount:   amount,
 		Title:    "Title",
@@ -47,7 +47,7 @@ func TestTransactionRepository_UpdateTransaction(t *testing.T) {
 	}))
 	require.Len(t, r.transactions, 1)
 
-	require.Equal(t, transaction.ID, r.transactions[0].ID)
+	require.Equal(t, transaction.UUID, r.transactions[0].UUID)
 	require.Equal(t, transaction.Time, r.transactions[0].Time)
 	require.Equal(t, amount, r.transactions[0].Amount)
 	require.Equal(t, transaction.Title, r.transactions[0].Title)
@@ -59,7 +59,7 @@ func TestTransactionRepository_DeleteTransaction(t *testing.T) {
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
-		ID:       1,
+		UUID:     1,
 		Time:     time.Now(),
 		Amount:   0,
 		Title:    "Title",
@@ -85,7 +85,7 @@ func TestTransactionRepository_GetAccountTransactionsByTimeRange(t *testing.T) {
 	require.Nil(t, err)
 	require.Len(t, r.transactions, 0)
 	transaction := &models.Transaction{
-		ID:       1,
+		UUID:     1,
 		Time:     current,
 		Amount:   0,
 		Title:    "Title",

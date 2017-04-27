@@ -25,7 +25,8 @@ func main() {
 	accountRepository, _ := memoryrepository.NewAccountRepository()
 	transactionRepository, _ := memoryrepository.NewTransactionRepository()
 	c := core.New(userRepository, accountRepository, transactionRepository)
-	account, _ := c.CreateAccount(0, "main", iso4217.RUB)
+	user, _ := c.CreateUser()
+	account, _ := c.CreateAccount(user.UUID, "main", iso4217.RUB)
 	if err := accountRepository.CreateAccount(account); err != nil {
 		fmt.Println(err)
 		return
@@ -36,7 +37,7 @@ func main() {
 		if err != nil {
 			break
 		}
-		t.AccountID = account.ID
+		t.AccountUUID = account.UUID
 		if err := transactionRepository.CreateTransaction(t); err != nil {
 			fmt.Println(err)
 			return
@@ -50,19 +51,19 @@ func main() {
 	fmt.Print("# Stats\n\n")
 
 	// All time
-	stats, _ := c.GetAccountStatsByTimeRange(account.ID, unixTime, now)
+	stats, _ := c.GetUserAccountStatsByTimeRange(user.UUID, account.UUID, unixTime, now)
 	fmt.Printf("## All time\n\n* inflow: %0.2f\n* outflow: %0.2f\n* balance: %0.2f\n* transactions: %d\n",
 		stats.Inflow, stats.Outflow, stats.Profit, stats.Count)
 	fmt.Println()
 
 	// Month
-	stats, _ = c.GetAccountStatsByTimeRange(account.ID, monthStart, now)
+	stats, _ = c.GetUserAccountStatsByTimeRange(user.UUID, account.UUID, monthStart, now)
 	fmt.Printf("## %s\n\n* inflow: %0.2f\n* outflow: %0.2f\n* profit: %0.2f\n* transactions: %d\n", monthStart.Month(),
 		stats.Inflow, stats.Outflow, stats.Profit, stats.Count)
 	fmt.Println()
 
 	fmt.Print("## Month cotegories\n\n")
-	categoriesSums, _ := c.CountAccountCategoriesSumsByTimeRange(account.ID, monthStart, now)
+	categoriesSums, _ := c.CountUserAccountCategorySumsByTimeRange(user.UUID, account.UUID, monthStart, now)
 
 	if len(categoriesSums) > 0 {
 		fmt.Printf("| %30s | %6s | %15s |\n", "Category", "Count", "Sum")

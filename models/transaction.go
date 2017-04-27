@@ -1,12 +1,17 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/satori/go.uuid"
+)
 
 type Transaction struct {
-	ID        uint64
-	AccountID uint64
-	Time      time.Time
-	Amount    float64
-	Title     string
-	Category  string
+	UUID        uuid.UUID
+	AccountUUID uuid.UUID
+	UserUUID    uuid.UUID
+	Time        time.Time
+	Amount      float64
+	Title       string
+	Category    string
 }

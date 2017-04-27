@@ -54,7 +54,7 @@ func (h *getAccountStatsByTimeRangeHandler) ServeHTTP(w http.ResponseWriter, r *
 		return
 	}
 
-	stats, err := h.core.GetAccountStatsByTimeRange(accountID, from, to)
+	stats, err := h.core.GetUserAccountStatsByTimeRange(accountID, from, to)
 	if err != nil {
 		h.log.Error(errGetAccountStatsByTimeRangeHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
