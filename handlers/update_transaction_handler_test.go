@@ -19,32 +19,39 @@ import (
 )
 
 func TestUpdateTransactionHandler_ServeHTTP_Success(t *testing.T) {
-	userRepository, _ := memoryrepository.NewUserRepository()
-	accountRepository, _ := memoryrepository.NewAccountRepository()
-	transactionRepository, _ := memoryrepository.NewTransactionRepository()
+	userRepository, err := memoryrepository.NewUserRepository()
+	require.Nil(t, err)
+	accountRepository, err := memoryrepository.NewAccountRepository()
+	require.Nil(t, err)
+	transactionRepository, err := memoryrepository.NewTransactionRepository()
+	require.Nil(t, err)
 	c := core.New(userRepository, accountRepository, transactionRepository)
-	user, _ := c.CreateUser()
-	account, _ := c.CreateAccount(user.ID, "test", iso4217.USD)
-	transaction, _ := c.CreateTransaction(account.ID, time.Now(), 5, "title 1", "category 1")
+	user, err := c.CreateUser()
+	require.Nil(t, err)
+	account, err := c.CreateAccount(user.UUID, "account", iso4217.USD)
+	require.Nil(t, err)
+	transaction, err := c.CreateTransaction(user.UUID, account.UUID, time.Unix(1, 0), 5, "title 1", "category 1")
+	require.Nil(t, err)
 	log := logrus.New()
 	log.Out = ioutil.Discard
+
 	handler := NewUpdateTransactionHandler(c, log)
 	router := mux.NewRouter()
-	router.Handle("/account/{account_id}/transaction/{transaction_id}", handler).Methods(http.MethodPut)
+	router.Handle(URLRouteUpdateTransaction, handler).Methods(http.MethodPut)
 
 	data := &url.Values{}
 	data.Add(fieldAmount, "22")
 	data.Add(fieldTime, time.Now().Format(apiDateFormat))
 	data.Add(fieldTitle, "title")
 	data.Add(fieldCategory, "category")
-	request := httptest.NewRequest(http.MethodPut, "/account/1/transaction/1", strings.NewReader(data.Encode()))
+	request := httptest.NewRequest(http.MethodPut, BuildPathUpdateTransaction(user.UUID, account.UUID, transaction.UUID), strings.NewReader(data.Encode()))
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
 	require.Equal(t, http.StatusOK, response.Code)
 
-	transaction, _ = c.GetTransactionByID(transaction.ID)
+	transaction, _ = c.GetUserAccountTransaction(user.UUID, account.UUID, transaction.UUID)
 	require.Equal(t, float64(22), transaction.Amount)
 	require.Equal(t, "title", transaction.Title)
 	require.Equal(t, "category", transaction.Category)

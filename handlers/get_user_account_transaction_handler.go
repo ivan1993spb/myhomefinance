@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 
 	"github.com/Sirupsen/logrus"
@@ -11,33 +11,25 @@ import (
 	"github.com/ivan1993spb/myhomefinance/core"
 )
 
-const URLRouteDeleteTransaction = "/user/{" + routeVarUserUUID + "}/account/{" + routeVarAccountUUID + "}/transaction/{" + routeVarTransactionUUID + "}"
+type errGetUserAccountTransactionHandler string
 
-const formatURLRouteDeleteTransaction = "/user/%s/account/%s/transaction/%s"
-
-func BuildPathDeleteTransaction(userUUID, accountUUID, transactionUUID uuid.UUID) string {
-	return fmt.Sprintf(formatURLRouteDeleteTransaction, userUUID, accountUUID, transactionUUID)
+func (e errGetUserAccountTransactionHandler) Error() string {
+	return "error on get user account transaction handler: " + string(e)
 }
 
-type errDeleteTransactionHandler string
-
-func (e errDeleteTransactionHandler) Error() string {
-	return "error on delete transaction handler: " + string(e)
-}
-
-type deleteTransactionHandler struct {
+type getUserAccountTransactionHandler struct {
 	core *core.Core
 	log  *logrus.Logger
 }
 
-func NewDeleteTransactionHandler(core *core.Core, log *logrus.Logger) http.Handler {
-	return &deleteTransactionHandler{
+func NewGetTransactionByIDHandler(core *core.Core, log *logrus.Logger) http.Handler {
+	return &getUserAccountTransactionHandler{
 		core: core,
 		log:  log,
 	}
 }
 
-func (h *deleteTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *getUserAccountTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	userUUID, err := uuid.FromString(vars[routeVarUserUUID])
@@ -56,14 +48,21 @@ func (h *deleteTransactionHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 
 	transactionUUID, err := uuid.FromString(vars[routeVarTransactionUUID])
 	if err != nil {
-		h.log.Error(errDeleteTransactionHandler(err.Error()))
+		h.log.Error(errUpdateTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	err = h.core.DeleteTransaction(userUUID, accountUUID, transactionUUID)
+	transaction, err := h.core.GetUserAccountTransaction(userUUID, accountUUID, transactionUUID)
 	if err != nil {
-		h.log.Error(errDeleteTransactionHandler(err.Error()))
+		h.log.Error(errGetUserAccountTransactionHandler(err.Error()))
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(transaction)
+	if err != nil {
+		h.log.Error(errGetUserAccountTransactionHandler(err.Error()))
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

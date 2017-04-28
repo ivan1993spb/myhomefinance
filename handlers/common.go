@@ -1,8 +1,9 @@
 package handlers
 
 const (
-	routeVarAccountID     = "account_id"
-	routeVarTransactionID = "transaction_id"
+	routeVarUserUUID        = "user_uuid"
+	routeVarAccountUUID     = "account_uuid"
+	routeVarTransactionUUID = "transaction_uuid"
 )
 
 const (
