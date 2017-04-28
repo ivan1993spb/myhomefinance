@@ -27,16 +27,13 @@ func main() {
 	c := core.New(userRepository, accountRepository, transactionRepository)
 	user, _ := c.CreateUser()
 	account, _ := c.CreateAccount(user.UUID, "main", iso4217.RUB)
-	if err := accountRepository.CreateAccount(account); err != nil {
-		fmt.Println(err)
-		return
-	}
 
 	for {
 		t, err := parser.ReadTransaction()
 		if err != nil {
 			break
 		}
+		t.UserUUID = user.UUID
 		t.AccountUUID = account.UUID
 		if err := transactionRepository.CreateTransaction(t); err != nil {
 			fmt.Println(err)

@@ -136,6 +136,7 @@ func (c Core) CreateUser() (*models.User, error) {
 }
 
 func (c Core) UpdateUser(userUUID uuid.UUID) (*models.User, error) {
+	// todo create fields
 	u := &models.User{
 		UUID: userUUID,
 	}
