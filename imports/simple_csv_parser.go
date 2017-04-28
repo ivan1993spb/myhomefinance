@@ -3,8 +3,9 @@ package imports
 import (
 	"encoding/csv"
 	"strconv"
-	"sync/atomic"
 	"time"
+
+	"github.com/satori/go.uuid"
 
 	"github.com/ivan1993spb/myhomefinance/models"
 )
@@ -53,18 +54,13 @@ func (p *SimpleCSVParser) ReadTransaction() (*models.Transaction, error) {
 		return nil, errReadTransaction(err.Error())
 	}
 
-	var ID uint64
-	if p.AddIDs {
-		ID = atomic.AddUint64(&p.counter, 1)
-	}
-
 	var (
 		title    = row[simpleCSVFieldTitle]
 		category = row[simpleCSVFieldCategory]
 	)
 
 	return &models.Transaction{
-		UUID:     ID,
+		UUID:     uuid.NewV4(),
 		Time:     transactionTime,
 		Amount:   amount,
 		Title:    title,

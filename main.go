@@ -11,6 +11,7 @@ import (
 	"github.com/ivan1993spb/myhomefinance/core"
 	"github.com/ivan1993spb/myhomefinance/handlers"
 	"github.com/ivan1993spb/myhomefinance/memoryrepository"
+	"github.com/ivan1993spb/myhomefinance/middlewares"
 )
 
 func main() {
@@ -22,11 +23,12 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.Path("/account/{account_id}/transaction").Methods(http.MethodPost).Handler(handlers.NewCreateTransactionHandler(c, log))
-	r.Path("/account/{account_id}/transaction/{transaction_id}").Methods(http.MethodPut).Handler(handlers.NewUpdateTransactionHandler(c, log))
-	r.Path("/account/{account_id}/transaction/{transaction_id}").Methods(http.MethodDelete).Handler(handlers.NewDeleteTransactionHandler(c, log))
+	r.Path(handlers.URLRouteCreateTransaction).Methods(http.MethodPost).Handler(handlers.NewCreateTransactionHandler(c, log))
+	r.Path(handlers.URLRouteUpdateTransaction).Methods(http.MethodPut).Handler(handlers.NewUpdateTransactionHandler(c, log))
+	r.Path(handlers.URLRouteDeleteTransaction).Methods(http.MethodDelete).Handler(handlers.NewDeleteTransactionHandler(c, log))
 
 	n := negroni.Classic()
+	n.Use(middlewares.Secure)
 	n.UseHandler(r)
 
 	(&graceful.Server{
