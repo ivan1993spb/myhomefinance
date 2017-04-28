@@ -1,9 +1,10 @@
 package memoryrepository
 
 import (
-	"errors"
 	"sync"
 	"time"
+
+	"github.com/satori/go.uuid"
 
 	"github.com/ivan1993spb/myhomefinance/models"
 	"github.com/ivan1993spb/myhomefinance/repository"
@@ -11,7 +12,6 @@ import (
 
 type transactionRepository struct {
 	transactions []*models.Transaction
-	cursorID     uint64
 	mutex        *sync.RWMutex
 	pool         *sync.Pool
 }
@@ -43,15 +43,14 @@ func (r *transactionRepository) CreateTransaction(t *models.Transaction) error {
 		return errCreateTransaction("passed nil transaction")
 	}
 
-	if t.UUID != 0 {
-		return errCreateTransaction("passed transaction has zero identifier")
-	}
-
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.cursorID++
-	t.UUID = r.cursorID
+	for _, transaction := range r.transactions {
+		if transaction.UUID == t.UUID {
+			return errCreateTransaction("uuid of passed transaction is already used")
+		}
+	}
 
 	transaction := r.pool.Get().(*models.Transaction)
 	*transaction = *t
@@ -71,16 +70,13 @@ func (r *transactionRepository) UpdateTransaction(t *models.Transaction) error {
 		return errUpdateTransaction("passed nil transaction")
 	}
 
-	if t.UUID == 0 {
-		return errUpdateTransaction("passed transaction has zero identifier")
-	}
-
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
 	for i := range r.transactions {
 		if r.transactions[i].UUID == t.UUID {
-			// ignore account id
+			// ignore account uuid
+			// ignore user uuid
 			r.transactions[i].Time = t.Time
 			r.transactions[i].Amount = t.Amount
 			r.transactions[i].Title = t.Title
@@ -104,10 +100,6 @@ func (r *transactionRepository) DeleteTransaction(t *models.Transaction) error {
 		return errDeleteTransaction("passed nil transaction")
 	}
 
-	if t.UUID == 0 {
-		return errDeleteTransaction("passed transaction has zero identifier")
-	}
-
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -122,21 +114,27 @@ func (r *transactionRepository) DeleteTransaction(t *models.Transaction) error {
 	return errDeleteTransaction("not found")
 }
 
-func (r *transactionRepository) GetTransactionByID(ID uint64) (*models.Transaction, error) {
+type errGetUserAccountTransaction string
+
+func (e errGetUserAccountTransaction) Error() string {
+	return "cannot get user account transaction: " + string(e)
+}
+
+func (r *transactionRepository) GetUserAccountTransaction(userUUID, accountUUID, transactionUUID uuid.UUID) (*models.Transaction, error) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
 	for _, t := range r.transactions {
-		if t.UUID == ID {
+		if t.UserUUID == userUUID && t.AccountUUID == accountUUID && t.UUID == transactionUUID {
 			var transaction models.Transaction = *t
 			return &transaction, nil
 		}
 	}
 
-	return nil, errors.New("cannot get transaction: not found")
+	return nil, errGetUserAccountTransaction("not found")
 }
 
-func (r *transactionRepository) GetAccountTransactionsByTimeRange(accountID uint64, from, to time.Time) ([]*models.Transaction, error) {
+func (r *transactionRepository) GetUserAccountTransactionsByTimeRange(userUUID, accountUUID uuid.UUID, from, to time.Time) ([]*models.Transaction, error) {
 	if !from.Before(to) {
 		return []*models.Transaction{}, nil
 	}
@@ -146,7 +144,7 @@ func (r *transactionRepository) GetAccountTransactionsByTimeRange(accountID uint
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if accountID == t.AccountUUID && between(from, to, t.Time) {
+		if t.UserUUID == userUUID && accountUUID == t.AccountUUID && between(from, to, t.Time) {
 			var transaction models.Transaction = *t
 			transactions = append(transactions, &transaction)
 		}
@@ -159,7 +157,7 @@ func between(from, to, t time.Time) bool {
 	return t.Equal(from) || t.Equal(to) || t.After(from) && t.Before(to)
 }
 
-func (r *transactionRepository) GetAccountTransactionsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) ([]*models.Transaction, error) {
+func (r *transactionRepository) GetUserAccountTransactionsByTimeRangeCategories(userUUID, accountUUID uuid.UUID, from, to time.Time, categories []string) ([]*models.Transaction, error) {
 	if !from.Before(to) {
 		return []*models.Transaction{}, nil
 	}
@@ -169,7 +167,7 @@ func (r *transactionRepository) GetAccountTransactionsByTimeRangeCategories(acco
 
 	transactions := make([]*models.Transaction, 0)
 	for _, t := range r.transactions {
-		if accountID == t.AccountUUID && contains(t.Category, categories) && between(from, to, t.Time) {
+		if t.UserUUID == userUUID && accountUUID == t.AccountUUID && contains(t.Category, categories) && between(from, to, t.Time) {
 			transaction := *t
 			transactions = append(transactions, &transaction)
 		}
@@ -187,12 +185,13 @@ func contains(str string, slice []string) bool {
 	return false
 }
 
-func (r *transactionRepository) GetAccountStatsByTimeRange(accountID uint64, from, to time.Time) (*models.StatsTimeRange, error) {
+func (r *transactionRepository) GetUserAccountStatsByTimeRange(userUUID, accountUUID uuid.UUID, from, to time.Time) (*models.StatsTimeRange, error) {
 	if !from.Before(to) {
 		return &models.StatsTimeRange{
-			AccountID: accountID,
-			From:      from,
-			To:        to,
+			AccountUUID: accountUUID,
+			UserUUID:    userUUID,
+			From:        from,
+			To:          to,
 		}, nil
 	}
 
@@ -201,20 +200,22 @@ func (r *transactionRepository) GetAccountStatsByTimeRange(accountID uint64, fro
 
 	if len(r.transactions) == 0 {
 		return &models.StatsTimeRange{
-			AccountID: accountID,
-			From:      from,
-			To:        to,
+			AccountUUID: accountUUID,
+			UserUUID:    userUUID,
+			From:        from,
+			To:          to,
 		}, nil
 	}
 
 	stats := &models.StatsTimeRange{
-		AccountID: accountID,
-		From:      from,
-		To:        to,
+		AccountUUID: accountUUID,
+		UserUUID:    userUUID,
+		From:        from,
+		To:          to,
 	}
 
 	for _, t := range r.transactions {
-		if accountID == t.AccountUUID && between(from, to, t.Time) {
+		if t.UserUUID == userUUID && accountUUID == t.AccountUUID && between(from, to, t.Time) {
 			stats.Count += 1
 
 			if t.Amount > 0 {
@@ -234,13 +235,14 @@ func (r *transactionRepository) GetAccountStatsByTimeRange(accountID uint64, fro
 	return stats, nil
 }
 
-func (r *transactionRepository) GetAccountStatsByTimeRangeCategories(accountID uint64, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
+func (r *transactionRepository) GetUserAccountStatsByTimeRangeCategories(userUUID, accountUUID uuid.UUID, from, to time.Time, categories []string) (*models.StatsTimeRangeCategories, error) {
 	if !from.Before(to) {
 		return &models.StatsTimeRangeCategories{
-			AccountID:  accountID,
-			From:       from,
-			To:         to,
-			Categories: categories,
+			AccountUUID: accountUUID,
+			UserUUID:    userUUID,
+			From:        from,
+			To:          to,
+			Categories:  categories,
 		}, nil
 	}
 
@@ -249,22 +251,24 @@ func (r *transactionRepository) GetAccountStatsByTimeRangeCategories(accountID u
 
 	if len(r.transactions) == 0 {
 		return &models.StatsTimeRangeCategories{
-			AccountID:  accountID,
-			From:       from,
-			To:         to,
-			Categories: categories,
+			AccountUUID: accountUUID,
+			UserUUID:    userUUID,
+			From:        from,
+			To:          to,
+			Categories:  categories,
 		}, nil
 	}
 
 	stats := &models.StatsTimeRangeCategories{
-		AccountID:  accountID,
-		From:       from,
-		To:         to,
-		Categories: categories,
+		AccountUUID: accountUUID,
+		UserUUID:    userUUID,
+		From:        from,
+		To:          to,
+		Categories:  categories,
 	}
 
 	for _, t := range r.transactions {
-		if accountID == t.AccountUUID && contains(t.Category, categories) && between(from, to, t.Time) {
+		if t.UserUUID == userUUID && accountUUID == t.AccountUUID && contains(t.Category, categories) && between(from, to, t.Time) {
 			stats.Count += 1
 
 			if t.Amount > 0 {
@@ -284,7 +288,7 @@ func (r *transactionRepository) GetAccountStatsByTimeRangeCategories(accountID u
 	return stats, nil
 }
 
-func (r *transactionRepository) CountAccountCategoriesSumsByTimeRange(accountID uint64, from, to time.Time) ([]*models.CategorySum, error) {
+func (r *transactionRepository) CountUserAccountCategorySumsByTimeRange(userUUID, accountUUID uuid.UUID, from, to time.Time) ([]*models.CategorySum, error) {
 	if !from.Before(to) {
 		return []*models.CategorySum{}, nil
 	}
@@ -295,7 +299,7 @@ func (r *transactionRepository) CountAccountCategoriesSumsByTimeRange(accountID 
 	categorySums := make([]*models.CategorySum, 0)
 
 	for _, t := range r.transactions {
-		if accountID == t.AccountUUID && between(from, to, t.Time) {
+		if t.UserUUID == userUUID && accountUUID == t.AccountUUID && between(from, to, t.Time) {
 			categorySums = sumCategoryTransaction(categorySums, t, from, to)
 		}
 	}
@@ -318,6 +322,7 @@ func sumCategoryTransaction(categorySums []*models.CategorySum, t *models.Transa
 
 	return append(categorySums, &models.CategorySum{
 		AccountUUID: t.AccountUUID,
+		UserUUID:    t.UserUUID,
 		From:        from,
 		To:          to,
 		Category:    t.Category,

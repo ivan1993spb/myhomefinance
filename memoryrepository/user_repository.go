@@ -8,10 +8,9 @@ import (
 )
 
 type userRepository struct {
-	users    []*models.User
-	cursorID uint64
-	mutex    *sync.Mutex
-	pool     *sync.Pool
+	users []*models.User
+	mutex *sync.Mutex
+	pool  *sync.Pool
 }
 
 func NewUserRepository() (repository.UserRepository, error) {
@@ -24,7 +23,7 @@ func newUserRepository() (*userRepository, error) {
 		mutex: &sync.Mutex{},
 		pool: &sync.Pool{
 			New: func() interface{} {
-				return new(models.User)
+				return &models.User{}
 			},
 		},
 	}, nil
@@ -41,15 +40,14 @@ func (r *userRepository) CreateUser(u *models.User) error {
 		return errCreateUser("passed nil user")
 	}
 
-	if u.UUID != 0 {
-		return errCreateUser("passed user has an identifier")
-	}
-
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
-	r.cursorID++
-	u.UUID = r.cursorID
+	for _, user := range r.users {
+		if user.UUID == u.UUID {
+			return errCreateUser("uuid of passed user is already used")
+		}
+	}
 
 	user := r.pool.Get().(*models.User)
 	*user = *u
@@ -69,21 +67,17 @@ func (r *userRepository) UpdateUser(u *models.User) error {
 		return errUpdateUser("passed nil user")
 	}
 
-	if u.UUID == 0 {
-		return errUpdateUser("passed user has zero identifier")
-	}
-
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
 	for i := range r.users {
 		if r.users[i].UUID == u.UUID {
 			*r.users[i] = *u
-			break
+			return nil
 		}
 	}
 
-	return nil
+	return errUpdateUser("not found")
 }
 
 type errDeleteUser string
@@ -97,10 +91,6 @@ func (r *userRepository) DeleteUser(u *models.User) error {
 		return errDeleteUser("passed nil user")
 	}
 
-	if u.UUID == 0 {
-		return errDeleteUser("passed user does not have identifier")
-	}
-
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 
@@ -108,9 +98,9 @@ func (r *userRepository) DeleteUser(u *models.User) error {
 		if r.users[i].UUID == u.UUID {
 			r.pool.Put(r.users[i])
 			r.users = append(r.users[:i], r.users[i+1:]...)
-			break
+			return nil
 		}
 	}
 
-	return nil
+	return errUpdateUser("not found")
 }
