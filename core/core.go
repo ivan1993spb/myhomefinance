@@ -121,6 +121,10 @@ func (c *Core) DeleteAccount(userUUID, accountUUID uuid.UUID) error {
 	})
 }
 
+func (c *Core) GetUserAccounts(userUUID uuid.UUID) ([]*models.Account, error) {
+	return c.accountRepository.GetUserAccounts(userUUID)
+}
+
 func (c Core) CreateUser() (*models.User, error) {
 	u := &models.User{
 		UUID: uuid.NewV4(),
