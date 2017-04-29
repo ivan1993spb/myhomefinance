@@ -10,6 +10,7 @@ import (
 
 	"github.com/ivan1993spb/myhomefinance/core"
 	"github.com/ivan1993spb/myhomefinance/handlers"
+	"github.com/ivan1993spb/myhomefinance/iso4217"
 	"github.com/ivan1993spb/myhomefinance/memoryrepository"
 	"github.com/ivan1993spb/myhomefinance/middlewares"
 )
@@ -20,6 +21,17 @@ func main() {
 	transactionRepository, _ := memoryrepository.NewTransactionRepository()
 	c := core.New(userRepository, accountRepository, transactionRepository)
 	log := logrus.New()
+
+	user, err := c.CreateUser()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(user)
+	account, err := c.CreateAccount(user.UUID, "test", iso4217.RUB)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info(account)
 
 	r := mux.NewRouter()
 
